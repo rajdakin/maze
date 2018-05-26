@@ -1,4 +1,4 @@
-#!/usr/local/bin/lua
+import_prefix = ... and (...):match("(.-)[^%.]+$") or ""
 
 directions = {}
 directions["up"] = "u"
@@ -20,6 +20,8 @@ objects = {}
 objects["sword"] = false
 objects["key"] = false
 objects["redkey"] = false
+
+local level = require(import_prefix .. "level")
 
 last_data = "nil"
 last_data_index = 0
@@ -65,7 +67,7 @@ function getNextData()
 end
 
 function resetMaze()
-	NumberInALine = 7
+--[[	NumberInALine = 7
 	-- 1 2 3 4 5 6 7
 	-- 8 9 . . .
 --	doors = {[-6] = {},                                                                     [-5] = {},                                [-4] = {},                                [-3] = {},                              [-2] = {},                                [-1] = {},                                 [0] = {},
@@ -93,7 +95,12 @@ function resetMaze()
 --	         {exit = true, dir_exit = "left", reddoor = true, dir_reddoor = "left", door = true, dir_door = "left"}, {graveorig = true, down = true},
 --	         {},                                                                                                     {up = true, key = true, redkey = true},
 --	         {},                                                                                                     {}}
---	room = 4
+--	room = 4]]
+	local rlevel = get_active_level()
+	NumberInALine = rlevel.number_in_a_line
+	doors = rlevel.datas
+	room = rlevel.room
+	
 	setRoomsAsUnseen()
 
 	-- unreachables

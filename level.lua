@@ -1,7 +1,8 @@
 import_prefix = ...
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
 
-require(import_prefix .. "class")
+local classmodule = require(import_prefix .. "class")
+local utilmodule = require(import_prefix .. "util")
 
 local levels = {}
 

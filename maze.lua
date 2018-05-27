@@ -20,6 +20,7 @@ objects["key"] = false
 objects["redkey"] = false
 
 local levelmodule = require(import_prefix .. "level")
+local utilmodule = require(import_prefix .. "util")
 
 game_ended = false
 
@@ -29,11 +30,6 @@ function resetMaze()
 end
 
 resetMaze()
-
-function sleep(s)
-	local t0 = os.clock()
-	while os.clock() - t0 <= s do end
-end
 
 function main()
 	game_ended = false

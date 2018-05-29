@@ -23,62 +23,103 @@ function Room:initialize()
 	end
 end
 
-function Room:printRoom(objects, isActiveRoom, is_left_seen_status_true)
-	if (self:getAttribute("left")
-	  or (((not self:getAttribute("door")) and (self:getAttribute("dir_door") == "left"))
-	  and ((not self:getAttribute("reddoor")) and (self:getAttribute("dir_reddoor") == "left")))
-	  or (((not self:getAttribute("door")) and (self:getAttribute("dir_door") == "left"))
-	  and ((not self:getAttribute("reddoor")) and (self:getAttribute("dir_reddoor") == nil)))
-	  or (((not self:getAttribute("door")) and (self:getAttribute("dir_door") == nil))
-	  and ((not self:getAttribute("reddoor")) and (self:getAttribute("dir_reddoor") == "left")))
-	  or (self:getAttribute("grave") and (self:getAttribute("exitdir") == "left"))
-	  or  self:getAttribute("graveorig"))
-	 and (self:getAttribute("saw") or is_left_seen_status_true) then
-		if self:getAttribute("graveorig") then
-			io.write("\27[44;31m \27[00m")
-		else
-			io.write(" ")
-		end
-	else
-		io.write("\27[01;30;41;07m \27[00m")
-	end
-	if isActiveRoom then
-		io.write("\27[43m")
-	end
-	if self:getAttribute("saw") then
-		if self:getAttribute("exit") then
+function Room:canHear(event, up, down, left, right)
+	return (up and up:getAttribute(event)) or (down and down:getAttribute(event))
+	 or (left and left:getAttribute(event)) or (right and right:getAttribute(event))
+end
+
+function Room:hasAccess(direction)
+	return self:getAttribute(direction)
+	 or (not self:getAttribute("door") and self:getAttribute("dir_door") == direction)
+	 or (not self:getAttribute("reddoor") and self:getAttribute("dir_reddoor") == direction)
+end
+
+function Room:canSee(event, up, down, left, right)
+	return (self:hasAccess("up") and self:canHear(event, up))
+	 or (self:hasAccess("down") and self:canHear(event, down))
+	 or (self:hasAccess("left") and self:canHear(event, left))
+	 or (self:hasAccess("right") and self:canHear(event, right))
+end
+
+local doorBGcolor = {["door"] = "44", ["reddoor"] = "41"}
+function Room:printDoor(dir, doorType)
+	if self:getAttribute(dir) then
+		io.write(" ")
+	elseif (self:getAttribute(doorType) and (self:getAttribute("dir_" .. doorType) == dir)) then
+		io.write("\27[01;33;" .. doorBGcolor[doorType] .. "m")
+		if self:getAttribute("exit") and (self:getAttribute("dir_exit") == dir) then
 			io.write("E")
-		elseif self:getAttribute("sword") then
-			io.write("s")
-		elseif self:getAttribute("key") then
-			io.write("c")
-		elseif self:getAttribute("redkey") then
-			io.write("C")
-		elseif self:getAttribute("door") then
-			io.write("d")
-		elseif self:getAttribute("reddoor") then
-			io.write("D")
-		elseif self:getAttribute("grave") then
-			io.write("G")
-		elseif self:getAttribute("graveorig") then
-			io.write("g")
-		elseif self:getAttribute("monster") then
-			io.write("\27[31mM\27[00m")
-		elseif self:getAttribute("trap") then
-			io.write("\27[31mT\27[00m")
-		elseif self:getAttribute("unreachable") then
-			io.write("\27[01;30;41;07mU\27[00m")
 		else
 			io.write(" ")
 		end
+	elseif (not self:getAttribute(doorType)) and (self:getAttribute("dir_" .. doorType) == dir) then
+		io.write("\27[32m ")
 	else
-		io.write("\27[01;30;07;47m?\27[00m")
+		io.write("\27[01;30;41;07m ")
 	end
-	if isActiveRoom then
-		io.write("\27[00m")
+	io.write("\27[00m")
+end
+function Room:printRoom(objects, isActiveRoom)
+	io.write("\27[s")
+	if not self:getAttribute("saw") then
+		io.write("\27[B\27[01;30;47;07m ?? \27[u\27[2B\27[01;30;47;07m ?? \27[u\27[3B\27[01;30;47;07m    \27[u\27[01;30;47;07m    \27[00m")
+	else
+		io.write("\27[01;30;41;07m \27[u\27[B")                   -- / Column one
+		self:printDoor("left", "door")                            -- |
+		io.write("\27[u\27[2B")                                   -- |
+		self:printDoor("left", "reddoor")                         -- |
+		io.write("\27[u\27[3B\27[01;30;41;07m \27[u\27[C\27[s")   -- -
+		self:printDoor("up", "door")                              -- / Column two
+		self:printDoor("up", "reddoor")                           -- + Column three
+		io.write("\27[u\27[B")                                    -- |
+		if self:getAttribute("unreachable") then                  -- |
+			io.write("\27[01;30;41;07mUU\27[2D\27[BUU")           -- |
+		else                                                      -- |
+			if isActiveRoom then                                  -- |
+				io.write("\27[43m")                               -- |
+			end                                                   -- |
+			if self:getAttribute("key") then                      -- |
+				io.write("K")                                     -- |
+			elseif self:getAttribute("near_key") then             -- |
+				io.write("\27[02mK\27[22m")                       -- |
+			else                                                  -- |
+				io.write(" ")                                     -- |
+			end                                                   -- |
+			if self:getAttribute("redkey") then                   -- |
+				io.write("k")                                     -- |
+			elseif self:getAttribute("near_redkey") then          -- |
+				io.write("\27[02mk\27[22m")                       -- |
+			else                                                  -- |
+				io.write(" ")                                     -- |
+			end                                                   -- |
+			io.write("\27[2D\27[B")                               -- |
+			if self:getAttribute("sword") then                    -- |
+				io.write("S")                                     -- |
+			elseif self:getAttribute("near_sword") then           -- |
+				io.write("\27[02mS\27[22m")                       -- |
+			else                                                  -- |
+				io.write(" ")                                     -- |
+			end                                                   -- |
+			if self:getAttribute("monster") then                  -- |
+				io.write("M")                                     -- |
+			elseif self:getAttribute("near_monster") then         -- |
+				io.write("\27[02mM\27[22m")                       -- |
+			else                                                  -- |
+				io.write(" ")                                     -- |
+			end                                                   -- |
+		end                                                       -- |
+		io.write("\27[00m\27[2D\27[B")                            -- |
+		self:printDoor("down", "door")                            -- |
+		self:printDoor("down", "reddoor")                         -- -
+		io.write("\27[u\27[2C\27[s\27[01;30;41;07m \27[u\27[B")   -- / Column four
+		self:printDoor("right", "door")                           -- |
+		io.write("\27[u\27[2B")                                   -- |
+		self:printDoor("right", "reddoor")                        -- |
+		io.write("\27[u\27[3B\27[01;30;41;07m \27[u\27[C\27[00m") -- -
 	end
 end
 
+---TODO: Add rooms UDLR - setAttribute(near_{key,exit,sword,redkey,monster})
 function Room:checkRoomEvents(is_ended, objects, room_position_in_row, caller)
 	if self:getAttribute("sword") then
 		io.write("You see a sword on a book, that says that this sword will self-disintegrate with its first target.\nYou turn the page and you read that you can only have one at a time and that if you take this one, every other sword will disintegrates.\n")
@@ -113,24 +154,19 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, caller)
 		io.write(".")
 		io.flush()
 		sleep(0.5)
-		io.write("\8\8\8???, so you ")
-		local i
-		for i = 0, 1 do
-			io.write("read it")
-			io.flush()
-			sleep(1)
-			io.write(".")
-			io.flush()
-			sleep(1)
-			io.write(".")
-			io.flush()
-			sleep(1)
-			io.write(".")
-			io.flush()
-			sleep(1)
-			io.write(" and ")
-		end
-		io.write("\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8                       \8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8\8")
+		io.write("\8\8\8???, so you read it")
+		io.flush()
+		sleep(1)
+		io.write(".")
+		io.flush()
+		sleep(1)
+		io.write(".")
+		io.flush()
+		sleep(1)
+		io.write(".")
+		io.flush()
+		sleep(1)
+		io.write("\8\8\8   \8\8\8")
 		io.write(", and you see a part about the key:\n")
 		io.flush()
 		sleep(0.5)
@@ -330,4 +366,8 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, caller)
 		end
 	end
 	return {is_ended, objects}
+end
+
+function getRoomDisplaySize()
+	return 4
 end

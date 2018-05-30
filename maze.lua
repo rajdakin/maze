@@ -94,7 +94,10 @@ function main()
 			local ret = level:checkLevelEvents(game_ended, objects)
 			game_ended = ret.ended
 			objects = ret.objects
-			if ret:iskind(EventParsingReturnExited) then
+			if ret:iskind(EventParsingReturnEnded) then
+				print()
+				return "Ended because of: " .. ret.reason
+			elseif ret:iskind(EventParsingReturnExited) then
 				resetMaze()
 				dead = ret.dead
 				if not dead then

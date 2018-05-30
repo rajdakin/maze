@@ -160,7 +160,9 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		if objects["sword"] then io.write("You do already have one. ") end
 		io.write("Do you want to take this sword? " .. '"O" / "o" / "Y" / "y" for yes, anything else to cancel: ')
 		local answer = io.read()
-		if answer and ((answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y")) then
+		if not answer then
+			return EventParsingReturnEnded("user's request")
+		elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 			objects["sword"] = true
 			self:setAttribute("sword", false)
 		end
@@ -284,7 +286,9 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			io.write("Do you want to take it? " .. '"O" / "o" / "Y" / "y" for yes, anything else to cancel: ')
 			io.flush()
 			local answer = io.read()
-			if answer and ((answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y")) then
+			if not answer then
+				return EventParsingReturnEnded("user's request")
+			elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 				objects["key"] = true
 				self:setAttribute("key", false)
 			end
@@ -302,7 +306,9 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			else
 				io.write('Do you want to take it? "O"/"o"/"Y"/"y" means yes, anything else to cancel: ')
 				local answer = io.read()
-				if answer and ((answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y")) then
+				if not answer then
+					return EventParsingReturnEnded("user's request")
+				elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 					objects["redkey"] = true
 					self:setAttribute("redkey", false)
 				end
@@ -357,7 +363,9 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			io.write("After having walked across stairs, you see a room filled with skeletons.\nA grid is located on the ground and leads to another room.\nDo you want to continue and go donwstairs or go backwards ? (O / o / Y / y means go downstairs, everything else means go back): ")
 			self:setAttribute("saw", true)
 			local answer = io.read()
-			if answer and ((answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y")) then
+			if not answer then
+				return EventParsingReturnEnded("user's request")
+			elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 				return EventParsingReturnRoomChanging("left", objects)
 			else
 				return EventParsingReturnRoomRestore(objects)

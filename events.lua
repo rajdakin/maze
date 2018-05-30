@@ -27,6 +27,10 @@ local EventParsingReturn = class(function(self, id, is_ended, objects)
 	self.objects = objects
 end, Event)
 
+EventParsingReturnEnded = class(function(self, reason)
+	EventParsingReturn.__init(self, -1)
+	self.reason = reason
+end, EventParsingReturn)
 EventParsingReturnDone = class(function(self, objects)
 	EventParsingReturn.__init(self, 0, false, objects)
 end, EventParsingReturn)

@@ -43,7 +43,14 @@ function main()
 		level:setActiveRoomAttribute("saw", true)
 		print("")
 		io.write('"' .. directions["up"] .. '", "' .. directions["down"] .. '", "' .. directions["left"] .. '", "' .. directions["right"] .. '" (directions), "wait" (if you want to act with what is in the same room as you), "exit" or "map" : ')
+		
 		local movement = io.read()
+		if movement == nil then
+			game_ended = true
+			print()
+			return "Ended because of: user's request"
+		end
+		
 		if (movement == directions["up"]) then
 			-- go up!
 			if level:getActiveRoomAttribute("up") or ((not level:getActiveRoomAttribute("door")) and (level:getActiveRoomAttribute("dir_door") == "up")) or ((not level:getActiveRoomAttribute("reddoor")) and (level:getActiveRoomAttribute("dir_reddoor") == "up")) or (level:getActiveRoomAttribute("grave") and (level:getActiveRoomAttribute("exitdir") == "up")) then

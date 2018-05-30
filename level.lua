@@ -3,16 +3,11 @@ if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else 
 
 local utilmodule = require(import_prefix .. "util")
 
+local eventsmodule = require(import_prefix .. "events")
 local classmodule = require(import_prefix .. "class")
 local roommodule = require(import_prefix .. "room")
 
 local levels = {}
-
-local cardinals = {}
-cardinals["up"] = "north"
-cardinals["down"] = "south"
-cardinals["left"] = "east"
-cardinals["right"] = "west"
 
 local Level = class(function(self, initial_room, level_length, level_array)
 	self.__number_of_columns = level_length
@@ -27,6 +22,11 @@ local Level = class(function(self, initial_room, level_length, level_array)
 	self:initialize()
 end)
 
+function Level:refreshActiveRoomNearEvents()
+	self:getActiveRoom():refreshRoomNearEvents(self:getRoomNumber() % self:getColumnCount(),
+		self:getRoom(self:getRoomNumber() - self:getColumnCount()), self:getRoom(self:getRoomNumber() + self:getColumnCount()),
+		self:getRoom(self:getRoomNumber() - 1), self:getRoom(self:getRoomNumber() + 1))
+end
 
 function Level:getActiveRoomAttribute(attributeName) return self:getRoom(self.__room_number):getAttribute(attributeName)        end
 function Level:setActiveRoomAttribute(attributeName, value) self:getRoom(self.__room_number):setAttribute(attributeName, value) end
@@ -58,14 +58,7 @@ function Level:initialize()
 end
 
 function Level:printLevelMap(is_ended, objects)
-	io.write("E = exit, s = sword, c = key, C = \27[9mred\27[00m \27[02;31mblood\27[00my key, d = door, D = red door, G = grave, g = grave's origin,   = nothing particular, \27[01;30;07;47m?\27[00m = not yet discovered, \27[01;30;41;07m \27[00m = wall")
-	if not is_ended then
-		io.write("\n\27[01;31mWITHOUT HACK, NEVER APPEARS!\27[00m")
-	else
-		io.write(",")
-	end
-	
-	print(" \27[31mM\27[00m = monster, \27[31mT\27[00m = trap, \27[01;30;41;07mU\27[00m = unreachable")
+	print("E = exit, S = sword, K = key, k = \27[9mred\27[00m \27[02;31mblood\27[00my key, \27[44m \27[00m = door, \27[41m \27[00m = red door, \27[45m \27[00m = grave to grave's origin,   = nothing particular, \27[01;30;07;47m?\27[00m = not yet discovered, \27[01;30;41;07m \27[00m = wall, \27[31mM\27[00m = monster, \27[31mT\27[00m = trap, \27[01;30;41;07mU\27[00m = unreachable")
 	print("")
 	if objects["key"] or objects["redkey"] or objects["sword"] then
 		if objects["key"] then
@@ -79,28 +72,59 @@ function Level:printLevelMap(is_ended, objects)
 		end
 		print("")
 	end
+	
+	local w, h
+	w = (getRoomDisplayWidth()  - 1) * self:getColumnCount() + 1
+	h = (getRoomDisplayHeight() - 1) * self:getColumnCount() + 1
 	local sizeOfMap = getArrayLength(self:getRooms()) - 2 * self:getColumnCount()
 	local i, j
+	
+	io.write("\27[s\27[01;30;47;07m")
+	for i = 1, w do
+		io.write(" ")
+	end
+	io.write("\27[G")
+	
 	for i = 1, sizeOfMap do
 		if i % self:getColumnCount() == 1 then
 			if i ~= 1 then
-				io.write("\27[" .. getRoomDisplaySize() - 1 .. "B")
+				io.write("\27[" .. getRoomDisplayHeight() - 1 .. "B")
 			end
-			for j = 1, getRoomDisplaySize() do
-				io.write("\n")
+			for j = 1, getRoomDisplayHeight() do
+				io.write("\27[00m\n\27[s\27[01;30;47;07m \27[u")
 			end
-			io.write("\27[" .. getRoomDisplaySize() - 1 .. "A")
+			io.write("\27[" .. getRoomDisplayHeight() .. "A\27[D")
 		end
-		self:getRoom(i):printRoom(objets, (i == self:getRoomNumber()) and not is_ended,
-			self:getRoom(i - self:getColumnCount()), self:getRoom(i - 1),
-			self:getRoom(i + 1), self:getRoom(i + self:getColumnCount()))
+		self:getRoom(i):printRoom(objets, (i == self:getRoomNumber()) and not is_ended)
 	end
-	io.write("\27[" .. getRoomDisplaySize() - 1 .. "B\n\27[G")
+	io.write("\27[" .. getRoomDisplayHeight() - 1 .. "B\n\27[G \27[D")
 	io.flush()
 end
 
 function Level:checkLevelEvents(is_ended, objects)
-	ret = self:getActiveRoom():checkRoomEvents(is_ended, objects, self:getRoomNumber() % self:getColumnCount(), self)
+	local i = self:getRoomNumber()
+	ret = self:getRoom(i):checkRoomEvents(is_ended, objects, i % self:getColumnCount(),
+	                                      self:getRoom(i - self:getColumnCount()), self:getRoom(i + self:getColumnCount()), 
+										  self:getRoom(i - 1), self:getRoom(i + 1))
+	is_ended = ret.ended
+	objects = ret.objects
+	if ret:isinstance(EventParsingReturnRoomChanging) then
+		if ret.room == "up" then
+			ret.room = self:getRoomNumber() - self:getColumnCount()
+		elseif ret.room == "down" then
+			ret.room = self:getRoomNumber() + self:getColumnCount()
+		elseif ret.room == "left" then
+			ret.room = self:getRoomNumber() - 1
+		elseif ret.room == "right" then
+			ret.room = self:getRoomNumber() + 1
+		end
+		self:setRoom(ret.room)
+		ret = self:checkLevelEvents(is_ended, objects)
+	elseif ret:isinstance(EventParsingReturnRoomRestore) then
+		self:restoreRoom()
+		ret = self:checkLevelEvents(is_ended, objects)
+	end
+	
 	return ret
 end
 
@@ -120,15 +144,20 @@ local function initialize_levels()
 	                          {right = true, monster = true},                                             {up = true,              left = true, right = true}, {                        left = true, right = true, redkey = true}, {                                                      left = true, right = true},                                           {up = true,              left = true,               sword = true, reddoor = true, dir_reddoor = "up"}, {up = true,                           right = true},                 {left = true, trap = true},
 	                          {},                                                                         {},                                                  {},                                                                 {},                                                                                                                          {},                                                                         {},                                                                                             {}}
 	)
-	levels[-1] = Level(4, 2, {[-1] = {},                                                                                                                                                                   [0] = {},
-	                          {exit = true, dir_exit = "left",                 reddoor = true, dir_reddoor = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveorig = true},
-	                          {                                redkey = true},                                                                                                                             {up = true,              key = true},
-	                          {},                                                                                                                                                                          {}}
+	levels[-1] = Level(4, 2, {[-1] = {},                                                                                                                                                                  [0] = {},
+	                          {exit = true, dir_exit = "left",                reddoor = true, dir_reddoor = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveorig = true},
+	                          {                                redkey = true},                                                                                                                            {up = true,              key = true},
+	                          {},                                                                                                                                                                         {}}
 	)
 	levels[-2] = Level(4, 2, {[-1] = {},                                                                                              [0] = {},
 	                          {exit = true, dir_exit = "left", reddoor = true, dir_reddoor = "left", door = true, dir_door = "left"}, {graveorig = true, down = true},
 	                          {},                                                                                                     {up = true, key = true, redkey = true},
 	                          {},                                                                                                     {}}
+	)
+	levels[-3] = Level(1, 2, {[-1] = {},                                                                                                                     [0] = {},
+	                          {           down = true, right = true, redkey = true},                                                                         {exit = true, dir_exit = "up", left = true, reddoor = true, dir_reddoor = "up"},
+	                          {up = true,                                           door = true, dir_door = "right", reddoor = true, dir_reddoor = "right"}, {},
+	                          {},                                                                                                                            {}}
 	)
 end
 
@@ -138,7 +167,7 @@ end
 
 function get_active_level()
 	local levels = get_levels()
-	return levels[1]
+	return levels[2]
 end
 
 initialize_levels()

@@ -9,7 +9,7 @@ local roommodule = require(import_prefix .. "room")
 
 local levels = {}
 
-local Level = class(function(self, initial_room, level_length, level_array)
+--[[local]] Level = class(function(self, initial_room, level_length, level_array)
 	self.__number_of_columns = level_length
 	self.__old_room = initial_room
 	self.__room_number = initial_room
@@ -128,6 +128,7 @@ function Level:checkLevelEvents(is_ended, objects)
 	return ret
 end
 
+require("contribution")
 local function initialize_levels()
 	levels[1] = Level(28, 7, {[-6] = {},                                                                                                              [-5] = {},                                           [-4] = {},                                                        [-3] = {},                                           [-2] = {},                                                        [-1] = {},                                                         [0] = {},
 	                          {exit = true, dir_exit = "left",            down = true,                               door = true, dir_door = "left"}, {                                     right = true}, {           down = true, left = true, right = true},              {                        left = true, right = true}, {                        left = true, right = true},              {                        left = true, right = true, sword = true}, {           down = true, left = true},
@@ -159,6 +160,8 @@ local function initialize_levels()
 	                          {up = true,                                           door = true, dir_door = "right", reddoor = true, dir_reddoor = "right"}, {},
 	                          {},                                                                                                                            {}}
 	)
+	
+	add_contrib_levels()
 end
 
 function get_levels()
@@ -167,7 +170,7 @@ end
 
 function get_active_level()
 	local levels = get_levels()
-	return levels[2]
+	return levels[getArrayLength(levels) - 2]
 end
 
 initialize_levels()

@@ -1,0 +1,7 @@
+[Conceptor]
+rajdakin
+
+[Main developer]
+rajdakin
+
+[Contributors]

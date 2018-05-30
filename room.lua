@@ -13,7 +13,7 @@ end)
 function Room:getAttribute(attributeName) return self.__datas[attributeName]         end
 function Room:setAttribute(attributeName, value) self.__datas[attributeName] = value end
 
-local list_data = {"exit", "up", "down", "left", "right", "monster", "sword", "key", "door", "direction", "trap", "redkey", "reddoor", "grave", "graveorig", "saw"}
+local list_data = {"exit", "up", "down", "left", "right", "monster", "sword", "key", "door", "trap", "redkey", "reddoor", "grave", "graveorig", "saw"}
 function Room:setUnreachable()
 	local unreachable = true
 	for k, v in pairs(list_data) do

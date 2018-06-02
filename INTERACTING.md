@@ -61,3 +61,8 @@ level = [level]
 level:setAllRoomsSeenStatusAs(false)
 ```
 where `[level]` is your level (see [CONTRIBUTING.md#Creating levels](CONTRIBUTING.md#creating-levels))
+Then write
+```lua
+main()
+```
+to start the level testing.

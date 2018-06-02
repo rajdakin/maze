@@ -60,7 +60,7 @@ function Room:printDoor(dir, doorType)
 			io.write(" ")
 		end
 	elseif (not self:getAttribute(doorType)) and (self:getAttribute("dir_" .. doorType) == dir) then
-		io.write("\27[32m ")
+		io.write("\27[42m ")
 	else
 		io.write("\27[01;30;41;07m ")
 	end

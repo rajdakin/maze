@@ -53,28 +53,28 @@ function main()
 		
 		if (movement == directions["up"]) then
 			-- go up!
-			if level:getActiveRoomAttribute("up") or ((not level:getActiveRoomAttribute("door")) and (level:getActiveRoomAttribute("dir_door") == "up")) or ((not level:getActiveRoomAttribute("reddoor")) and (level:getActiveRoomAttribute("dir_reddoor") == "up")) or (level:getActiveRoomAttribute("grave") and (level:getActiveRoomAttribute("exitdir") == "up")) then
+			if level:getActiveRoom():hasAccess("up") then
 				level:setRoom(level:getRoomNumber() - level:getColumnCount())
 			else
 				print "BOOMM !!"
 			end
 		elseif (movement == directions["down"]) then
 			-- go down!
-			if level:getActiveRoomAttribute("down") or ((not level:getActiveRoomAttribute("door")) and (level:getActiveRoomAttribute("dir_door") == "down")) or ((not level:getActiveRoomAttribute("reddoor")) and (level:getActiveRoomAttribute("dir_reddoor") == "down")) or (level:getActiveRoomAttribute("grave") and (level:getActiveRoomAttribute("exitdir") == "down")) then
+			if level:getActiveRoom():hasAccess("down") then
 				level:setRoom(level:getRoomNumber() + level:getColumnCount())
 			else
 				print "BOOMM !!"
 			end
 		elseif (movement == directions["left"]) then
 			-- go left!
-			if level:getActiveRoomAttribute("left") or ((not level:getActiveRoomAttribute("door")) and (level:getActiveRoomAttribute("dir_door") == "left")) or ((not level:getActiveRoomAttribute("reddoor")) and (level:getActiveRoomAttribute("dir_reddoor") == "left")) or (level:getActiveRoomAttribute("grave") and (level:getActiveRoomAttribute("exitdir") == "left")) then
+			if level:getActiveRoom():hasAccess("left") then
 				level:setRoom(level:getRoomNumber() - 1)
 			else
 				print "BOOMM !!"
 			end
 		elseif (movement == directions["right"]) then
 			-- go right!
-			if level:getActiveRoomAttribute("right") or ((not level:getActiveRoomAttribute("door")) and (level:getActiveRoomAttribute("dir_door") == "right")) or ((not level:getActiveRoomAttribute("reddoor")) and (level:getActiveRoomAttribute("dir_reddoor") == "right")) or (level:getActiveRoomAttribute("grave") and (level:getActiveRoomAttribute("exitdir") == "right")) then
+			if level:getActiveRoom():hasAccess("right") then
 				level:setRoom(level:getRoomNumber() + 1)
 			else
 				print "BOOMM !!"

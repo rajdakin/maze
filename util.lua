@@ -16,3 +16,9 @@ function getArrayLength(tbl)
 	end
 	return count
 end
+
+function min(a, b) if a < b then return a else return b end end
+function max(a, b) if a < b then return b else return a end end
+
+local mathmodule = require("math")
+function floor(a) return math.floor(a) end

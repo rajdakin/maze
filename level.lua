@@ -28,11 +28,13 @@ function Level:refreshActiveRoomNearEvents()
 		self:getRoom(self:getRoomNumber() - 1), self:getRoom(self:getRoomNumber() + 1))
 end
 
+function Level:getMapSize() return getArrayLength(self:getRooms()) - 2 * self:getColumnCount() end
+
 function Level:getActiveRoomAttribute(attributeName) return self:getRoom(self.__room_number):getAttribute(attributeName)        end
 function Level:setActiveRoomAttribute(attributeName, value) self:getRoom(self.__room_number):setAttribute(attributeName, value) end
 
 function Level:getRoomAttribute(room, attributeName) return self:getRoom(room):getAttribute(attributeName)        end
-function Level:setRoomAttribute(room, attributeName, value) print(room); self:getRoom(room):setAttribute(attributeName, value) end
+function Level:setRoomAttribute(room, attributeName, value) self:getRoom(room):setAttribute(attributeName, value) end
 
 function Level:getRoomNumber() return self.__room_number end
 function Level:setRoom(room) self.__old_room = self.__room_number; self.__room_number = room end
@@ -42,8 +44,8 @@ function Level:getRooms() return self.__rooms end
 function Level:getActiveRoom()  return self:getRooms()[self:getRoomNumber()] end
 function Level:getRoom(room_no) return self:getRooms()[room_no]              end
 
-function Level:getRoomCoordinates(room_no)  return room % self:getColumnCount(), floor(room / self:getColumnCount()) end
-function Level:getRoomFromcoordinates(x, y) return self:getRoom(x + y * self:getColumnCount) end
+function Level:getRoomCoordinates(room_no) local x, y = room_no % self:getColumnCount(), floor(room_no / self:getColumnCount()) if room_no % self:getColumnCount() == 0 then x = self:getColumnCount() y = y - 1 end return x, y end
+function Level:getRoomFromCoordinates(x, y) return self:getRoom(x + y * self:getColumnCount()) end
 
 function Level:getColumnCount() return self.__number_of_columns end
 
@@ -60,10 +62,26 @@ function Level:initialize()
 	end
 end
 
+function Level:reverseMap(objects)
+	if objects and objects["key"] or objects["redkey"] or objects["sword"] then
+		if objects["key"] then
+			io.write("\27[A")
+		end
+		if objects["redkey"] then
+			io.write("\27[A")
+		end
+		if objects["sword"] then
+			io.write("\27[A")
+		end
+		io.write("\27[A")
+	end
+	io.write("\27[" .. 3 *3 +7 .. "A\27[J")
+end
+
 function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 	print("E = exit, S = sword, K = key, k = \27[9mred\27[00m \27[02;31mblood\27[00my key, \27[44m \27[00m = door, \27[41m \27[00m = red door, \27[45m \27[00m = grave to grave's origin,   = nothing particular, \27[01;30;07;47m?\27[00m = not yet discovered, \27[01;30;41;07m \27[00m = wall, \27[31mM\27[00m = monster, \27[31mT\27[00m = trap, \27[01;30;41;07mU\27[00m = unreachable")
 	print("")
-	if objects["key"] or objects["redkey"] or objects["sword"] then
+	if objects and objects["key"] or objects["redkey"] or objects["sword"] then
 		if objects["key"] then
 			print("You have a \27[45;01;32mkey\27[00m.")
 		end
@@ -76,8 +94,6 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 		print("")
 	end
 	
-	local sizeOfMap = getArrayLength(self:getRooms()) - 2 * self:getColumnCount()
-	
 	local xOffset
 	local yOffset
 	local maxXcoord
@@ -89,53 +105,37 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 		local camWidth  = 3 -- Future: will be easier to modify
 		local camHeight = 3
 		local roomX, roomY = self:getRoomCoordinates(self:getRoomNumber())
-		xOffset = max(0, min(self:getColumnCount(), roomX - floor((camWidth - 1) / 2)))
-		yOffset = max(0, min(floor(sizeOfMap / self:getColumnCount()), roomY - floor((camHeight - 1) / 2)))
+		xOffset = max(1, min(self:getColumnCount() - camWidth + 1, roomX - floor((camWidth - 1) / 2)))
+		yOffset = max(0, min(floor(self:getMapSize() / self:getColumnCount()) - camHeight, roomY - floor((camHeight - 1) / 2)))
 		maxXcoord = camWidth  * (getRoomDisplayWidth () - 1) + 1
 		maxYcoord = camHeight * (getRoomDisplayHeight() - 1) + 1
 	else
-		xOffset = 0
+		xOffset = 1
 		yOffset = 0
-		maxXcoord = self:getColumnCount()
-		maxYcoord = floor(sizeOfMap / getColumnCount())
+		maxXcoord = self:getColumnCount() * (getRoomDisplayWidth() - 1) + 1
+		maxYcoord = floor(self:getMapSize() / self:getColumnCount()) * (getRoomDisplayWidth() - 1) + 1
 	end
 	
 	io.write("\27[01;30;47;07m")
 	for curXcoord = 1, maxXcoord do io.write(" ") end io.write("\27[00m\27[G")
 	for curYcoord = 1, maxYcoord do io.write("\27[01;30;47;07m \27[00m\n") end io.write("\27[" .. maxYcoord .. "A")
 	
-	for curYcoord = 1, maxYcoord, getRoomDisplayHeight() - 1 do
-		for curXcoord = 1, maxXcoord, getRoomDisplayWidth() - 1 do
-			self:getRoomFromCoordinates(curXcoord + xOffset, curYcoord + yOffset):printRoom(objets, (i == self:getRoomNumber()) and not is_ended)
+	for curYcoord = 1, maxYcoord - 1, getRoomDisplayHeight() - 1 do
+		for curXcoord = 1, maxXcoord - 1, getRoomDisplayWidth() - 1 do
+			local roomX, roomY = (curXcoord - 1) / (getRoomDisplayWidth() - 1), (curYcoord - 1) / (getRoomDisplayHeight() - 1)
+			local i = roomX + xOffset + (roomY + yOffset) * self:getColumnCount()
+			
+			local ret = self:getRoomFromCoordinates(roomX + xOffset, roomY + yOffset):printRoom(objets, (i == self:getRoomNumber()) and not is_ended)
+			
+			if ret:iskind(RoomPrintingError) then
+				return LevelPrintingErrored(ret)
+			end
 		end
 		io.write("\27[" .. getRoomDisplayHeight() - 1 .. "B\27[G")
 	end
 	print("\27[00m\n")
-	--[[local w, h
-	w = (getRoomDisplayWidth()  - 1) * self:getColumnCount() + 1
-	h = (getRoomDisplayHeight() - 1) * self:getColumnCount() + 1
-	local i, j
 	
-	io.write("\27[s\27[01;30;47;07m")
-	for i = 1, w do
-		io.write(" ")
-	end
-	io.write("\27[G")
-	
-	for i = 1, sizeOfMap do
-		if i % self:getColumnCount() == 1 then
-			if i ~= 1 then
-				io.write("\27[" .. getRoomDisplayHeight() - 1 .. "B")
-			end
-			for j = 1, getRoomDisplayHeight() do
-				io.write("\27[00m\n\27[s\27[01;30;47;07m \27[u")
-			end
-			io.write("\27[" .. getRoomDisplayHeight() .. "A\27[D")
-		end
-		self:getRoom(i):printRoom(objets, (i == self:getRoomNumber()) and not is_ended)
-	end
-	io.write("\27[" .. getRoomDisplayHeight() - 1 .. "B\n\27[G \27[D")
-	io.flush()]]
+	return LevelPrintingDone()
 end
 
 function Level:checkLevelEvents(is_ended, objects)
@@ -145,7 +145,7 @@ function Level:checkLevelEvents(is_ended, objects)
 										  self:getRoom(i - 1), self:getRoom(i + 1))
 	is_ended = ret.ended
 	objects = ret.objects
-	if ret:isinstance(EventParsingReturnRoomChanging) then
+	if ret:isinstance(EventParsingResultRoomChanging) then
 		if ret.room == "up" then
 			ret.room = self:getRoomNumber() - self:getColumnCount()
 		elseif ret.room == "down" then
@@ -157,7 +157,7 @@ function Level:checkLevelEvents(is_ended, objects)
 		end
 		self:setRoom(ret.room)
 		ret = self:checkLevelEvents(is_ended, objects)
-	elseif ret:isinstance(EventParsingReturnRoomRestore) then
+	elseif ret:isinstance(EventParsingResultRoomRestore) then
 		self:restoreRoom()
 		ret = self:checkLevelEvents(is_ended, objects)
 	end
@@ -207,7 +207,7 @@ end
 
 function get_active_level()
 	local levels = get_levels()
-	return levels[getArrayLength(levels) - 3]
+	return levels[1--[[getArrayLength(levels) - 3]]]
 end
 
 initialize_levels()

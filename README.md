@@ -27,8 +27,8 @@ Controls:
   3. Reset faint/bold: \27[22m
   4. Reverse video (background <-> foreground colors) *(this is mostly used to render walls)*: \27[07m
   5. Crossed-out: \27[09m
-  6. Foreground colors: \27[3cm -styled
-  7. Background colors: \27[4cm -styled
+  6. Foreground colors: \27[3cm -styled (where c is the color)
+  7. Background colors: \27[4cm -styled (where c is the color)
   8. Cursor UDLR movements: \27[1A \27[1B \27[1C \27[1D
   9. Cursor absolute horizontal: \27[G
   10. Cursor save state: \27[s

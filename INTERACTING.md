@@ -15,11 +15,12 @@ level:setAllRoomsSeenStatusAs(status) -- where status is either true or false
 
 Print the map:
 ```lua
---[[ arguments are: is_ended, objects
+--[[ arguments are: is_ended, objects, doesDisplayAllMap
 	 - is_ended is if the game is ended (in that case yes)
 	 - objects is the object map (in that case, you can't have anything)
+	 - whether to display the whole map or just the little square
   ]]
-level:printLevelMap(true, {})
+level:printLevelMap(true, {}, true)
 ```
 
 Change room:

@@ -66,6 +66,7 @@ function Room:printDoor(dir, doorType)
 	end
 	io.write("\27[00m")
 end
+
 function Room:printRoom(objects, isActiveRoom)
 	io.write("\27[s")
 	if not self:getAttribute("saw") then
@@ -126,6 +127,7 @@ function Room:printRoom(objects, isActiveRoom)
 		self:printDoor("right", "reddoor")                        -- |
 		io.write("\27[u\27[3B\27[01;30;41;07m \27[u\27[00m") -- -
 	end
+	return RoomPrintingDone()
 end
 
 function Room:refreshRoomNearEvents(position_in_row, up, down, left, right)
@@ -141,7 +143,7 @@ function Room:refreshRoomNearEvents(position_in_row, up, down, left, right)
 		print("You briefly see a sharpened blade in a nearly room.")
 		self:setAttribute("near_sword", true)
 	end
-	if self:canSee("monster", position_in_row, up, down, left, right) then
+	if self:canHear("monster", position_in_row, up, down, left, right) then
 		print("A terrifying scream chills your blood, but it is so powerful you can't tell where does it come from.")
 		self:setAttribute("near_monster", true)
 	end
@@ -161,7 +163,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		io.write("Do you want to take this sword? " .. '"O" / "o" / "Y" / "y" for yes, anything else to cancel: ')
 		local answer = io.read()
 		if not answer then
-			return EventParsingReturnEnded("user's request")
+			return EventParsingResultEnded("user's request")
 		elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 			objects["sword"] = true
 			self:setAttribute("sword", false)
@@ -178,7 +180,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			self:setAttribute("monster", false)
 		else
 			print("Yous see a monster, but, due to your lack of equipment, you don't have any weapon... While you try to escape, the monster catch you and eat you. You are DEAD!")
-			return EventParsingReturnExited(true)
+			return EventParsingResultExited(true)
 		end
 		up:setAttribute("near_monster", false)
 		down:setAttribute("near_monster", false)
@@ -208,7 +210,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				end
 			else
 				print("You see the exit at the " .. cardinals[self:getAttribute("dir_exit")] .. "!\nQuick, you take your key and you open the exit door.\nYou survived against the monsters and the traps and you WON!")
-				return EventParsingReturnExited(false)
+				return EventParsingResultExited(false)
 			end
 		else
 			io.write("You see a door at the " .. cardinals[self:getAttribute("dir_door")])
@@ -247,7 +249,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				end
 			else
 				print("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_exit")] .. " blocking the exit!\nHopefully, you remember that you have a red key, of the same color than the door. You open the door and you exit this maze!\nYou survived against the monsters and the traps and you WON!")
-				return EventParsingReturnExited(false)
+				return EventParsingResultExited(false)
 			end
 		else
 			io.write("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_reddoor")])
@@ -265,7 +267,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 	end
 	if self:getAttribute("trap") then
 		print("You felt into a trap, and, with terrible pain, you DIE.")
-		return EventParsingReturnExited(true)
+		return EventParsingResultExited(true)
 	end
 	if not is_ended then
 		if self:getAttribute("key") then
@@ -287,7 +289,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			io.flush()
 			local answer = io.read()
 			if not answer then
-				return EventParsingReturnEnded("user's request")
+				return EventParsingResultEnded("user's request")
 			elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 				objects["key"] = true
 				self:setAttribute("key", false)
@@ -307,7 +309,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				io.write('Do you want to take it? "O"/"o"/"Y"/"y" means yes, anything else to cancel: ')
 				local answer = io.read()
 				if not answer then
-					return EventParsingReturnEnded("user's request")
+					return EventParsingResultEnded("user's request")
 				elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 					objects["redkey"] = true
 					self:setAttribute("redkey", false)
@@ -345,7 +347,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					io.write("EXCEPTION.UNKNOWN_KEY_VALUE: " .. self:getAttribute("keyneeded") .. " AT LINE #XX")
 				end
 				io.write(" of the exit located at the " .. cardinals[self:getAttribute("exitdir")] .. ".")
-				return EventParsingReturnExited(true)
+				return EventParsingResultExited(true)
 			end
 			if self:getAttribute("exitdir") == "up" then
 				up:setAttribute("down", true)
@@ -364,18 +366,18 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			self:setAttribute("saw", true)
 			local answer = io.read()
 			if not answer then
-				return EventParsingReturnEnded("user's request")
+				return EventParsingResultEnded("user's request")
 			elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
-				return EventParsingReturnRoomChanging("left", objects)
+				return EventParsingResultRoomChanging("left", objects)
 			else
-				return EventParsingReturnRoomRestore(objects)
+				return EventParsingResultRoomRestore(objects)
 			end
 		end
 	end
 	if not is_ended then
-		return EventParsingReturnDone(objects)
+		return EventParsingResultDone(objects)
 	else
-		return EventParsingReturnExited("???")
+		return EventParsingResultExited("???")
 	end
 end
 

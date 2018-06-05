@@ -208,7 +208,7 @@ end
 
 function get_active_level()
 	local levels = get_levels()
-	return levels[1--[[getArrayLength(levels) - 3]]]
+	return levels[getArrayLength(levels) - 3]
 end
 
 initialize_levels()

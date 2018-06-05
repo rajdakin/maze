@@ -4,6 +4,7 @@ if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else 
 local utilmodule = require(import_prefix .. "util")
 
 local eventsmodule = require(import_prefix .. "events")
+local configmodule = require(import_prefix .. "config")
 local classmodule = require(import_prefix .. "class")
 local roommodule = require(import_prefix .. "room")
 
@@ -102,8 +103,8 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 	local curYcoord
 	
 	if not doesDisplayAllMap then
-		local camWidth  = 3 -- Future: will be easier to modify
-		local camHeight = 3
+		local camWidth  = currentConfig:getLevelConfig():getCamWidth ()
+		local camHeight = currentConfig:getLevelConfig():getCamHeight()
 		local roomX, roomY = self:getRoomCoordinates(self:getRoomNumber())
 		xOffset = max(1, min(self:getColumnCount() - camWidth + 1, roomX - floor((camWidth - 1) / 2)))
 		yOffset = max(0, min(floor(self:getMapSize() / self:getColumnCount()) - camHeight, roomY - floor((camHeight - 1) / 2)))

@@ -76,7 +76,7 @@ function Level:reverseMap(objects)
 		end
 		io.write("\27[A")
 	end
-	io.write("\27[" .. 3 *3 +7 .. "A\27[J")
+	io.write("\27[" .. currentConfig:getLevelConfig():getCamHeight() *(getRoomDisplayHeight() - 1) + currentConfig:getLevelConfig():getMapYoffset() .. "A\27[J")
 end
 
 function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)

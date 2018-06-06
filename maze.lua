@@ -50,7 +50,7 @@ function main()
 		end
 		
 		io.write('"' .. directions["up"] .. '", "' .. directions["down"] .. '", "' .. directions["left"] .. '", "' .. directions["right"] .. '" (directions), "wait" (if you want to act with what is in the same room as you), "exit" or "map" : ')
-		
+		io.flush()
 		local movement = io.read()
 		if movement == nil then
 			game_ended = true
@@ -61,7 +61,7 @@ function main()
 		
 		level:reverseMap(objects)
 		
-		if (movement == directions["up"]) then
+		if (movement == directions["up"]) or (movement == '\27[A') then
 			-- go up!
 			if level:getActiveRoom():hasAccess("up") then
 				level:setRoom(level:getRoomNumber() - level:getColumnCount())
@@ -69,7 +69,7 @@ function main()
 			else
 				print("BOOMM !!")
 			end
-		elseif (movement == directions["down"]) then
+		elseif (movement == directions["down"]) or (movement == '\27[B') then
 			-- go down!
 			if level:getActiveRoom():hasAccess("down") then
 				level:setRoom(level:getRoomNumber() + level:getColumnCount())
@@ -77,7 +77,7 @@ function main()
 			else
 				print("BOOMM !!")
 			end
-		elseif (movement == directions["left"]) then
+		elseif (movement == directions["left"]) or (movement == '\27[D') then
 			-- go left!
 			if level:getActiveRoom():hasAccess("left") then
 				level:setRoom(level:getRoomNumber() - 1)
@@ -85,7 +85,7 @@ function main()
 			else
 				print("BOOMM !!")
 			end
-		elseif (movement == directions["right"]) then
+		elseif (movement == directions["right"]) or (movement == '\27[C') then
 			-- go right!
 			if level:getActiveRoom():hasAccess("right") then
 				level:setRoom(level:getRoomNumber() + 1)

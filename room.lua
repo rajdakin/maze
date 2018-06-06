@@ -161,6 +161,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		io.write("You see a sword on a book, that says that this sword will self-disintegrate with its first target.\nYou turn the page and you read that you can only have one at a time and that if you take this one, every other sword will disintegrates.\n")
 		if objects["sword"] then io.write("You do already have one. ") end
 		io.write("Do you want to take this sword? " .. '"O" / "o" / "Y" / "y" for yes, anything else to cancel: ')
+		io.flush()
 		local answer = io.read()
 		if not answer then
 			return EventParsingResultEnded("user's request")
@@ -307,6 +308,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				print("You decided not to take it, as you already have one.")
 			else
 				io.write('Do you want to take it? "O"/"o"/"Y"/"y" means yes, anything else to cancel: ')
+				io.flush()
 				local answer = io.read()
 				if not answer then
 					return EventParsingResultEnded("user's request")
@@ -362,8 +364,9 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			end
 		end
 		if self:getAttribute("graveorig") then
-			io.write("After having walked across stairs, you see a room filled with skeletons.\nA grid is located on the ground and leads to another room.\nDo you want to continue and go donwstairs or go backwards ? (O / o / Y / y means go downstairs, everything else means go back): ")
 			self:setAttribute("saw", true)
+			io.write("After having walked across stairs, you see a room filled with skeletons.\nA grid is located on the ground and leads to another room.\nDo you want to continue and go donwstairs or go backwards ? (O / o / Y / y means go downstairs, everything else means go back): ")
+			io.flush()
 			local answer = io.read()
 			if not answer then
 				return EventParsingResultEnded("user's request")

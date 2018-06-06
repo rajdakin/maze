@@ -26,13 +26,13 @@ Follow every instruction by a hit to the enter key.
 - If you have a taller or smaller screen than me, and that the instructions you give doesn't print on the following line of the last instruction, change the `mapYoffset` value in [config.lua@line25](config.lua#L25)
 - Every build is tested on xterm, and should work on rxvt. To have the best render if you don't use these, test if your terminal accepts the following (Lua-style) escape codes:
   1. Bold: \27[01m
-  2. Faint: \27[02m
+  2. Faint: \27[02m *not working on RXVT*
   3. Reset faint/bold: \27[22m
   4. Reverse video (background <-> foreground colors) *(this is mostly used to render walls)*: \27[07m
-  5. Crossed-out: \27[09m
+  5. Crossed-out: \27[09m *not working on RXVT*
   6. Foreground colors: \27[3cm -styled (where c is the color)
   7. Background colors: \27[4cm -styled (where c is the color)
-  8. Cursor UDLR movements: \27[1A \27[1B \27[1C \27[1D
+  8. Cursor UDLR movements: \27[1A \27[1B \27[1D \27[1C
   9. Cursor absolute horizontal: \27[G
   10. Cursor save state: \27[s
   11. Cursor load state: \27[u

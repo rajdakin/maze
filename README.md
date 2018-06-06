@@ -10,13 +10,14 @@ To play this game, you must
 3. Run `lua maze.lua`
 
 Controls:
-- u: move up (north)
-- d: move down (south)
-- l: move left (east)
-- r: move right (west)
+- u or up arrow: move up (north)
+- d or down arrow: move down (south)
+- l or left arrow: move left (east)
+- r or right arrow: move right (west)
 - w: take what's on your room and take attention to what's near
 - m: print the map
 - q: quit :(
+Follow every instruction by a hit to the enter key.
 
 # Notes
 1. To play a real level, write a whole number > 0

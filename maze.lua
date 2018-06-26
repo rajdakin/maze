@@ -37,7 +37,8 @@ function main()
 	objects["sword"] = false
 	objects["key"] = false
 	objects["redkey"] = false
-	print("You are in room 1, or \"starting room\". You can try to go in each 4 directions. What do you choose?")
+	--print("You are in room 1, or \"starting room\". You can try to go in each 4 directions. What do you choose?")
+	level:printBeginingLore()
 	level:refreshActiveRoomNearEvents()
 	while not game_ended do	-- here starts interactive
 		level:setActiveRoomAttribute("saw", true)
@@ -126,6 +127,7 @@ function main()
 			end
 		end
 	end
+	level:printEndingLore(dead, objects["sword"])
 	io.write("The end!") io.flush()
 	sleep(1) io.write("\8.") io.flush()
 	sleep(1) io.write(".") io.flush()

@@ -10,14 +10,45 @@ local roommodule = require(import_prefix .. "room")
 
 local levels = {}
 
---[[local]] Level = class(function(self, initial_room, level_length, level_array)
-	self.__number_of_columns = level_length
-	self.__old_room = initial_room
-	self.__room_number = initial_room
-	
-	self.__rooms = {}
-	for i = 1 - level_length, getArrayLength(level_array) - level_length do
-		self.__rooms[i] = Room(level_array[i])
+--[[local]] Level = class(function(self, level_datas, obs2, obs3)
+	if type(level_datas) == "number" then
+		self.__column_count = obs2
+		self.__old_room = level_datas
+		self.__room_number = level_datas
+		self.__lores = {"", ""}
+		self.__lore_begin = ""
+		self.__lore_end   = {[false] = "", [true] = "You DIED..."}
+		
+		self.__rooms = {}
+		for i = 1 - obs2, getArrayLength(obs3) - obs2 do
+			self.__rooms[i] = Room(obs3[i])
+		end
+		
+		self.__level_configuration = currentConfig:getLevelConfig()
+		
+		print("[Developer warning] [level module] Warning: obsolete level instanciation used. Please use the new version.")
+	else
+		self.__column_count = level_datas["column_count"]
+		self.__old_room = level_datas["starting_room"]
+		self.__room_number = level_datas["starting_room"]
+		self.__lores = level_datas["lores"]
+		self.__lore_begin = self.__lores[1]
+		
+		generic_death = "You DIED..."
+		if type(self.__lores[2]) == "string" then self.__lore_end = {[false] = self.__lores[2], [true] = generic_end}
+		elseif self.__lores[2][1] then
+			if self.__lores[2][2] then self.__lore_end = {[false] = self.__lores[2][1], [true] = self.__lores[2][2]} else self.__lore_end = {[false] = self.__lores[2][1], [true] = generic_death} end
+		elseif self.lores[2][false] then
+			if self.__lores[2][true] then self.__lore_end = {[false] = self.__lores[2][false], [true] = self.__lores[2][true]} else self.__lore_end = {[false] = self.__lores[2][false], [true] = generic_death} end
+		else self.__lore_end = {[false] = "", [true] = generic_death} end
+		
+		self.__rooms = {}
+		for i = 1 - self.__column_count, getArrayLength(level_datas["rooms_datas"]) - self.__column_count do
+			self.__rooms[i] = Room(level_datas["rooms_datas"][i])
+		end
+		
+		self.__level_configuration = level_datas["level_conf"]
+		if not self.__level_configuration then self.__level_configuration = currentConfig:getLevelConfig() end
 	end
 	
 	self:initialize()
@@ -30,6 +61,8 @@ function Level:refreshActiveRoomNearEvents()
 end
 
 function Level:getMapSize() return getArrayLength(self:getRooms()) - 2 * self:getColumnCount() end
+
+function Level:getLevelConfiguration() return self.__level_configuration end
 
 function Level:getActiveRoomAttribute(attributeName) return self:getRoom(self.__room_number):getAttribute(attributeName)        end
 function Level:setActiveRoomAttribute(attributeName, value) self:getRoom(self.__room_number):setAttribute(attributeName, value) end
@@ -48,7 +81,7 @@ function Level:getRoom(room_no) return self:getRooms()[room_no]              end
 function Level:getRoomCoordinates(room_no) local x, y = room_no % self:getColumnCount(), floor(room_no / self:getColumnCount()) if room_no % self:getColumnCount() == 0 then x = self:getColumnCount() y = y - 1 end return x, y end
 function Level:getRoomFromCoordinates(x, y) return self:getRoom(x + y * self:getColumnCount()) end
 
-function Level:getColumnCount() return self.__number_of_columns end
+function Level:getColumnCount() return self.__column_count end
 
 function Level:setAllRoomsSeenStatusAs(seen)
 	for k, v in pairs(self:getRooms()) do
@@ -61,6 +94,16 @@ function Level:initialize()
 		v:initialize()
 		v:setUnreachable()
 	end
+end
+
+function Level:printBeginingLore()
+	print(self.__lore_begin)
+end
+
+function Level:printEndingLore(death, sword)
+	print(self.__lore_end[death])
+	-- Todo: use level's map reveal function
+	self:setAllRoomsSeenStatusAs(not death)
 end
 
 function Level:reverseMap(objects)
@@ -76,7 +119,7 @@ function Level:reverseMap(objects)
 		end
 		io.write("\27[A")
 	end
-	io.write("\27[" .. min(currentConfig:getLevelConfig():getCamHeight(), floor(self:getMapSize() / self:getColumnCount())) * (getRoomDisplayWidth() - 1) + currentConfig:getLevelConfig():getMapYoffset() +  .. "A\27[J")
+	io.write("\27[" .. min(self:getLevelConfiguration():getCamHeight(), floor(self:getMapSize() / self:getColumnCount())) * (getRoomDisplayWidth() - 1) + self:getLevelConfiguration():getMapYoffset() .. "A\27[J")
 end
 
 function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
@@ -103,8 +146,8 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 	local curYcoord
 	
 	if not doesDisplayAllMap then
-		local camWidth  = currentConfig:getLevelConfig():getCamWidth ()
-		local camHeight = currentConfig:getLevelConfig():getCamHeight()
+		local camWidth  = self:getLevelConfiguration():getCamWidth ()
+		local camHeight = self:getLevelConfiguration():getCamHeight()
 		local roomX, roomY = self:getRoomCoordinates(self:getRoomNumber())
 		xOffset = max(1, min(self:getColumnCount() - camWidth + 1, roomX - floor((camWidth - 1) / 2)))
 		yOffset = max(0, min(floor(self:getMapSize() / self:getColumnCount()) - camHeight, roomY - floor((camHeight - 1) / 2)))
@@ -168,36 +211,51 @@ end
 
 require("contribution")
 local function initialize_levels()
-	levels[1] = Level(28, 7, {[-6] = {},                                                                                                              [-5] = {},                                           [-4] = {},                                                        [-3] = {},                                           [-2] = {},                                                        [-1] = {},                                                         [0] = {},
-	                          {exit = true, dir_exit = "left",            down = true,                               door = true, dir_door = "left"}, {                                     right = true}, {           down = true, left = true, right = true},              {                        left = true, right = true}, {                        left = true, right = true},              {                        left = true, right = true, sword = true}, {           down = true, left = true},
-	                          {                                up = true,              right = true, monster = true},                                 {           down = true, left = true, right = true}, {up = true,              left = true, right = true},              {                        left = true},               {up = true, down = true},                                         {           down = true,              right = true},               {up = true,              left = true},
-	                          {                                           down = true, right = true},                                                 {up = true,              left = true},               {},                                                               {           down = true,              right = true}, {up = true,              left = true},                            {up = true, down = true,              right = true},               {           down = true, left = true},
-	                          {                                up = true,              right = true},                                                 {                        left = true, right = true}, {                        left = true, right = true, key = true},  {up = true,              left = true, right = true}, {                        left = true, right = true, trap = true}, {up = true,              left = true, right = true},               {up = true,              left = true},
-	                          {},                                                                                                                     {},                                                  {},                                                               {},                                                  {},                                                               {},                                                                {}}
-	)
-	levels[2] = Level(23, 7, {[-6] = {},                                                                  [-5] = {},                                           [-4] = {},                                                          [-3] = {},                                                                                                                   [-2] = {},                                                                                             [-1] = {},                                                           [0] = {},
-	                          {right = true,                             door = true, dir_door = "down"}, {           down = true, left = true},               {           down = true,              right = true},                {exit = true, dir_exit = "up",                         left = true,                           door = true, dir_door = "up"}, {},                                                                                                    {           down = true,                            monster = true}, {},
-	                          {right = true,                 key = true, door = true, dir_door = "up"},   {up = true, down = true, left = true, right = true}, {up = true,              left = true},                              {                                                                   right = true},                                           {           down = true, left = true, right = true, sword = true},                                     {up = true, down = true, left = true, right = true},                 {left = true, trap = true},
-	                          {},                                                                         {up = true, down = true,              right = true}, {                        left = true, right = true},                {                                         down = true, left = true, right = true, key = true},                               {up = true,              left = true, right = true},                                                   {up = true, down = true, left = true},                               {},
-	                          {},                                                                         {up = true, down = true,              right = true}, {                        left = true},                              {                              up = true,                           right = true},                                           {                        left = true, right = true},                                                   {up = true, down = true, left = true},                               {},
-	                          {right = true, monster = true},                                             {up = true,              left = true, right = true}, {                        left = true, right = true, redkey = true}, {                                                      left = true, right = true},                                           {                        left = true,               sword = true, reddoor = true, dir_reddoor = "up"}, {up = true,                           right = true},                 {left = true, trap = true},
-	                          {},                                                                         {},                                                  {},                                                                 {},                                                                                                                          {},                                                                         {},                                                                                             {}}
-	)
-	levels[-1] = Level(4, 2, {[-1] = {},                                                                                                                                                                  [0] = {},
-	                          {exit = true, dir_exit = "left",                reddoor = true, dir_reddoor = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveorig = true},
-	                          {                                redkey = true},                                                                                                                            {up = true,              key = true},
-	                          {},                                                                                                                                                                         {}}
-	)
-	levels[-2] = Level(4, 2, {[-1] = {},                                                                                              [0] = {},
-	                          {exit = true, dir_exit = "left", reddoor = true, dir_reddoor = "left", door = true, dir_door = "left"}, {graveorig = true, down = true},
-	                          {},                                                                                                     {up = true, key = true, redkey = true},
-	                          {},                                                                                                     {}}
-	)
-	levels[-3] = Level(1, 2, {[-1] = {},                                                                                                                     [0] = {},
-	                          {           down = true, right = true, redkey = true},                                                                         {exit = true, dir_exit = "up", left = true, reddoor = true, dir_reddoor = "up"},
-	                          {up = true,                                           door = true, dir_door = "right", reddoor = true, dir_reddoor = "right"}, {},
-	                          {},                                                                                                                            {}}
-	)
+	levels[1] = Level({["level_array_version"] = 1,
+	    ["starting_room"] = 28,
+	    ["column_count"] = 7,
+	    ["rooms_datas"] = {[-6] = {},                                                                                                              [-5] = {},                                           [-4] = {},                                                        [-3] = {},                                           [-2] = {},                                                        [-1] = {},                                                         [0] = {},
+	                       {exit = true, dir_exit = "left",            down = true,                               door = true, dir_door = "left"}, {                                     right = true}, {           down = true, left = true, right = true},              {                        left = true, right = true}, {                        left = true, right = true},              {                        left = true, right = true, sword = true}, {           down = true, left = true},
+	                       {                                up = true,              right = true, monster = true},                                 {           down = true, left = true, right = true}, {up = true,              left = true, right = true},              {                        left = true},               {up = true, down = true},                                         {           down = true,              right = true},               {up = true,              left = true},
+	                       {                                           down = true, right = true},                                                 {up = true,              left = true},               {},                                                               {           down = true,              right = true}, {up = true,              left = true},                            {up = true, down = true,              right = true},               {           down = true, left = true},
+	                       {                                up = true,              right = true},                                                 {                        left = true, right = true}, {                        left = true, right = true, key = true},  {up = true,              left = true, right = true}, {                        left = true, right = true, trap = true}, {up = true,              left = true, right = true},               {up = true,              left = true},
+	                       {},                                                                                                                     {},                                                  {},                                                               {},                                                  {},                                                               {},                                                                {}},
+	    ["lores"] = {
+	        "You arrived in a room. You don't know how you got here, or how to escape, neiher where you are.\nYou can however move, and you feels you have a huge carrying capacity, like the one from video game's character.\nWhat do you do?",
+	        "After a long corridor, you found the map of the labyrinth you escaped. You continued to walk, but then you heard a \27[3mclick!\27[00m and you felt into the darkness...\n...Wait, not really...\n...Yeah, you just felt into an other maze."
+		},
+	    ["map_reveal"] = function(dead, sword) return not dead end -- Not yet implemented
+	})
+	levels[2] = Level({["level_array_version"] = 1,
+		["starting_room"] = 23,
+		["column_count"] = 7,
+		["rooms_datas"] = {[-6] = {},                                                                  [-5] = {},                                           [-4] = {},                                                          [-3] = {},                                                                                                                   [-2] = {},                                                                                             [-1] = {},                                                           [0] = {},
+	                       {right = true,                             door = true, dir_door = "down"}, {           down = true, left = true},               {           down = true,              right = true},                {exit = true, dir_exit = "up",                         left = true,                           door = true, dir_door = "up"}, {},                                                                                                    {           down = true,                            monster = true}, {},
+	                       {right = true,                 key = true, door = true, dir_door = "up"},   {up = true, down = true, left = true, right = true}, {up = true,              left = true},                              {                                                                   right = true},                                           {           down = true, left = true, right = true, sword = true},                                     {up = true, down = true, left = true, right = true},                 {left = true, trap = true},
+	                       {},                                                                         {up = true, down = true,              right = true}, {                        left = true, right = true},                {                                         down = true, left = true, right = true, key = true},                               {up = true,              left = true, right = true},                                                   {up = true, down = true, left = true},                               {},
+	                       {},                                                                         {up = true, down = true,              right = true}, {                        left = true},                              {                              up = true,                           right = true},                                           {                        left = true, right = true},                                                   {up = true, down = true, left = true},                               {},
+	                       {right = true, monster = true},                                             {up = true,              left = true, right = true}, {                        left = true, right = true, redkey = true}, {                                                      left = true, right = true},                                           {                        left = true,               sword = true, reddoor = true, dir_reddoor = "up"}, {up = true,                           right = true},                 {left = true, trap = true},
+						   {},                                                                         {},                                                  {},                                                                 {},                                                                                                                          {},                                                                         {},                                                                                             {}},
+	    ["lores"] = {
+			"", -- Usually, you don't want anything for when you spawn in the maze.
+			{"You walked along... an.. other corridor?   When you found yet another map. You continued along the corridor...\n...and you emerged to the surface! You are\n\nFREE!", "You died, even if this would've been the end anyways..."}
+		}
+	})
+	levels[-1] = Level({["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                                                                  [0] = {},
+	                                                                                                                 {exit = true, dir_exit = "left",                reddoor = true, dir_reddoor = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveorig = true},
+	                                                                                                                 {                                redkey = true},                                                                                                                            {up = true,              key = true},
+	                                                                                                                 {},                                                                                                                                                                         {}}, ["lores"] = {"", ""} -- tests levels, no lores
+	})
+	levels[-2] = Level({["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                              [0] = {},
+	                                                                                                                 {exit = true, dir_exit = "left", reddoor = true, dir_reddoor = "left", door = true, dir_door = "left"}, {graveorig = true, down = true},
+	                                                                                                                 {},                                                                                                     {up = true, key = true, redkey = true},
+	                                                                                                                 {},                                                                                                     {}}, ["lores"] = {"", ""} -- tests levels, no lores
+	})
+	levels[-3] = Level({["level_array_version"] = 1, ["starting_room"] = 1, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                     [0] = {},
+	                                                                                                                 {           down = true, right = true, redkey = true},                                                                         {exit = true, dir_exit = "up", left = true, reddoor = true, dir_reddoor = "up"},
+	                                                                                                                 {up = true,                                           door = true, dir_door = "right", reddoor = true, dir_reddoor = "right"}, {},
+	                                                                                                                 {},                                                                                                                            {}}, ["lores"] = {"", ""} -- tests levels, no lores
+	})
 	
 	add_contrib_levels()
 end

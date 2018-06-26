@@ -164,7 +164,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		io.flush()
 		local answer = io.read()
 		if not answer then
-			return EventParsingResultEnded("user's request")
+			return EventParsingResultEnded(0)
 		elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 			objects["sword"] = true
 			self:setAttribute("sword", false)
@@ -290,7 +290,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			io.flush()
 			local answer = io.read()
 			if not answer then
-				return EventParsingResultEnded("user's request")
+				return EventParsingResultEnded(0)
 			elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 				objects["key"] = true
 				self:setAttribute("key", false)
@@ -311,7 +311,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				io.flush()
 				local answer = io.read()
 				if not answer then
-					return EventParsingResultEnded("user's request")
+					return EventParsingResultEnded(0)
 				elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 					objects["redkey"] = true
 					self:setAttribute("redkey", false)
@@ -369,7 +369,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			io.flush()
 			local answer = io.read()
 			if not answer then
-				return EventParsingResultEnded("user's request")
+				return EventParsingResultEnded(0)
 			elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
 				return EventParsingResultRoomChanging("left", objects)
 			else

@@ -181,7 +181,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			self:setAttribute("monster", false)
 		else
 			print("Yous see a monster, but, due to your lack of equipment, you don't have any weapon... While you try to escape, the monster catch you and eat you. You are DEAD!")
-			return EventParsingResultExited(true)
+			return EventParsingResultExited(true, objects)
 		end
 		up:setAttribute("near_monster", false)
 		down:setAttribute("near_monster", false)
@@ -211,7 +211,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				end
 			else
 				print("You see the exit at the " .. cardinals[self:getAttribute("dir_exit")] .. "!\nQuick, you take your key and you open the exit door.\nYou survived against the monsters and the traps and you WON!")
-				return EventParsingResultExited(false)
+				return EventParsingResultExited(false, objects)
 			end
 		else
 			io.write("You see a door at the " .. cardinals[self:getAttribute("dir_door")])
@@ -250,7 +250,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				end
 			else
 				print("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_exit")] .. " blocking the exit!\nHopefully, you remember that you have a red key, of the same color than the door. You open the door and you exit this maze!\nYou survived against the monsters and the traps and you WON!")
-				return EventParsingResultExited(false)
+				return EventParsingResultExited(false, objects)
 			end
 		else
 			io.write("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_reddoor")])
@@ -268,7 +268,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 	end
 	if self:getAttribute("trap") then
 		print("You felt into a trap, and, with terrible pain, you DIE.")
-		return EventParsingResultExited(true)
+		return EventParsingResultExited(true, objects)
 	end
 	if not is_ended then
 		if self:getAttribute("key") then
@@ -284,7 +284,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			sleep(1)   io.write(".") io.flush()
 			sleep(0.5) io.write(".") io.flush()
 			sleep(0.5) io.write("\8\8\8?? \8")
-			io.write("\nIf you insert it in a closed door and then you remove it, it will self-disintegrate.\nIf the door isn't locked, then you'll be able to remove it without worrying. One the door unlocked, remove the key and no one will be able to lock it again (with one exception).\nIf you lock a door...\"\nThen a lot of explanations.\n\"If you take this key, every other key you have will disintegrate.\"\n\n")
+			io.write("\nIf you insert it in a closed door and then you remove it, it will self-disintegrate.\nIf the door isn't locked, then you'll be able to remove it without worrying. Once the door unlocked, remove the key and no one will be able to lock it again (with one exception).\nIf you lock a door...\"\nThen a lot of explanations.\n\"If you take this key, every other key you have will disintegrate.\"\n\n")
 			if objects["key"] then io.write("You do already have a key. ") end
 			io.write("Do you want to take it? " .. '"O" / "o" / "Y" / "y" for yes, anything else to cancel: ')
 			io.flush()
@@ -349,7 +349,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					io.write("EXCEPTION.UNKNOWN_KEY_VALUE: " .. self:getAttribute("keyneeded") .. " AT LINE #XX")
 				end
 				io.write(" of the exit located at the " .. cardinals[self:getAttribute("exitdir")] .. ".")
-				return EventParsingResultExited(true)
+				return EventParsingResultExited(true, objects)
 			end
 			if self:getAttribute("exitdir") == "up" then
 				up:setAttribute("down", true)
@@ -380,7 +380,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 	if not is_ended then
 		return EventParsingResultDone(objects)
 	else
-		return EventParsingResultExited("???")
+		return EventParsingResultExited("???", objects)
 	end
 end
 

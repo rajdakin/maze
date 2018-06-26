@@ -26,29 +26,33 @@ local levels = {}
 		
 		self.__level_configuration = currentConfig:getLevelConfig()
 		
-		print("[Developer warning] [level module] Warning: obsolete level instanciation used. Please use the new version.")
+		print("[Developer warning in level module] Warning: obsolete level instanciation used. Please use the new version.")
 	else
-		self.__column_count = level_datas["column_count"]
-		self.__old_room = level_datas["starting_room"]
-		self.__room_number = level_datas["starting_room"]
-		self.__lores = level_datas["lores"]
-		self.__lore_begin = self.__lores[1]
-		
-		generic_death = "You DIED..."
-		if type(self.__lores[2]) == "string" then self.__lore_end = {[false] = self.__lores[2], [true] = generic_end}
-		elseif self.__lores[2][1] then
-			if self.__lores[2][2] then self.__lore_end = {[false] = self.__lores[2][1], [true] = self.__lores[2][2]} else self.__lore_end = {[false] = self.__lores[2][1], [true] = generic_death} end
-		elseif self.lores[2][false] then
-			if self.__lores[2][true] then self.__lore_end = {[false] = self.__lores[2][false], [true] = self.__lores[2][true]} else self.__lore_end = {[false] = self.__lores[2][false], [true] = generic_death} end
-		else self.__lore_end = {[false] = "", [true] = generic_death} end
-		
-		self.__rooms = {}
-		for i = 1 - self.__column_count, getArrayLength(level_datas["rooms_datas"]) - self.__column_count do
-			self.__rooms[i] = Room(level_datas["rooms_datas"][i])
+		if level_datas["level_array_version"] == 1 then
+			self.__column_count = level_datas["column_count"]
+			self.__old_room = level_datas["starting_room"]
+			self.__room_number = level_datas["starting_room"]
+			self.__lores = level_datas["lores"]
+			self.__lore_begin = self.__lores[1]
+			
+			generic_death = "You DIED..."
+			if type(self.__lores[2]) == "string" then self.__lore_end = {[false] = self.__lores[2], [true] = generic_end}
+			elseif self.__lores[2][1] then
+				if self.__lores[2][2] then self.__lore_end = {[false] = self.__lores[2][1], [true] = self.__lores[2][2]} else self.__lore_end = {[false] = self.__lores[2][1], [true] = generic_death} end
+			elseif self.lores[2][false] then
+				if self.__lores[2][true] then self.__lore_end = {[false] = self.__lores[2][false], [true] = self.__lores[2][true]} else self.__lore_end = {[false] = self.__lores[2][false], [true] = generic_death} end
+			else self.__lore_end = {[false] = "", [true] = generic_death} end
+			
+			self.__rooms = {}
+			for i = 1 - self.__column_count, getArrayLength(level_datas["rooms_datas"]) - self.__column_count do
+				self.__rooms[i] = Room(level_datas["rooms_datas"][i])
+			end
+			
+			self.__level_configuration = level_datas["level_conf"]
+			if not self.__level_configuration then self.__level_configuration = currentConfig:getLevelConfig() end
+		else
+			print("[Error in level module] Error: unknown level array version.")
 		end
-		
-		self.__level_configuration = level_datas["level_conf"]
-		if not self.__level_configuration then self.__level_configuration = currentConfig:getLevelConfig() end
 	end
 	
 	self:initialize()

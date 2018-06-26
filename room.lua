@@ -210,7 +210,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					print("EXCEPTION.UNKNOWN_DOOR_DIR: " .. self:getAttribute("dir_door") .. " AT LINE #")
 				end
 			else
-				print("You see the exit at the " .. cardinals[self:getAttribute("dir_exit")] .. "!\nQuick, you take your key and you open the exit door.\nYou survived against the monsters and the traps and you WON!")
+				print("You see the exit at the " .. cardinals[self:getAttribute("dir_exit")] .. "!\nQuick, you take your key and you open the exit door.\n") --You survived against the monsters and the traps and you WON!")
 				return EventParsingResultExited(false, objects)
 			end
 		else
@@ -249,7 +249,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					print("EXCEPTION.UNKNOWN_REDDOOR_DIR: " .. self:getAttribute("dir_reddoor") .. " AT LINE #X")
 				end
 			else
-				print("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_exit")] .. " blocking the exit!\nHopefully, you remember that you have a red key, of the same color than the door. You open the door and you exit this maze!\nYou survived against the monsters and the traps and you WON!")
+				print("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_exit")] .. " blocking the exit!\nHopefully, you remember that you have a red key, of the same color than the door. You open the door and you exit this maze!\n") --You survived against the monsters and the traps and you WON!")
 				return EventParsingResultExited(false, objects)
 			end
 		else

@@ -76,7 +76,7 @@ function Level:reverseMap(objects)
 		end
 		io.write("\27[A")
 	end
-	io.write("\27[" .. currentConfig:getLevelConfig():getCamHeight() *(getRoomDisplayHeight() - 1) + currentConfig:getLevelConfig():getMapYoffset() .. "A\27[J")
+	io.write("\27[" .. min(currentConfig:getLevelConfig():getCamHeight(), floor(self:getMapSize() / self:getColumnCount())) * (getRoomDisplayWidth() - 1) + currentConfig:getLevelConfig():getMapYoffset() +  .. "A\27[J")
 end
 
 function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
@@ -108,8 +108,8 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 		local roomX, roomY = self:getRoomCoordinates(self:getRoomNumber())
 		xOffset = max(1, min(self:getColumnCount() - camWidth + 1, roomX - floor((camWidth - 1) / 2)))
 		yOffset = max(0, min(floor(self:getMapSize() / self:getColumnCount()) - camHeight, roomY - floor((camHeight - 1) / 2)))
-		maxXcoord = camWidth  * (getRoomDisplayWidth () - 1) + 1
-		maxYcoord = camHeight * (getRoomDisplayHeight() - 1) + 1
+		maxXcoord = min(camWidth ,                           self:getColumnCount())  * (getRoomDisplayWidth() - 1) + 1
+		maxYcoord = min(camHeight, floor(self:getMapSize() / self:getColumnCount())) * (getRoomDisplayWidth() - 1) + 1
 	else
 		xOffset = 1
 		yOffset = 0

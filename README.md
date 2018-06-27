@@ -20,10 +20,6 @@ Controls:
 Follow every instruction by a hit to the enter key.
 
 # Notes
-1. To play a real level, write a whole number > 0
-2. To play a test level, write a whole number < 0
-- If you want to change the size of the map, change the `{width, height}` values in [config.lua@line24](config.lua#L24)
-- If you have a taller or smaller screen than me, and that the instructions you give doesn't print on the following line of the last instruction, change the `mapYoffset` value in [config.lua@line25](config.lua#L25)
 - Every build is tested on xterm, and should work on rxvt. To have the best render if you don't use these, test if your terminal accepts the following \(Lua-style) escape codes:
   1. Bold: \27[01m
   2. Faint: \27[02m *not working on RXVT*
@@ -37,6 +33,11 @@ Follow every instruction by a hit to the enter key.
   10. Cursor save state: \27[s
   11. Cursor load state: \27[u
   12. You may want italic \(used for lores): \27[3m
+- If you want to change the starting level:
+  1. To play a real level, write a whole number > 0 instead of 1 in [level.lua@line234](level.lua#L234)
+  2. To play a test level, write a whole number < 0 instead of -1 in [level.lua@line232](level.lua#L232) **and** set `loadTestLevels` to `true`in [config.lua@line38](config.lua#L38)
+- If you want to change the size of the map, change the `{width, height}` values in [config.lua@line39](config.lua#L39)
+- If you have a taller or smaller screen than me, and that the instructions you give doesn't print on the following line of the last instruction, change the `mapYoffset` value in [config.lua@line40](config.lua#L40)
 - If you want to interact with the game after ending it, see [INTERACTING.md](INTERACTING.md)
 - If you want to play an other level, change the number inside the brackets in the `get_active_level` function to a pre-set level in the `initialize_levels` function in [level.lua](level.lua)
 - If you want to create a level, see [CONTRIBUTING.md#Creating levels](CONTRIBUTING.md#creating-levels)

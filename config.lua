@@ -5,22 +5,37 @@ local utilmodule = require(import_prefix .. "util")
 
 local classmodule = require(import_prefix .. "class")
 
-local LevelConfig = class(function(self, mapViewingSize, mapYoffset)
-	self.__mapViewingSize = mapViewingSize
-	self.__mapOffset = {0, mapYoffset}
+local LevelConfig = class(function(self, levelConfiguration)
+	self.__mapViewingSize = levelConfiguration["mapViewingSize"]
+	self.__mapOffset = {0, levelConfiguration["mapYoffset"]} -- used in the reverseMap function
 end)
 
+function LevelConfig:getCamSize  () return self.__mapViewingSize    end
 function LevelConfig:getCamWidth () return self.__mapViewingSize[1] end
 function LevelConfig:getCamHeight() return self.__mapViewingSize[2] end
+
+function LevelConfig:getMapOffset() return self.__mapOffset end
+function LevelConfig:getMapXoffset() return self.__mapOffset[1] end
 function LevelConfig:getMapYoffset() return self.__mapOffset[2] end
 
-local Config = class(function(self, mapViewingSize, mapYoffset)
-	self.__levelConfig = LevelConfig(mapViewingSize, mapYoffset)
+local LevelManagerConfig = class(function(self, levelManagerConfiguration, levelConfiguration)
+	self.__levelConfig = LevelConfig(levelConfiguration)
+	
+	self.__loadTestLevels = levelManagerConfiguration["loadTestLevels"]
 end)
 
-function Config:getLevelConfig() return self.__levelConfig end
+function LevelManagerConfig:getLevelConfig() return self.__levelConfig end
 
-currentConfig = Config(
-	{3, 3},
-	7
-)
+function LevelManagerConfig:doLoadTestLevels() return self.__loadTestLevels end
+
+local Config = class(function(self, configuration)
+	self.__levelManagerConfig = LevelManagerConfig(configuration["levelManagerConfiguration"], configuration["levelConfiguration"])
+end)
+
+function Config:getLevelManagerConfig() return self.__levelManagerConfig end
+
+currentConfig = Config({
+	["levelManagerConfiguration"] = {["loadTestLevels"] = false},
+	["levelConfiguration"] = {["mapViewingSize"] = {3, 3},
+	                          ["mapYoffset"] = 7}
+})

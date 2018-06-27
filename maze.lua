@@ -26,8 +26,7 @@ objects["redkey"] = false
 game_ended = false
 
 function resetMaze()
-	level = get_active_level()
-	level:setAllRoomsSeenStatusAs(false)
+	levelManager:getActiveLevel():setAllRoomsSeenStatusAs(false)
 end
 
 resetMaze()
@@ -38,13 +37,13 @@ function main()
 	objects["key"] = false
 	objects["redkey"] = false
 	--print("You are in room 1, or \"starting room\". You can try to go in each 4 directions. What do you choose?")
-	level:printBeginingLore()
-	level:refreshActiveRoomNearEvents()
+	levelManager:getActiveLevel():printBeginingLore()
+	levelManager:getActiveLevel():refreshActiveRoomNearEvents()
 	while not game_ended do	-- here starts interactive
-		level:setActiveRoomAttribute("saw", true)
+		levelManager:getActiveLevel():setActiveRoomAttribute("saw", true)
 		print("")
 		
-		local ret = level:printLevelMap(game_ended, objects, false)
+		local ret = levelManager:getActiveLevel():printLevelMap(game_ended, objects, false)
 		if ret:iskind(LevelPrintingErrored) then
 			print()
 			return "Internal error: " .. "[Level printing] " .. ret.reason.reason
@@ -60,43 +59,43 @@ function main()
 			return "Ended because of: user's request"
 		end
 		
-		level:reverseMap(objects)
+		levelManager:getActiveLevel():reverseMap(objects)
 		
 		if (movement == directions["up"]) or (movement == '\27[A') then
 			-- go up!
-			if level:getActiveRoom():hasAccess("up") then
-				level:setRoom(level:getRoomNumber() - level:getColumnCount())
+			if levelManager:getActiveLevel():getActiveRoom():hasAccess("up") then
+				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() - levelManager:getActiveLevel():getColumnCount())
 				print("Moving up")
 			else
 				print("BOOMM !!")
 			end
 		elseif (movement == directions["down"]) or (movement == '\27[B') then
 			-- go down!
-			if level:getActiveRoom():hasAccess("down") then
-				level:setRoom(level:getRoomNumber() + level:getColumnCount())
+			if levelManager:getActiveLevel():getActiveRoom():hasAccess("down") then
+				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() + levelManager:getActiveLevel():getColumnCount())
 				print("Moving down")
 			else
 				print("BOOMM !!")
 			end
 		elseif (movement == directions["left"]) or (movement == '\27[D') then
 			-- go left!
-			if level:getActiveRoom():hasAccess("left") then
-				level:setRoom(level:getRoomNumber() - 1)
+			if levelManager:getActiveLevel():getActiveRoom():hasAccess("left") then
+				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() - 1)
 				print("Moving left")
 			else
 				print("BOOMM !!")
 			end
 		elseif (movement == directions["right"]) or (movement == '\27[C') then
 			-- go right!
-			if level:getActiveRoom():hasAccess("right") then
-				level:setRoom(level:getRoomNumber() + 1)
+			if levelManager:getActiveLevel():getActiveRoom():hasAccess("right") then
+				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() + 1)
 				print("Moving right")
 			else
 				print("BOOMM !!")
 			end
 		elseif (movement == "w?") or (movement == "w ") or (movement == "m") or (movement == "map") then
 			-- print the map
-			ret = level:printLevelMap(game_ended, objects, true)
+			ret = levelManager:getActiveLevel():printLevelMap(game_ended, objects, true)
 			if ret:iskind(LevelPrintingErrored) then
 				print()
 				return "Internal error: " .. "[Level printing] " .. ret.reason.reason
@@ -111,7 +110,7 @@ function main()
 		end
 		if not ((movement == "w ?") or (movement == "w ") or (movement == "m") or (movement == "map")
 		     or (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit")) then
-			local ret = level:checkLevelEvents(game_ended, objects)
+			local ret = levelManager:getActiveLevel():checkLevelEvents(game_ended, objects)
 			game_ended = ret.ended
 			objects = ret.objects
 			if ret:iskind(EventParsingResultEnded) then
@@ -122,12 +121,12 @@ function main()
 				resetMaze()
 				dead = ret.dead
 				if not dead then
-					level:setAllRoomsSeenStatusAs(true)
+					levelManager:getActiveLevel():setAllRoomsSeenStatusAs(true)
 				end
 			end
 		end
 	end
-	level:printEndingLore(dead, objects["sword"])
+	levelManager:getActiveLevel():printEndingLore(dead, objects["sword"])
 	io.write("The end!") io.flush()
 	sleep(1) io.write("\8.") io.flush()
 	sleep(1) io.write(".") io.flush()
@@ -142,7 +141,7 @@ print("\nIf you are in interactive mode, you can restart the game by writing:")
 print("resetMaze()")
 print("main()")
 print("\nTo see the map, write:")
-print("level:printLevelMap(true, {}, true)")
+print("levelManager:getActiveLevel():printLevelMap(true, {}, true)")
 if dead then
 	print("You died, so you haven't got the entire map.")
 else

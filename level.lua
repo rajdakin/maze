@@ -1,18 +1,18 @@
 import_prefix = ...
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
 
+local contributionmodule = require(import_prefix .. "contribution")
 local utilmodule = require(import_prefix .. "util")
 
-local eventsmodule = require(import_prefix .. "events")
+local managermodule = require(import_prefix .. "manager")
 local configmodule = require(import_prefix .. "config")
+local eventsmodule = require(import_prefix .. "events")
 local classmodule = require(import_prefix .. "class")
 local roommodule = require(import_prefix .. "room")
 
-local levels = {}
-
---[[local]] Level = class(function(self, level_datas, obs2, obs3)
+local Level = class(function(self, level_datas, level_config, obs3)
 	if type(level_datas) == "number" then
-		self.__column_count = obs2
+		self.__column_count = level_config
 		self.__old_room = level_datas
 		self.__room_number = level_datas
 		self.__lores = {"", ""}
@@ -20,11 +20,11 @@ local levels = {}
 		self.__lore_end   = {[false] = "", [true] = "You DIED..."}
 		
 		self.__rooms = {}
-		for i = 1 - obs2, getArrayLength(obs3) - obs2 do
+		for i = 1 - level_config, getArrayLength(obs3) - level_config do
 			self.__rooms[i] = Room(obs3[i])
 		end
 		
-		self.__level_configuration = currentConfig:getLevelConfig()
+		self.__level_configuration = currentConfig:getLevelManagerConfig():getLevelConfig()
 		
 		print("[Developer warning in level module] Warning: obsolete level instanciation used. Please use the new version.")
 	else
@@ -49,7 +49,8 @@ local levels = {}
 			end
 			
 			self.__level_configuration = level_datas["level_conf"]
-			if not self.__level_configuration then self.__level_configuration = currentConfig:getLevelConfig() end
+			if self.__level_configuration then print("[Developer warning in level module] Using custom level configuration.")
+			else self.__level_configuration = level_config end
 		else
 			print("[Error in level module] Error: unknown level array version.")
 		end
@@ -101,11 +102,11 @@ function Level:initialize()
 end
 
 function Level:printBeginingLore()
-	print(self.__lore_begin)
+	if self.__lore_begin and self.__lore_begin ~= "" then print(self.__lore_begin) end
 end
 
 function Level:printEndingLore(death, sword)
-	print(self.__lore_end[death])
+	if self.__lore_end[death] and self.__lore_end[death] ~= "" then print(self.__lore_end[death]) end
 	-- Todo: use level's map reveal function
 	self:setAllRoomsSeenStatusAs(not death)
 end
@@ -213,9 +214,39 @@ function Level:checkLevelEvents(is_ended, objects)
 	return ret
 end
 
-require("contribution")
-local function initialize_levels()
-	levels[1] = Level({["level_array_version"] = 1,
+LevelManager = class(function(self, levelManagerConfig)
+	Manager.__init(self, Level)
+	
+	self.__config = levelManagerConfig
+	
+	self:initialize()
+end, Manager)
+
+function LevelManager:initialize()
+	self:removeAll()
+	self.__test_level_count = 0
+	
+	self:initializeLevels()
+	
+	if self.__config:doLoadTestLevels() then
+		self.__level_number = -1
+	else
+		self.__level_number = 1
+	end
+end
+
+function LevelManager:addTestLevel(level_datas)
+	self.__test_level_count = self.__test_level_count + 1
+	self.__instances[-self.__test_level_count] = Level(level_datas, self.__config:getLevelConfig())
+	return -self.__test_level_count
+end
+
+function LevelManager:addLevel(level_datas)
+	return self:addInstance(level_datas, self.__config:getLevelConfig())
+end
+
+function LevelManager:initializeLevels()
+	self:addLevel({["level_array_version"] = 1,
 	    ["starting_room"] = 28,
 	    ["column_count"] = 7,
 	    ["rooms_datas"] = {[-6] = {},                                                                                                              [-5] = {},                                           [-4] = {},                                                        [-3] = {},                                           [-2] = {},                                                        [-1] = {},                                                         [0] = {},
@@ -225,12 +256,13 @@ local function initialize_levels()
 	                       {                                up = true,              right = true},                                                 {                        left = true, right = true}, {                        left = true, right = true, key = true},  {up = true,              left = true, right = true}, {                        left = true, right = true, trap = true}, {up = true,              left = true, right = true},               {up = true,              left = true},
 	                       {},                                                                                                                     {},                                                  {},                                                               {},                                                  {},                                                               {},                                                                {}},
 	    ["lores"] = {
-	        "You arrived in a room. You don't know how you got here, or how to escape, neiher where you are.\nYou can however move, and you feels you have a huge carrying capacity, like the one from video game's character.\nWhat do you do?",
+	        "You arrived in a room. You don't know how you got here, or how to escape, neither where you are.\nYou can however move, and you feels you have a huge carrying capacity, like the one from video game's character.\nWhat do you do?",
 	        "After a long corridor, you found the map of the labyrinth you escaped. You continued to walk, but then you heard a \27[3mclick!\27[00m and you felt into the darkness...\n...Wait, not really...\n...Yeah, you just felt into an other maze."
 		},
-	    ["map_reveal"] = function(dead, sword) return not dead end -- Not yet implemented
+		["map_reveal"] = function(dead, sword) return not dead end, -- Not yet implemented
+		["win_level"]  = function(dead, sword) return not dead end  -- Not yet implemented
 	})
-	levels[2] = Level({["level_array_version"] = 1,
+	self:addLevel({["level_array_version"] = 1,
 		["starting_room"] = 23,
 		["column_count"] = 7,
 		["rooms_datas"] = {[-6] = {},                                                                  [-5] = {},                                           [-4] = {},                                                          [-3] = {},                                                                                                                   [-2] = {},                                                                                             [-1] = {},                                                           [0] = {},
@@ -245,32 +277,34 @@ local function initialize_levels()
 			{"You walked along... an.. other corridor?   When you found yet another map. You continued along the corridor...\n...and you emerged to the surface! You are\n\nFREE!", "You died, even if this would've been the end anyways..."}
 		}
 	})
-	levels[-1] = Level({["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                                                                  [0] = {},
-	                                                                                                                 {exit = true, dir_exit = "left",                reddoor = true, dir_reddoor = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveorig = true},
-	                                                                                                                 {                                redkey = true},                                                                                                                            {up = true,              key = true},
-	                                                                                                                 {},                                                                                                                                                                         {}}, ["lores"] = {"", ""} -- tests levels, no lores
-	})
-	levels[-2] = Level({["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                              [0] = {},
-	                                                                                                                 {exit = true, dir_exit = "left", reddoor = true, dir_reddoor = "left", door = true, dir_door = "left"}, {graveorig = true, down = true},
-	                                                                                                                 {},                                                                                                     {up = true, key = true, redkey = true},
-	                                                                                                                 {},                                                                                                     {}}, ["lores"] = {"", ""} -- tests levels, no lores
-	})
-	levels[-3] = Level({["level_array_version"] = 1, ["starting_room"] = 1, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                     [0] = {},
-	                                                                                                                 {           down = true, right = true, redkey = true},                                                                         {exit = true, dir_exit = "up", left = true, reddoor = true, dir_reddoor = "up"},
-	                                                                                                                 {up = true,                                           door = true, dir_door = "right", reddoor = true, dir_reddoor = "right"}, {},
-	                                                                                                                 {},                                                                                                                            {}}, ["lores"] = {"", ""} -- tests levels, no lores
-	})
 	
-	add_contrib_levels()
+	add_contrib_nontest_levels(self)
+	
+	if self.__config:doLoadTestLevels() then
+		self:addTestLevel({["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                                                                  [0] = {},
+		                                                                                                                 {exit = true, dir_exit = "left",                reddoor = true, dir_reddoor = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveorig = true},
+		                                                                                                                 {                                redkey = true},                                                                                                                            {up = true,              key = true},
+		                                                                                                                 {},                                                                                                                                                                         {}}, ["lores"] = {"", ""} -- tests levels, no lores
+		})
+		self:addTestLevel({["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                              [0] = {},
+		                                                                                                                 {exit = true, dir_exit = "left", reddoor = true, dir_reddoor = "left", door = true, dir_door = "left"}, {graveorig = true, down = true},
+		                                                                                                                 {},                                                                                                     {up = true, key = true, redkey = true},
+		                                                                                                                 {},                                                                                                     {}}, ["lores"] = {"", ""} -- tests levels, no lores
+		})
+		self:addTestLevel({["level_array_version"] = 1, ["starting_room"] = 1, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                     [0] = {},
+		                                                                                                                 {           down = true, right = true, redkey = true},                                                                         {exit = true, dir_exit = "up", left = true, reddoor = true, dir_reddoor = "up"},
+		                                                                                                                 {up = true,                                           door = true, dir_door = "right", reddoor = true, dir_reddoor = "right"}, {},
+		                                                                                                                 {},                                                                                                                            {}}, ["lores"] = {"", ""} -- tests levels, no lores
+		})
+		
+		add_contrib_test_levels(self)
+	end
 end
 
-function get_levels()
-	return levels
-end
+function LevelManager:getLevels() return self:getInstances() end
+function LevelManager:getActiveLevel() return self:getInstance(self.__level_number) end
 
-function get_active_level()
-	local levels = get_levels()
-	return levels[getArrayLength(levels) - 3]
-end
+function LevelManager:getLevelNumber() return self.__level_number         end
+function LevelManager:setLevelNumber(value)   self.__level_number = value end
 
-initialize_levels()
+levelManager = LevelManager(currentConfig:getLevelManagerConfig())

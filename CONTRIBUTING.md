@@ -1,7 +1,7 @@
 # Contributing
 
 ## Creating levels
-If you want to submit a level, please put the code in `add_contrib_levels` in [contribution.lua](contribution.lua)
+If you want to submit a level, please put the code in `add_contrib_nontest_levels` in [contribution.lua@line1]( contribution.lua#L1) for a real level or in `add_contrib_nontest_levels` in [contribution.lua@line13]( contribution.lua#L13) for a test level
 
 If you want to create a level, here's what to do:
 ### Creating the actual level
@@ -16,7 +16,7 @@ This way will be removed later.
 The new way is by using a big array and passing it to the constructor.
 
 To create a level, you need ~~three~~ five informations:
-- The level configuration. \(You might not want to create a game configuration and use the `currentConfig:getLevelConfig()` level configuration.) Goes into ID `level_conf` \(optional).
+- The level configuration. \(You might not want to create a game configuration and use the `currentConfig:getLevelConfig()` level configuration.) Goes into ID `level_conf` *\(optional)*.
 - The starting room. This is where you start. Goes into ID `starting_room`.
 - The column count. It determines how many rooms per line there is. Goes into ID `column_count`.
 - The level datas. Goes into ID `rooms_datas`. It is an array made of:

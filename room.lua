@@ -30,13 +30,15 @@ end
 
 function Room:canHear(event, position_in_row, up, down, left, right)
 	return (up and up:getAttribute(event)) or (down and down:getAttribute(event))
-	 or ((position_in_row ~= 1) and left and left:getAttribute(event)) or ((position_in_row ~= 0) and right and right:getAttribute(event))
+	 or ((position_in_row ~= 1) and left and left:getAttribute(event))
+	 or ((position_in_row ~= 0) and right and right:getAttribute(event))
 end
 
 function Room:hasAccess(direction)
 	return self:getAttribute(direction)
 	 or (not self:getAttribute("door") and self:getAttribute("dir_door") == direction)
 	 or (not self:getAttribute("reddoor") and self:getAttribute("dir_reddoor") == direction)
+	 or (self:getAttribute("exitdir") == direction)
 end
 
 function Room:canSee(event, position_in_row, up, down, left, right)
@@ -46,11 +48,13 @@ function Room:canSee(event, position_in_row, up, down, left, right)
 	 or (self:hasAccess("right") and self:canHear(event, position_in_row, right))
 end
 
-local doorBGcolor = {["door"] = "44", ["reddoor"] = "41", ["grave"] = "45"}
+local doorBGcolor = {["door"] = "44", ["reddoor"] = "41", ["grave"] = "45", ["opengrave"] = "0"}
 function Room:printDoor(dir, doorType)
 	if self:getAttribute(dir) then
 		io.write(" ")
-	elseif self:getAttribute("grave") then
+	elseif self:getAttribute("exitdir") == dir then
+		io.write("\27[01;33;" .. doorBGcolor["opengrave"] .. "m ")
+	elseif (self:getAttribute("grave") and (dir == "right")) or (self:getAttribute("graveorig") and (dir == "left")) then
 		io.write("\27[01;33;" .. doorBGcolor["grave"] .. "m ")
 	elseif (self:getAttribute(doorType) and (self:getAttribute("dir_" .. doorType) == dir)) then
 		io.write("\27[01;33;" .. doorBGcolor[doorType] .. "m")

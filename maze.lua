@@ -3,6 +3,7 @@ if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else 
 
 local utilmodule = require(import_prefix .. "util")
 
+local consolemodule = require(import_prefix .. "console")
 local levelmodule = require(import_prefix .. "level")
 
 directions = {}
@@ -36,12 +37,11 @@ function main()
 	objects["sword"] = false
 	objects["key"] = false
 	objects["redkey"] = false
-	--print("You are in room 1, or \"starting room\". You can try to go in each 4 directions. What do you choose?")
 	levelManager:getActiveLevel():printBeginingLore()
 	levelManager:getActiveLevel():refreshActiveRoomNearEvents()
 	while not game_ended do	-- here starts interactive
 		levelManager:getActiveLevel():setActiveRoomAttribute("saw", true)
-		print("")
+		console:printLore("\n")
 		
 		local ret = levelManager:getActiveLevel():printLevelMap(game_ended, objects, false)
 		if ret:iskind(LevelPrintingErrored) then
@@ -49,10 +49,15 @@ function main()
 			return "Internal error: " .. "[Level printing] " .. ret.reason.reason
 		end
 		
-		io.write('"' .. directions["up"] .. '", "' .. directions["down"] .. '", "' .. directions["left"] .. '", "' .. directions["right"] .. '" (directions), "wait" (if you want to act with what is in the same room as you), "exit" or "map" : ')
-		io.flush()
-		local movement = io.read()
-		if movement == nil then
+		console:printLore('"' .. directions["up"] .. '", "' .. directions["down"] .. '", "' .. directions["left"] .. '", "' .. directions["right"] .. '" (directions), "wait" (if you want to act with what is in the same room as you), "exit" or "map" : ')
+		local returned = console:read()
+		local success, eos, movement = returned.success, returned.eos, returned.returned
+		if not success then
+			game_ended = true
+			dead = true
+			print()
+			return "Internal error: " .. "[Level movement parsing] " .. " input reading error (" .. movement .. ")"
+		elseif eos then
 			game_ended = true
 			dead = true
 			print()
@@ -65,48 +70,48 @@ function main()
 			-- go up!
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("up") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() - levelManager:getActiveLevel():getColumnCount())
-				print("Moving up")
+				console:printLore("Moving up\n")
 			else
-				print("BOOMM !!")
+				console:printLore("BOOMM !!\n")
 			end
 		elseif (movement == directions["down"]) or (movement == '\27[B') then
 			-- go down!
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("down") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() + levelManager:getActiveLevel():getColumnCount())
-				print("Moving down")
+				console:printLore("Moving down\n")
 			else
-				print("BOOMM !!")
+				console:printLore("BOOMM !!\n")
 			end
 		elseif (movement == directions["left"]) or (movement == '\27[D') then
 			-- go left!
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("left") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() - 1)
-				print("Moving left")
+				console:printLore("Moving left\n")
 			else
-				print("BOOMM !!")
+				console:printLore("BOOMM !!\n")
 			end
 		elseif (movement == directions["right"]) or (movement == '\27[C') then
 			-- go right!
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("right") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() + 1)
-				print("Moving right")
+				console:printLore("Moving right\n")
 			else
-				print("BOOMM !!")
+				console:printLore("BOOMM !!\n")
 			end
 		elseif (movement == "w?") or (movement == "w ") or (movement == "m") or (movement == "map") then
 			-- print the map
 			ret = levelManager:getActiveLevel():printLevelMap(game_ended, objects, true)
 			if ret:iskind(LevelPrintingErrored) then
-				print()
+				console:printLore("\n")
 				return "Internal error: " .. "[Level printing] " .. ret.reason.reason
 			end
 		elseif (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit") then
 			game_ended = true
 			dead = true
 		elseif (movement == "w") or (movement == "wait") then
-			print("Waiting...")
+			console:printLore("Waiting...\n")
 		else
-			print("Unknown command: " .. movement)
+			console:print("Unknown command: " .. movement .. "\n", LogLevel.ERROR, "maze.lua/main")
 		end
 		if not ((movement == "w ?") or (movement == "w ") or (movement == "m") or (movement == "map")
 		     or (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit")) then
@@ -127,23 +132,23 @@ function main()
 		end
 	end
 	levelManager:getActiveLevel():printEndingLore(dead, objects["sword"])
-	io.write("The end!") io.flush()
-	sleep(1) io.write("\8.") io.flush()
-	sleep(1) io.write(".") io.flush()
-	sleep(1) io.write(".") io.flush()
-	sleep(2) io.write("\8\8\8?  ") io.flush()
-	sleep(2) io.write("\8\8\8\8\8\8\8\8\8\8")
+	console:printLore("The end!")
+	sleep(1) console:printLore("\8.")
+	sleep(1) console:printLore(".")
+	sleep(1) console:printLore(".")
+	sleep(2) console:printLore("\8\8\8?  ")
+	sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8")
 	return "(Yes, it is)"
 end
 
-print(main())
-print("\nIf you are in interactive mode, you can restart the game by writing:")
-print("resetMaze()")
-print("main()")
-print("\nTo see the map, write:")
-print("levelManager:getActiveLevel():printLevelMap(true, {}, true)")
+console:printLore(main() .. "\n")
+console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")
+console:printLore("resetMaze()\n")
+console:printLore("main()\n")
+console:printLore("\nTo see the map, write:\n")
+console:printLore("levelManager:getActiveLevel():printLevelMap(true, {}, true)\n")
 if dead then
-	print("You died, so you haven't got the entire map.")
+	console:printLore("You died, so you haven't got the entire map.\n")
 else
-	print("Having exited, the full labyrinth is revealed because you now have its map!")
+	console:printLore("Having exited, the full labyrinth is revealed because you now have its map!\n")
 end

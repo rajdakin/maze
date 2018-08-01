@@ -4,6 +4,7 @@ if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else 
 local contributionmodule = require(import_prefix .. "contribution")
 local utilmodule = require(import_prefix .. "util")
 
+local consolemodule = require(import_prefix .. "console")
 local managermodule = require(import_prefix .. "manager")
 local configmodule = require(import_prefix .. "config")
 local eventsmodule = require(import_prefix .. "events")
@@ -26,7 +27,10 @@ local Level = class(function(self, level_datas, level_config, obs3)
 		
 		self.__level_configuration = currentConfig:getLevelManagerConfig():getLevelConfig()
 		
-		print("[Developer warning in level module] Warning: obsolete level instanciation used. Please use the new version.")
+		console:print("Warning: obsolete level instanciation used. Please use the new version.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
+		
+		local init = self:initialize()
+		self.initialize_status = {success = init.success, obsolete = true, opt = init}
 	else
 		if level_datas["level_array_version"] == 1 then
 			self.__column_count = level_datas["column_count"]
@@ -35,7 +39,7 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			self.__lores = level_datas["lores"]
 			self.__lore_begin = self.__lores[1]
 			
-			generic_death = "You DIED..."
+			local generic_death = "You DIED..."
 			if type(self.__lores[2]) == "string" then self.__lore_end = {[false] = self.__lores[2], [true] = generic_end}
 			elseif self.__lores[2][1] then
 				if self.__lores[2][2] then self.__lore_end = {[false] = self.__lores[2][1], [true] = self.__lores[2][2]} else self.__lore_end = {[false] = self.__lores[2][1], [true] = generic_death} end
@@ -49,14 +53,16 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			end
 			
 			self.__level_configuration = level_datas["level_conf"]
-			if self.__level_configuration then print("[Developer warning in level module] Using custom level configuration.")
+			if self.__level_configuration then console:print("Using custom level configuration.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
 			else self.__level_configuration = level_config end
+			
+			local init = self:initialize()
+			self.initialize_status = {success = init.success, obsolete = false, opt = init}
 		else
-			print("[Error in level module] Error: unknown level array version.")
+			console:print("Error: unknown level array version.", LogLevel.ERROR, "level.lua/Level:(init)")
+			self.initialize_status = {success = false, opt = "Bad level array version."}
 		end
 	end
-	
-	self:initialize()
 end)
 
 function Level:refreshActiveRoomNearEvents()
@@ -95,18 +101,25 @@ function Level:setAllRoomsSeenStatusAs(seen)
 end
 
 function Level:initialize()
+	local roomInit
+	
 	for k, v in pairs(self:getRooms()) do
-		v:initialize()
-		v:setUnreachable()
+		roomInit = true
+		roomInit = roomInit and v:initialize()
+		roomInit = roomInit and v:setUnreachable()
+		
+		if not roomInit then return {success = false} end
 	end
+	
+	return {success = true}
 end
 
 function Level:printBeginingLore()
-	if self.__lore_begin and self.__lore_begin ~= "" then print(self.__lore_begin) end
+	if self.__lore_begin and self.__lore_begin ~= "" then console:printLore(self.__lore_begin) console:printLore("\n") end
 end
 
 function Level:printEndingLore(death, sword)
-	if self.__lore_end[death] and self.__lore_end[death] ~= "" then print(self.__lore_end[death]) end
+	if self.__lore_end[death] and self.__lore_end[death] ~= "" then console:printLore(self.__lore_end[death]) console:printLore("\n") end
 	-- Todo: use level's map reveal function
 	self:setAllRoomsSeenStatusAs(not death)
 end
@@ -114,33 +127,33 @@ end
 function Level:reverseMap(objects)
 	if objects and objects["key"] or objects["redkey"] or objects["sword"] then
 		if objects["key"] then
-			io.write("\27[A")
+			console:printLore("\27[A")
 		end
 		if objects["redkey"] then
-			io.write("\27[A")
+			console:printLore("\27[A")
 		end
 		if objects["sword"] then
-			io.write("\27[A")
+			console:printLore("\27[A")
 		end
-		io.write("\27[A")
+		console:printLore("\27[A")
 	end
-	io.write("\27[" .. min(self:getLevelConfiguration():getCamHeight(), floor(self:getMapSize() / self:getColumnCount())) * (getRoomDisplayWidth() - 1) + self:getLevelConfiguration():getMapYoffset() .. "A\27[J")
+	console:printLore("\27[" .. min(self:getLevelConfiguration():getCamHeight(), floor(self:getMapSize() / self:getColumnCount())) * (getRoomDisplayWidth() - 1) + self:getLevelConfiguration():getMapYoffset() .. "A\27[J")
 end
 
 function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
-	print("E = exit, S = sword, K = key, k = \27[9mred\27[00m \27[02;31mblood\27[00my key, \27[44m \27[00m = door, \27[41m \27[00m = red door, \27[45m \27[00m = grave to grave's origin,   = nothing particular, \27[01;30;07;47m?\27[00m = not yet discovered, \27[01;30;41;07m \27[00m = wall, \27[31mM\27[00m = monster, \27[31mT\27[00m = trap, \27[01;30;41;07mU\27[00m = unreachable")
-	print("")
+	console:printLore("E = exit, S = sword, K = key, k = \27[9mred\27[00m \27[02;31mblood\27[00my key, \27[44m \27[00m = door, \27[41m \27[00m = red door, \27[45m \27[00m = grave to grave's origin,   = nothing particular, \27[01;30;07;47m?\27[00m = not yet discovered, \27[01;30;41;07m \27[00m = wall, \27[31mM\27[00m = monster, \27[31mT\27[00m = trap, \27[01;30;41;07mU\27[00m = unreachable\n")
+	console:printLore("\n")
 	if objects and objects["key"] or objects["redkey"] or objects["sword"] then
 		if objects["key"] then
-			print("You have a \27[45;01;32mkey\27[00m.")
+			console:printLore("You have a \27[45;01;32mkey\27[00m.\n")
 		end
 		if objects["redkey"] then
-			print("You have a \27[46;01;31mred key...?\27[00m.")
+			console:printLore("You have a \27[46;01;31mred key...?\27[00m.\n")
 		end
 		if objects["sword"] then
-			print("You have a \27[01;39;40;07msword\27[00m.")
+			console:printLore("You have a \27[01;39;40;07msword\27[00m.\n")
 		end
-		print("")
+		console:printLore("\n")
 	end
 	
 	local xOffset
@@ -165,9 +178,9 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 		maxYcoord = floor(self:getMapSize() / self:getColumnCount()) * (getRoomDisplayWidth() - 1) + 1
 	end
 	
-	io.write("\27[01;30;47;07m")
-	for curXcoord = 1, maxXcoord do io.write(" ") end io.write("\27[00m\27[G")
-	for curYcoord = 1, maxYcoord do io.write("\27[01;30;47;07m \27[00m\n") end io.write("\27[" .. maxYcoord .. "A")
+	console:printLore("\27[01;30;47;07m")
+	for curXcoord = 1, maxXcoord do console:printLore(" ") end console:printLore("\27[00m\27[G")
+	for curYcoord = 1, maxYcoord do console:printLore("\27[01;30;47;07m \27[00m\n") end console:printLore("\27[" .. maxYcoord .. "A")
 	
 	for curYcoord = 1, maxYcoord - 1, getRoomDisplayHeight() - 1 do
 		for curXcoord = 1, maxXcoord - 1, getRoomDisplayWidth() - 1 do
@@ -180,9 +193,9 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 				return LevelPrintingErrored(ret)
 			end
 		end
-		io.write("\27[" .. getRoomDisplayHeight() - 1 .. "B\27[G")
+		console:printLore("\27[" .. getRoomDisplayHeight() - 1 .. "B\27[G")
 	end
-	print("\27[00m\n")
+	console:printLore("\27[00m\n\n")
 	
 	return LevelPrintingDone()
 end
@@ -242,7 +255,9 @@ function LevelManager:addTestLevel(level_datas)
 end
 
 function LevelManager:addLevel(level_datas)
-	return self:addInstance(level_datas, self.__config:getLevelConfig())
+	id = self:addInstance(level_datas, self.__config:getLevelConfig())
+	if not self:getInstance(id).initialize_status.success then self:removeInstance(id) return {success = false}
+	else return {success = true, id = id} end
 end
 
 function LevelManager:initializeLevels()
@@ -251,7 +266,7 @@ function LevelManager:initializeLevels()
 	    ["column_count"] = 7,
 	    ["rooms_datas"] = {[-6] = {},                                                                                                              [-5] = {},                                           [-4] = {},                                                        [-3] = {},                                           [-2] = {},                                                        [-1] = {},                                                         [0] = {},
 	                       {exit = true, dir_exit = "left",            down = true,                               door = true, dir_door = "left"}, {                                     right = true}, {           down = true, left = true, right = true},              {                        left = true, right = true}, {                        left = true, right = true},              {                        left = true, right = true, sword = true}, {           down = true, left = true},
-	                       {                                up = true,              right = true, monster = true},                                 {           down = true, left = true, right = true}, {up = true,              left = true, right = true},              {                        left = true},               {up = true, down = true},                                         {           down = true,              right = true},               {up = true,              left = true},
+	                       {                                up = true,              right = true, monster = true},                                 {           down = true, left = true, right = true}, {up = true,              left = true, right = true},              {                        left = true},               {           down = true},                                         {           down = true,              right = true},               {up = true,              left = true},
 	                       {                                           down = true, right = true},                                                 {up = true,              left = true},               {},                                                               {           down = true,              right = true}, {up = true,              left = true},                            {up = true, down = true,              right = true},               {           down = true, left = true},
 	                       {                                up = true,              right = true},                                                 {                        left = true, right = true}, {                        left = true, right = true, key = true},  {up = true,              left = true, right = true}, {                        left = true, right = true, trap = true}, {up = true,              left = true, right = true},               {up = true,              left = true},
 	                       {},                                                                                                                     {},                                                  {},                                                               {},                                                  {},                                                               {},                                                                {}},

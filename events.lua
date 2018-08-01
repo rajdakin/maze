@@ -21,14 +21,14 @@ function Event:iskind(clss)
 	end
 end
 
-local EventParsingResult = class(function(self, id, is_ended, objects)
+EventParsingResult = class(function(self, id, is_ended, objects)
 	Event.__init(self, 0, id)
 	self.ended = is_ended
 	self.objects = objects
 end, Event)
 
 -- 0 is definite
-eventParsingResultEndedReasons = {[0] = "User request"}
+eventParsingResultEndedReasons = {[-1] = "Internal error", [0] = "User request"}
 
 EventParsingResultEnded = class(function(self, reasonId, reason_registering_string)
 	EventParsingResult.__init(self, -1)
@@ -54,48 +54,85 @@ EventParsingResultRoomRestore = class(function(self, objects)
 end, EventParsingResult)
 
 
-local RoomPrintingResult = class(function(self, id)
+RoomPrintingResult = class(function(self, id)
 	Event.__init(self, 1, id)
 end, Event)
 
-printingErrorSubIDs = {}
+roomPrintingErrorSubIDs = {}
 RoomPrintingError = class(function(self, id)
-	if id then printingErrorSubIDs[id] = true end
-	self.__subids = printingErrorSubIDs
+	if id then roomPrintingErrorSubIDs[id] = true end
+	self.__subids = roomPrintingErrorSubIDs
 end, RoomPrintingResult)
-printingSuccessSubIDs = {}
+roomPrintingSuccessSubIDs = {}
 RoomPrintingSuccess = class(function(self, id)
-	printingSuccessSubIDs[id] = true
-	self.__subids = printingSuccessSubIDs
+	roomPrintingSuccessSubIDs[id] = true
+	self.__subids = roomPrintingSuccessSubIDs
 end, RoomPrintingResult)
 
 RoomPrintingErrorMalformedCall = class(function(self, reason)
 	RoomPrintingError.__init(self, -1)
-	if reason then self.reason = reason else self.reason = "No column to write in was passed as argument!" end
+	if reason then self.reason = reason else self.reason = "" end
 end, RoomPrintingError)
 RoomPrintingDone = class(function(self)
 	RoomPrintingSuccess.__init(self, 0)
 end, RoomPrintingSuccess)
 
-local LevelPrintingResult = class(function(self, id)
-	Event.__init(self, 1, id)
+
+LevelInitializingResult = class(function(self)
+	Event.__init(self, 2, nil)
 end, Event)
 
-printingErrorSubIDs = {}
+levelInitializingErrorSubIDs = {}
+LevelInitializingError = class(function(self, id)
+	LevelInitializingResult.__init(self)
+	levelInitializingErrorSubIDs[id] = true
+	self.__subids = levelInitializingErrorSubIDs
+end, LevelInitializingResult)
+levelInitializingSuccessSubIDs = {}
+LevelInitializingSuccess = class(function(self, id)
+	LevelInitializingResult.__init(self)
+	levelInitializingSuccessSubIDs[id] = true
+	self.__subids = levelInitializingSuccessSubIDs
+end, LevelInitializingResult)
+
+LevelInitializingErrored = class(function(self, reason)
+	LevelInitializingError.__init(self, -1)
+	if reason then self.reason = reason else self.reason = "" end
+end, LevelInitializingError)
+LevelInitializingDone = class(function(self)
+	LevelInitializingSuccess.__init(self, 1)
+end, LevelInitializingSuccess)
+LevelInitializingWarn = class(function(self, reason)
+	LevelInitializingSuccess.__init(self, 2)
+end, LevelInitializingSuccess)
+
+
+LevelPrintingResult = class(function(self)
+	Event.__init(self, 3, nil)
+end, Event)
+
+levelPrintingErrorSubIDs = {}
 LevelPrintingError = class(function(self, id)
-	printingErrorSubIDs[id] = true
-	self.__subids = printingErrorSubIDs
+	LevelPrintingResult.__init(self)
+	levelPrintingErrorSubIDs[id] = true
+	self.__subids = levelPrintingErrorSubIDs
 end, LevelPrintingResult)
-printingSuccessSubIDs = {}
+levelPrintingSuccessSubIDs = {}
 LevelPrintingSuccess = class(function(self, id)
-	printingSuccessSubIDs[id] = true
-	self.__subids = printingSuccessSubIDs
+	LevelPrintingResult.__init(self)
+	levelPrintingSuccessSubIDs[id] = true
+	self.__subids = levelPrintingSuccessSubIDs
 end, LevelPrintingResult)
 
 LevelPrintingErrored = class(function(self, reason)
 	LevelPrintingError.__init(self, -1)
-	self.reason = reason
+	if reason then self.reason = reason else self.reason = "" end
 end, LevelPrintingError)
 LevelPrintingDone = class(function(self)
-	LevelPrintingSuccess.__init(self, 0)
+	LevelPrintingSuccess.__init(self, 1)
 end, LevelPrintingSuccess)
+
+--EventParsingResult.__init = nil
+--RoomPrintingResult.__init = nil
+--LevelInitializingResult.__init = nil
+--LevelPrintingResult.__init = nil

@@ -3,6 +3,7 @@ if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else 
 
 local utilmodule = require(import_prefix .. "util")
 
+local consolemodule = require(import_prefix .. "console")
 local eventsmodule = require(import_prefix .. "events")
 local classmodule = require(import_prefix .. "class")
 
@@ -20,12 +21,16 @@ function Room:setUnreachable()
 		if self:getAttribute(v) then unreachable = false end
 	end
 	self:setAttribute("unreachable", unreachable)
+	
+	return true
 end
 
 function Room:initialize()
 	for k, v in pairs(list_data) do
 		if not self:getAttribute(v) then self:setAttribute(v, false) end
 	end
+	
+	return true
 end
 
 function Room:canHear(event, position_in_row, up, down, left, right)
@@ -51,125 +56,127 @@ end
 local doorBGcolor = {["door"] = "44", ["reddoor"] = "41", ["grave"] = "45", ["opengrave"] = "0"}
 function Room:printDoor(dir, doorType)
 	if self:getAttribute(dir) then
-		io.write(" ")
+		console:printLore(" ")
 	elseif self:getAttribute("exitdir") == dir then
-		io.write("\27[01;33;" .. doorBGcolor["opengrave"] .. "m ")
+		console:printLore("\27[01;33;" .. doorBGcolor["opengrave"] .. "m ")
 	elseif (self:getAttribute("grave") and (dir == "right")) or (self:getAttribute("graveorig") and (dir == "left")) then
-		io.write("\27[01;33;" .. doorBGcolor["grave"] .. "m ")
+		console:printLore("\27[01;33;" .. doorBGcolor["grave"] .. "m ")
 	elseif (self:getAttribute(doorType) and (self:getAttribute("dir_" .. doorType) == dir)) then
-		io.write("\27[01;33;" .. doorBGcolor[doorType] .. "m")
+		console:printLore("\27[01;33;" .. doorBGcolor[doorType] .. "m")
 		if self:getAttribute("exit") and (self:getAttribute("dir_exit") == dir) then
-			io.write("E")
+			console:printLore("E")
 		else
-			io.write(" ")
+			console:printLore(" ")
 		end
 	elseif (not self:getAttribute(doorType)) and (self:getAttribute("dir_" .. doorType) == dir) then
-		io.write("\27[42m ")
+		console:printLore("\27[42m ")
 	else
-		io.write("\27[01;30;41;07m ")
+		console:printLore("\27[01;30;41;07m ")
 	end
-	io.write("\27[00m")
+	console:printLore("\27[00m")
 end
 
 function Room:printRoom(objects, isActiveRoom)
-	io.write("\27[s")
+	console:printLore("\27[s")
 	if not self:getAttribute("saw") then
-		io.write("\27[C\27[s\27[B\27[01;30;47;07m?? \27[u\27[2B\27[01;30;47;07m?? \27[u\27[3B\27[01;30;47;07m   \27[u\27[2C\27[00m")
+		console:printLore("\27[C\27[s\27[B\27[01;30;47;07m?? \27[u\27[2B\27[01;30;47;07m?? \27[u\27[3B\27[01;30;47;07m   \27[u\27[2C\27[00m")
 	else
-		io.write("\27[01;30;41;07m \27[u\27[B")                   -- / Column one
+		console:printLore("\27[01;30;41;07m \27[u\27[B")                   -- / Column one
 		self:printDoor("left", "door")                            -- |
-		io.write("\27[u\27[2B")                                   -- |
+		console:printLore("\27[u\27[2B")                                   -- |
 		self:printDoor("left", "reddoor")                         -- |
-		io.write("\27[u\27[3B\27[01;30;41;07m \27[u\27[C\27[s")   -- -
+		console:printLore("\27[u\27[3B\27[01;30;41;07m \27[u\27[C\27[s")   -- -
 		self:printDoor("up", "door")                              -- / Column two
 		self:printDoor("up", "reddoor")                           -- + Column three
-		io.write("\27[u\27[B")                                    -- |
+		console:printLore("\27[u\27[B")                                    -- |
 		if self:getAttribute("unreachable") then                  -- |
-			io.write("\27[01;30;41;07mUU\27[2D\27[BUU")           -- |
+			console:printLore("\27[01;30;41;07mUU\27[2D\27[BUU")           -- |
 		else                                                      -- |
 			if isActiveRoom then                                  -- |
-				io.write("\27[43m")                               -- |
+				console:printLore("\27[43m")                               -- |
 			end                                                   -- |
 			if self:getAttribute("key") then                      -- |
-				io.write("K")                                     -- |
+				console:printLore("K")                                     -- |
 			elseif self:getAttribute("near_key") then             -- |
-				io.write("\27[02mK\27[22m")                       -- |
+				console:printLore("\27[02mK\27[22m")                       -- |
 			else                                                  -- |
-				io.write(" ")                                     -- |
+				console:printLore(" ")                                     -- |
 			end                                                   -- |
 			if self:getAttribute("redkey") then                   -- |
-				io.write("k")                                     -- |
+				console:printLore("k")                                     -- |
 			elseif self:getAttribute("near_redkey") then          -- |
-				io.write("\27[02mk\27[22m")                       -- |
+				console:printLore("\27[02mk\27[22m")                       -- |
 			else                                                  -- |
-				io.write(" ")                                     -- |
+				console:printLore(" ")                                     -- |
 			end                                                   -- |
-			io.write("\27[2D\27[B")                               -- |
+			console:printLore("\27[2D\27[B")                               -- |
 			if self:getAttribute("sword") then                    -- |
-				io.write("S")                                     -- |
+				console:printLore("S")                                     -- |
 			elseif self:getAttribute("near_sword") then           -- |
-				io.write("\27[02mS\27[22m")                       -- |
+				console:printLore("\27[02mS\27[22m")                       -- |
 			else                                                  -- |
-				io.write(" ")                                     -- |
+				console:printLore(" ")                                     -- |
 			end                                                   -- |
 			if self:getAttribute("trap") then                     -- |
-				io.write("T")                                     -- |
+				console:printLore("T")                                     -- |
 			elseif self:getAttribute("monster") then              -- |
-				io.write("M")                                     -- |
+				console:printLore("M")                                     -- |
 			elseif self:getAttribute("near_monster") then         -- |
-				io.write("\27[02mM\27[22m")                       -- |
+				console:printLore("\27[02mM\27[22m")                       -- |
 			else                                                  -- |
-				io.write(" ")                                     -- |
+				console:printLore(" ")                                     -- |
 			end                                                   -- |
 		end                                                       -- |
-		io.write("\27[00m\27[2D\27[B")                            -- |
+		console:printLore("\27[00m\27[2D\27[B")                            -- |
 		self:printDoor("down", "door")                            -- |
 		self:printDoor("down", "reddoor")                         -- -
-		io.write("\27[u\27[2C\27[s\27[01;30;41;07m \27[u\27[B")   -- / Column four
+		console:printLore("\27[u\27[2C\27[s\27[01;30;41;07m \27[u\27[B")   -- / Column four
 		self:printDoor("right", "door")                           -- |
-		io.write("\27[u\27[2B")                                   -- |
+		console:printLore("\27[u\27[2B")                                   -- |
 		self:printDoor("right", "reddoor")                        -- |
-		io.write("\27[u\27[3B\27[01;30;41;07m \27[u\27[00m") -- -
+		console:printLore("\27[u\27[3B\27[01;30;41;07m \27[u\27[00m") -- -
 	end
 	return RoomPrintingDone()
 end
 
 function Room:refreshRoomNearEvents(position_in_row, up, down, left, right)
 	if self:canSee("key", position_in_row, up, down, left, right) then
-		print("You briefly see a shining, but you couldn't say from where it comes from.")
+		console:printLore("You briefly see a shining, but you couldn't say from where it comes from.\n")
 		self:setAttribute("near_key", true)
 	end
 	if self:canSee("redkey", position_in_row, up, down, left, right) then
-		print("A deadly light?? questions you, but you couldn't say from where it comes from.")
+		console:printLore("A deadly light?? questions you, but you couldn't say from where it comes from.\n")
 		self:setAttribute("near_redkey", true)
 	end
 	if self:canSee("sword", position_in_row, up, down, left, right) then
-		print("You briefly see a sharpened blade in a nearly room.")
+		console:printLore("You briefly see a sharpened blade in a nearly room.\n")
 		self:setAttribute("near_sword", true)
 	end
 	if self:canHear("monster", position_in_row, up, down, left, right) then
-		print("A terrifying scream chills your blood, but it is so powerful you can't tell where does it come from.")
+		console:printLore("A terrifying scream chills your blood, but it is so powerful you can't tell where does it come from.\n")
 		self:setAttribute("near_monster", true)
 	end
 	if self:canSee("exit", position_in_row, up, down, left, right) then
-		print("You hear the storm, then see a sunbeam! The exit is near this room...")
+		console:printLore("You hear the storm, then see a sunbeam! The exit is near this room...\n")
 		self:setAttribute("near_exit", true)
 	elseif self:canHear("exit", position_in_row, up, down, left, right) then
-		print("You can hear the storm! The exit is near this room...")
+		console:printLore("You can hear the storm! The exit is near this room...\n")
 		self:setAttribute("near_exit", 1)
 	end
 end
 
 function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down, left, right)
 	if self:getAttribute("sword") then
-		io.write("You see a sword on a book, that says that this sword will self-disintegrate with its first target.\nYou turn the page and you read that you can only have one at a time and that if you take this one, every other sword will disintegrates.\n")
-		if objects["sword"] then io.write("You do already have one. ") end
-		io.write("Do you want to take this sword? " .. '"O" / "o" / "Y" / "y" for yes, anything else to cancel: ')
-		io.flush()
-		local answer = io.read()
-		if not answer then
+		console:printLore("You see a sword on a book, that says that this sword will self-disintegrate with its first target.\nYou turn the page and you read that you can only have one at a time and that if you take this one, every other sword will disintegrates.\n")
+		if objects["sword"] then console:printLore("You do already have one. ") end
+		console:printLore("Do you want to take this sword? " .. '"Y" / "y" for yes, anything else to cancel: ')
+		local returned = console:read()
+		local success, eos, answer = returned.success, returned.eos, returned.returned
+		if not success then
+			return EventParsingResultEnded(-1)
+		elseif not answer then
 			return EventParsingResultEnded(0)
-		elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
+		elseif (answer == "Y") or (answer == "y") then
 			objects["sword"] = true
 			self:setAttribute("sword", false)
 		end
@@ -180,11 +187,11 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 	end
 	if self:getAttribute("monster") then
 		if objects["sword"] then
-			print("You see a monster! Quick, you arm your weapon... the moment it runs toward you! Your sword kills him, but it disintegrates... You don't have a sword anymore.")
+			console:printLore("You see a monster! Quick, you arm your weapon... the moment it runs toward you! Your sword kills him, but it disintegrates... You don't have a sword anymore.\n")
 			objects["sword"] = false
 			self:setAttribute("monster", false)
 		else
-			print("Yous see a monster, but, due to your lack of equipment, you don't have any weapon... While you try to escape, the monster catch you and eat you. You are DEAD!")
+			console:printLore("Yous see a monster, but, due to your lack of equipment, you don't have any weapon... While you try to escape, the monster catch you and eat you. You are DEAD!\n")
 			return EventParsingResultExited(true, objects)
 		end
 		up:setAttribute("near_monster", false)
@@ -195,7 +202,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 	if self:getAttribute("door") then
 		if objects["key"] then
 			if (not self:getAttribute("exit")) or (self:getAttribute("dir_exit") ~= self:getAttribute("dir_door")) then
-				print("You see a door at the " .. cardinals[self:getAttribute("dir_door")] .. ", that you open with your key.\nBut when you release the key, the door is closing by itself!\nYou reopen it, but before that the door closes, you remove your key, and the door stay opened.\nThe key disintegrate. You don't have the key anymore.")
+				console:printLore("You see a door at the " .. cardinals[self:getAttribute("dir_door")] .. ", that you open with your key.\nBut when you release the key, the door is closing by itself!\nYou reopen it, but before that the door closes, you remove your key, and the door stay opened.\nThe key disintegrate. You don't have the key anymore.\n")
 				objects["key"] = false
 				self:setAttribute("door", false)
 				if (self:getAttribute("dir_door") == "up") then
@@ -211,30 +218,30 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					right:setAttribute("door", false)
 					right:setAttribute("dir_door", "left")
 				else
-					print("EXCEPTION.UNKNOWN_DOOR_DIR: " .. self:getAttribute("dir_door") .. " AT LINE #")
+					console:print("Unknown door direction: " .. tostring(self:getAttribute("dir_door")) .. "\n", LogLevel.ERROR, "room.lua/Room:checkRoomEvents(door)")
 				end
 			else
-				print("You see the exit at the " .. cardinals[self:getAttribute("dir_exit")] .. "!\nQuick, you take your key and you open the exit door.\n") --You survived against the monsters and the traps and you WON!")
+				console:printLore("You see the exit at the " .. cardinals[self:getAttribute("dir_exit")] .. "!\nQuick, you take your key and you open the exit door.\n\n") --You survived against the monsters and the traps and you WON!")
 				return EventParsingResultExited(false, objects)
 			end
 		else
-			io.write("You see a door at the " .. cardinals[self:getAttribute("dir_door")])
+			console:printLore("You see a door at the " .. cardinals[self:getAttribute("dir_door")])
 			if self:getAttribute("exit") and (self:getAttribute("dir_exit") == self:getAttribute("dir_door")) then
-				io.write(" blocking the exit")
+				console:printLore(" blocking the exit")
 			end
-			io.write(".\nDue to your lack of equipment, you don't have the right key and despite all of your efforts, this door doesn't open...\nYou cannot ")
+			console:printLore(".\nDue to your lack of equipment, you don't have the right key and despite all of your efforts, this door doesn't open...\nYou cannot ")
 			if self:getAttribute("exit") and (self:getAttribute("dir_exit") == self:getAttribute("dir_door")) then
-				io.write("exit the maze")
+				console:printLore("exit the maze")
 			else
-				io.write("go to " .. cardinals[self:getAttribute("dir_door")])
+				console:printLore("go to " .. cardinals[self:getAttribute("dir_door")])
 			end
-			print(".")
+			console:printLore(".\n")
 		end
 	end
 	if self:getAttribute("reddoor") then
 		if objects["redkey"] then
 			if (not self:getAttribute("exit")) or (self:getAttribute("dir_exit") ~= self:getAttribute("dir_reddoor")) then
-				print("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_reddoor")] .. ".\nHopefully, you remember that you have a red key, of the same color than the door. You open the door.")
+				console:printLore("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_reddoor")] .. ".\nHopefully, you remember that you have a red key, of the same color than the door. You open the door.\n")
 				objects["redkey"] = false
 				self:setAttribute("reddoor", false)
 				if (self:getAttribute("dir_reddoor") == "up") then
@@ -250,52 +257,55 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					right:setAttribute("reddoor", false)
 					right:setAttribute("dir_reddoor", "left")
 				else
-					print("EXCEPTION.UNKNOWN_REDDOOR_DIR: " .. self:getAttribute("dir_reddoor") .. " AT LINE #X")
+					console:print("Unknown red door direction: " .. tostring(self:getAttribute("dir_reddoor")) .. "\n", LogLevel.ERROR, "room.lua/Room:checkRoomEvents(reddoor)")
 				end
 			else
-				print("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_exit")] .. " blocking the exit!\nHopefully, you remember that you have a red key, of the same color than the door. You open the door and you exit this maze!\n") --You survived against the monsters and the traps and you WON!")
+				console:printLore("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_exit")] .. " blocking the exit!\nHopefully, you remember that you have a red key, of the same color than the door. You open the door and you exit this maze!\n\n") --You survived against the monsters and the traps and you WON!")
 				return EventParsingResultExited(false, objects)
 			end
 		else
-			io.write("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_reddoor")])
+			console:printLore("You see a door you don't want to approach at the " .. cardinals[self:getAttribute("dir_reddoor")])
 			if self:getAttribute("exit") and (self:getAttribute("dir_exit") == self:getAttribute("dir_reddoor")) then
-				io.write(" blocking the exit..")
+				console:printLore(" blocking the exit..")
 			end
-			io.write(".\nDue to your lack of equipment, you don't have the right key and despite all of your efforts, this door doesn't open...\nYou cannot ")
+			console:printLore(".\nDue to your lack of equipment, you don't have the right key and despite all of your efforts, this door doesn't open...\nYou cannot ")
 			if self:getAttribute("exit") and (self:getAttribute("dir_exit") == self:getAttribute("dir_reddoor")) then
-				io.write("exit the maze..")
+				console:printLore("exit the maze..")
 			else
-				io.write("go to " .. cardinals[self:getAttribute("dir_reddoor")])
+				console:printLore("go to " .. cardinals[self:getAttribute("dir_reddoor")])
 			end
-			print(".")
+			console:printLore(".\n")
 		end
 	end
 	if self:getAttribute("trap") then
-		print("You felt into a trap, and, with terrible pain, you DIE.")
+		console:printLore("You felt into a trap, and, with terrible pain, you DIE.\n")
 		return EventParsingResultExited(true, objects)
 	end
 	if not is_ended then
 		if self:getAttribute("key") then
-			io.write("You see a key in a book. You can reach the key only by reading the book.") io.flush()
-			sleep(0.5) io.write(".") io.flush()
-			sleep(0.5) io.write(".") io.flush()
-			sleep(0.5) io.write("\8\8\8???, so you read it") io.flush()
-			sleep(1)   io.write(".") io.flush()
-			sleep(1)   io.write(".") io.flush()
-			sleep(1)   io.write(".") io.flush()
-			sleep(1)   io.write("\8\8\8   \8\8\8, and you see a part about the key:\n") io.flush()
-			sleep(0.5) io.write("\"This key is destined to the first that will find it. But beware! This key has a unique usage, but persistant.") io.flush()
-			sleep(1)   io.write(".") io.flush()
-			sleep(0.5) io.write(".") io.flush()
-			sleep(0.5) io.write("\8\8\8?? \8")
-			io.write("\nIf you insert it in a closed door and then you remove it, it will self-disintegrate.\nIf the door isn't locked, then you'll be able to remove it without worrying. Once the door unlocked, remove the key and no one will be able to lock it again (with one exception).\nIf you lock a door...\"\nThen a lot of explanations.\n\"If you take this key, every other key you have will disintegrate.\"\n\n")
-			if objects["key"] then io.write("You do already have a key. ") end
-			io.write("Do you want to take it? " .. '"O" / "o" / "Y" / "y" for yes, anything else to cancel: ')
-			io.flush()
-			local answer = io.read()
-			if not answer then
+			console:printLore("You see a key in a book. You can reach the key only by reading the book.")
+			sleep(0.5) console:printLore(".")
+			sleep(0.5) console:printLore(".")
+			sleep(0.5) console:printLore("\8\8\8???, so you read it")
+			sleep(1)   console:printLore(".")
+			sleep(1)   console:printLore(".")
+			sleep(1)   console:printLore(".")
+			sleep(1)   console:printLore("\8\8\8   \8\8\8, and you see a part about the key:\n")
+			sleep(0.5) console:printLore("\"This key is destined to the first that will find it. But beware! This key has a unique usage, but persistant.")
+			sleep(1)   console:printLore(".")
+			sleep(0.5) console:printLore(".")
+			sleep(0.5) console:printLore("\8\8\8?? \8")
+			console:printLore("\nIf you insert it in a closed door and then you remove it, it will self-disintegrate.\nIf the door isn't locked, then you'll be able to remove it without worrying. Once the door unlocked, remove the key and no one will be able to lock it again (with one exception).\nIf you lock a door...\"\nThen a lot of explanations.\n\"If you take this key, every other key you have will disintegrate.\"\n\n")
+			if objects["key"] then console:printLore("You do already have a key. ") end
+			
+			console:printLore("Do you want to take it? " .. '"Y" / "y" for yes, anything else to cancel: ')
+			local returned = console:read()
+			local success, eos, answer = returned.success, returned.eos, returned.returned
+			if not success then
+				return EventParsingResultEnded(-1)
+			elseif not answer then
 				return EventParsingResultEnded(0)
-			elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
+			elseif (answer == "Y") or (answer == "y") then
 				objects["key"] = true
 				self:setAttribute("key", false)
 			end
@@ -305,18 +315,20 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			right:setAttribute("near_key", false)
 		end
 		if self:getAttribute("redkey") then
-			io.write("You see a red") io.flush()
-			sleep(1) io.write("\8\8\8wait, no") io.flush()
-			sleep(1) io.write("\8\8\8\8\8\8\8\8bloody key in a book.\nIt says that this key already closed a door, and only it can reopen it.\n")
+			console:printLore("You see a red")
+			sleep(1) console:printLore("\8\8\8wait, no")
+			sleep(1) console:printLore("\8\8\8\8\8\8\8\8bloody key in a book.\nIt says that this key already closed a door, and only it can reopen it.\n")
 			if objects["redkey"] then
-				print("You decided not to take it, as you already have one.")
+				console:printLore("You decided not to take it, as you already have one.\n")
 			else
-				io.write('Do you want to take it? "O"/"o"/"Y"/"y" means yes, anything else to cancel: ')
-				io.flush()
-				local answer = io.read()
-				if not answer then
+				console:printLore('Do you want to take it? "Y" / "y" means yes, anything else to cancel: ')
+				local returned = console:read()
+				local success, eos, answer = returned.success, returned.eos, returned.returned
+				if not success then
+					return EventParsingResultEnded(-1)
+				elseif not answer then
 					return EventParsingResultEnded(0)
-				elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
+				elseif (answer == "Y") or (answer == "y") then
 					objects["redkey"] = true
 					self:setAttribute("redkey", false)
 				end
@@ -328,31 +340,31 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		end
 		self:refreshRoomNearEvents(room_position_in_row, up, down, left, right)
 		if self:getAttribute("grave") and self:getAttribute("deadlygrave") then
-			io.write("You chose to enter the room underneath, but it appears to be a grave.\n")
-			if (self:getAttribute("keyneeded") == "redkey") and (objects["redkey"] == true) or ((self:getAttribute("keyneeded") == "key") and (objects["key"] == true)) then
-				io.write("Hopefully, you can exit it thanks to the ")
+			console:printLore("You chose to enter the room underneath, but it appears to be a grave.\n")
+			if objects[self:getAttribute("keyneeded")] then
+				console:printLore("Hopefully, you can exit it thanks to the ")
 				if (self:getAttribute("keyneeded") == "redkey") and (objects["redkey"] == true) then
-					io.write("red key")
+					console:printLore("red key")
 					objects["redkey"] = false
 				end
 				if (self:getAttribute("keyneeded") == "key") and (objects["key"] == true) then
-					io.write("key")
+					console:printLore("key")
 					objects["key"] = false
 				else
-					io.write("EXCEPTION.UNKNOWN_KEY_VALUE: " .. self:getAttribute("keyneeded") .. " AT LINE #XX")
+					console:print("Unknown key value: " .. tostring(self:getAttribute("keyneeded")) .. "\n", LogLevel.ERROR, "room.lua/Room:checkRoomEvents(deadlygraveexitable1)")
 				end
-				print(", so you open the grave's exit, located at the " .. cardinals[self:getAttribute("exitdir")] .. ".")
+				console:printLore(", so you open the grave's exit, located at the " .. cardinals[self:getAttribute("exitdir")] .. ".\n")
 				self:setAttribute("deadlygrave", false)
 			else
-				print("You DIE.\nYou could've exit if you had the ")
+				console:printLore("You DIE.\nYou could've exit if you had the ")
 				if (self:getAttribute("keyneeded") == "key") then
-					io.write("key")
+					console:printLore("key")
 				elseif (self:getAttribute("keyneeded") == "redkey") then
-					io.write("red key")
+					console:printLore("red key")
 				else
-					io.write("EXCEPTION.UNKNOWN_KEY_VALUE: " .. self:getAttribute("keyneeded") .. " AT LINE #XX")
+					console:print("Unknown key value: " .. tostring(self:getAttribute("keyneeded")) .. "\n", LogLevel.ERROR, "room.lua/Room:checkRoomEvents(deadlygraveexitable2)")
 				end
-				io.write(" of the exit located at the " .. cardinals[self:getAttribute("exitdir")] .. ".")
+				console:printLore(" of the exit located at the " .. cardinals[self:getAttribute("exitdir")] .. ".")
 				return EventParsingResultExited(true, objects)
 			end
 			if self:getAttribute("exitdir") == "up" then
@@ -364,17 +376,19 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			elseif self:getAttribute("exitdir") == "right" then
 				right:setAttribute("left", true)
 			else
-				print("EXCEPTION.UNKNOWN_EXIT_DIR: " .. self:getAttribute("exitdir") .. " AT LINE #XXX")
+				console:print("Unknown exit direction: " .. tostring(self:getAttribute("exitdir")) .. "\n", LogLevel.ERROR, "room.lua/Room:checkRoomEvents(deadlygraveexitable3)")
 			end
 		end
 		if self:getAttribute("graveorig") then
 			self:setAttribute("saw", true)
-			io.write("After having walked across stairs, you see a room filled with skeletons.\nA grid is located on the ground and leads to another room.\nDo you want to continue and go donwstairs or go backwards ? (O / o / Y / y means go downstairs, everything else means go back): ")
-			io.flush()
-			local answer = io.read()
-			if not answer then
+			console:printLore("After having walked across stairs, you see a room filled with skeletons.\nA grid is located on the ground and leads to another room.\nDo you want to continue and go donwstairs or go backwards ? (" .. '"Y" / "y"' .. " means go downstairs, everything else means go back): ")
+			local returned = console:read()
+			local success, eos, answer = returned.success, returned.eos, returned.returned
+			if not success then
+				return EventParsingResultEnded(-1)
+			elseif not answer then
 				return EventParsingResultEnded(0)
-			elseif (answer == "O") or (answer == "o") or (answer == "Y") or (answer == "y") then
+			elseif (answer == "Y") or (answer == "y") then
 				return EventParsingResultRoomChanging("left", objects)
 			else
 				return EventParsingResultRoomRestore(objects)

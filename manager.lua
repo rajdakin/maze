@@ -22,7 +22,7 @@ function Manager:getInstance(position) return self.__instances[position] end
 
 function Manager:getSize() return #self.__instances end
 
-function Manager:removePosition(position)
+function Manager:removeInstance(position)
 	if self.__instances[position] then return table.remove(self.__instances, position)
 	else return nil end	
 end	

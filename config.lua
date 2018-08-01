@@ -28,14 +28,28 @@ function LevelManagerConfig:getLevelConfig() return self.__levelConfig end
 
 function LevelManagerConfig:doLoadTestLevels() return self.__loadTestLevels end
 
+
+local ConsoleConfig = class(function(self, configuration)
+	self.__logLevel = configuration["logLevel"]
+	self.__developerMode = configuration["developerMode"]
+end)
+
+function ConsoleConfig:getLogLevel()             return self.__logLevel            end
+function ConsoleConfig:isLogLevelValid(logLevel) return self.__logLevel > logLevel end
+function ConsoleConfig:isDeveloperMode()         return self.__developerMode       end
+
 local Config = class(function(self, configuration)
 	self.__levelManagerConfig = LevelManagerConfig(configuration["levelManagerConfiguration"], configuration["levelConfiguration"])
+	self.__consoleConfig = ConsoleConfig(configuration["consoleConfiguration"])
 end)
 
 function Config:getLevelManagerConfig() return self.__levelManagerConfig end
+function Config:getConsoleConfig() return self.__consoleConfig end
 
 currentConfig = Config({
-	["levelManagerConfiguration"] = {["loadTestLevels"] = false},
-	["levelConfiguration"] = {["mapViewingSize"] = {3, 3},
-	                          ["mapYoffset"] = 7}
+    ["levelManagerConfiguration"] = {["loadTestLevels"] = false},
+    ["levelConfiguration"] = {["mapViewingSize"] = {3, 3},
+                              ["mapYoffset"] = 7},
+    ["consoleConfiguration"] = {["logLevel"] = 2,
+                                ["developerMode"] = false}
 })

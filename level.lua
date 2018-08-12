@@ -175,12 +175,11 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 	else
 		xOffset = 1
 		yOffset = 0
-		maxXcoord = self:getColumnCount() * (getRoomDisplayWidth() - 1) + 1
+		maxXcoord =                           self:getColumnCount()  * (getRoomDisplayWidth() - 1) + 1
 		maxYcoord = floor(self:getMapSize() / self:getColumnCount()) * (getRoomDisplayWidth() - 1) + 1
 	end
 	
-	console:printLore("\27[01;30;47;07m")
-	for curXcoord = 1, maxXcoord do console:printLore(" ") end console:printLore("\27[00m\27[G")
+	for curXcoord = 1, maxXcoord do console:printLore("\27[01;30;47;07m \27[00m") end console:printLore("\27[00m\27[0G")
 	for curYcoord = 1, maxYcoord do console:printLore("\27[01;30;47;07m \27[00m\n") end console:printLore("\27[" .. maxYcoord .. "A")
 	
 	for curYcoord = 1, maxYcoord - 1, getRoomDisplayHeight() - 1 do
@@ -275,8 +274,9 @@ function LevelManager:initializeLevels()
 	        "You arrived in a room. You don't know how you got here, or how to escape, neither where you are.\nYou can however move, and you feels you have a huge carrying capacity, like the one from video game's character.\nWhat do you do?",
 	        "After a long corridor, you found the map of the labyrinth you escaped. You continued to walk, but then you heard a \27[3mclick!\27[00m and you felt into the darkness...\n...Wait, not really...\n...Yeah, you just felt into an other maze."
 		},
-		["map_reveal"] = function(dead, sword) return not dead end, -- Not yet implemented
-		["win_level"]  = function(dead, sword) return not dead end  -- Not yet implemented
+		["map_reveal"] = function(dead, objects)       return not dead  end, -- Not yet implemented
+		["win_level"]  = function(dead, objects)       return not dead  end, -- Not yet implemented
+		["alternative_lore"] = function(dead, objects) return "default" end  -- Not yet implemented, array version 2
 	})
 	self:addLevel({["level_array_version"] = 1,
 		["starting_room"] = 23,

@@ -50,17 +50,18 @@ LogLevel = enum(function(self, name, ...)
 	args = {...} args = args[1]
 	LogLevelClass.__init(self, args[1], args[2], args[3], args[4])
 end, LogLevelClass,
-{FATAL_ERROR = {"Fatal error",       0, function(config) return true                     end, function(...) args = {...} return OutputMode.FATAL end},
- ERROR       = {"Error",             1, function(config) return true                     end, function(...) args = {...}                             return OutputMode.FERR                                 end},
- WARNING     = {"Warning",           2, function(config) return true                     end, function(...) args = {...}                             return OutputMode.FERR                                 end},
- WARNING_DEV = {"Developer warning", 2, function(config) return config:isDeveloperMode() end, function(...) args = {...}                             return OutputMode.FERR                                 end},
- INFO        = {"Info",              3, function(config) return true                     end, function(...) args = {...} if (args[2] == "fast") then return OutputMode.FOUT else return OutputMode.SOUT end end},
- LOG         = {"Log",               4, function(config) return true                     end, function(...) args = {...}                             return OutputMode.FOUT                                 end}}
+{FATAL_ERROR = {"Fatal error",       0, function(config) return true                     end, function(args) return OutputMode.FATAL end},
+ ERROR       = {"Error",             1, function(config) return true                     end, function(args)                             return OutputMode.FERR                                 end},
+ WARNING     = {"Warning",           2, function(config) return true                     end, function(args)                             return OutputMode.FERR                                 end},
+ WARNING_DEV = {"Developer warning", 2, function(config) return config:isDeveloperMode() end, function(args)                             return OutputMode.FERR                                 end},
+ INFO        = {"Info",              3, function(config) return true                     end, function(args) if (args[2] == "fast") then return OutputMode.FOUT else return OutputMode.SOUT end end},
+ LOG         = {"Log",               4, function(config) return true                     end, function(args)                             return OutputMode.FOUT                                 end}}
 )
 
-local Log = class(function(self, log, out, err, pwait, gwait)
-	self.__out, self.__out_pre, self.__out_flush = out.print, out.print_pre, out.flush
-	self.__err, self.__err_pre, self.__err_flush = err.print, err.print_pre, err.flush
+local Log = class(function(self, config)
+	local log, out, err, pwait, gwait = config.log, config.out, config.err, config.pwait, config.gwait
+	self.__out, self.__out_inv, self.__out_flush = out.print, out.print_inv, out.flush
+	self.__err, self.__err_inv, self.__err_flush = err.print, err.print_inv, err.flush
 	
 	self.__precision_wait = pwait
 	self.__global_wait    = gwait
@@ -68,11 +69,11 @@ end)
 
 function Log:printString(string, is_output_mode, is_valid)
 	if is_output_mode then
-		self.__out_pre(string)
-		if is_valid then self.__out(string) end
+		if is_valid then self.__out    (string)
+		else             self.__out_inv(string) end
 	else
-		self.__err_pre(string)
-		if is_valid then self.__err(string) end
+		if is_valid then self.__err    (string)
+		else             self.__err_inv(string) end
 	end
 end
 
@@ -87,7 +88,7 @@ function Log:print(printable, level, module, valid_args, output_args)
 	self.__err_flush()
 end
 
-function Log:printLore(printable, output_args)
+function Log:printLore(printable)
 	if type(printable) == "string" then
 		self:printString(printable, true, true)
 	else
@@ -97,9 +98,13 @@ function Log:printLore(printable, output_args)
 	self.__err_flush()
 end
 
-local Console = class(function(self, input, log, out, err)
+local Console = class(function(self, consoleConfig, logConfig)
+	if not logConfig then consoleConfig, logConfig = consoleConfig.consoleConfig, consoleConfig.logConfig end
+	local input = consoleConfig.input
 	self.__in = input
-	self.__log = Log(log, out, err, sleep, longsleep)
+	
+	if not logConfig.pwait then logConfig.pwait = sleep end if not logConfig.gwait then logConfig.gwait = longsleep end
+	self.__log = Log(logConfig)
 end)
 
 function Console:read(...)
@@ -115,17 +120,20 @@ function Console:read(...)
 	end
 end
 
-function Console:print(printable, level, module, valid_args)
-	self.__log:print(printable, level, module, valid_args)
+function Console:print(printable, level, module, valid_args, output_args)
+	self.__log:print(printable, level, module, valid_args, output_args)
 end
 
 function Console:printLore(printable)
 	self.__log:printLore(printable)
 end
 
-console = Console(
-	function(...) return io.read(...) end,
-	function(...) end, -- This will always be called, no matter what type it is.
-	{print = function(...) io.write(...) end, flush = function() io.flush() end},
-	{print = function(...) io.write(...) end, flush = function() io.flush() end}
-)
+console = Console({
+	["consoleConfig"] = {
+		["input"] = function(...) return io.read(...) end
+	}, ["logConfig"] = {
+		["log"] = function(...) end, -- This will always be called, it may be useful to use it as a log writer
+		["out"] = {print = function(...)                     io.write(...) io.write("\27[00m") end, print_inv = function(...) end, flush = function() io.flush() end},
+		["err"] = {print = function(...) io.write("\27[31m") io.write(...) io.write("\27[00m") end, print_inv = function(...) end, flush = function() io.flush() end}
+	}
+})

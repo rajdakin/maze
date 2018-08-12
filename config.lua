@@ -35,9 +35,9 @@ local ConsoleConfig = class(function(self, configuration)
 	self.__developerMode = configuration["developerMode"]
 end)
 
-function ConsoleConfig:getLogLevel()             return self.__logLevel            end
-function ConsoleConfig:isLogLevelValid(logLevel) return self.__logLevel > logLevel end
-function ConsoleConfig:isDeveloperMode()         return self.__developerMode       end
+function ConsoleConfig:getLogLevel()             return self.__logLevel             end
+function ConsoleConfig:isLogLevelValid(logLevel) return self.__logLevel >= logLevel end
+function ConsoleConfig:isDeveloperMode()         return self.__developerMode        end
 
 local Config = class(function(self, configuration)
 	self.__levelManagerConfig = LevelManagerConfig(configuration["levelManagerConfiguration"], configuration["levelConfiguration"])

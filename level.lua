@@ -228,20 +228,28 @@ function Level:checkLevelEvents(is_ended, objects)
 end
 
 LevelManager = class(function(self, levelManagerConfig)
-	Manager.__init(self, Level)
-	
 	self.__config = levelManagerConfig
 	
 	self:initialize()
 end, Manager)
 
+function LevelManager:getLevels() return self.__levels end
+function LevelManager:getLevel(level) return self:getLevels()[level] end
+function LevelManager:getActiveLevel() return self:getLevel(self.__level_number) end
+
+function LevelManager:getLevelNumber() return self.__level_number         end
+function LevelManager:setLevelNumber(value)   self.__level_number = value end
+
+function LevelManager:removeLevels() self.__levels = {} self.__level_count, self.__test_level_count = 0, 0 end
+
+function LevelManager:geConfig() return self.__config end
+
 function LevelManager:initialize()
-	self:removeAll()
-	self.__test_level_count = 0
+	self:removeLevels()
 	
 	self:initializeLevels()
 	
-	if self.__config:doLoadTestLevels() then
+	if self:getConfig():doLoadTestLevels() then
 		self.__level_number = -1
 	else
 		self.__level_number = 1
@@ -250,14 +258,15 @@ end
 
 function LevelManager:addTestLevel(level_datas)
 	self.__test_level_count = self.__test_level_count + 1
-	self.__instances[-self.__test_level_count] = Level(level_datas, self.__config:getLevelConfig())
-	return -self.__test_level_count
+	self.__levels[-self.__test_level_count] = Level(level_datas, self.__config:getLevelConfig())
+	if not self.__levels[-self.__test_level_count].initialize_status.success then self.__levels[-self.__test_level_count] = nil return {success = false}
+	else return {success = true, -self.__test_level_count} end
 end
 
 function LevelManager:addLevel(level_datas)
-	id = self:addInstance(level_datas, self.__config:getLevelConfig())
-	if not self:getInstance(id).initialize_status.success then self:removeInstance(id) return {success = false}
-	else return {success = true, id = id} end
+	self.__levels[self.__level_count] = Level(self:addInstance(level_datas, self.__config:getLevelConfig())
+	if not self.__levels[self.__level_count].initialize_status.success then self.__levels[self.__level_count] = nil return {success = false}
+	else return {success = true, id = self.__level_count} end
 end
 
 function LevelManager:initializeLevels()
@@ -296,7 +305,7 @@ function LevelManager:initializeLevels()
 	
 	add_contrib_nontest_levels(self)
 	
-	if self.__config:doLoadTestLevels() then
+	if self:getConfig():doLoadTestLevels() then
 		self:addTestLevel({["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                                                                  [0] = {},
 		                                                                                                                 {exit = true, dir_exit = "left",                reddoor = true, dir_reddoor = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveorig = true},
 		                                                                                                                 {                                redkey = true},                                                                                                                            {up = true,              key = true},
@@ -316,11 +325,5 @@ function LevelManager:initializeLevels()
 		add_contrib_test_levels(self)
 	end
 end
-
-function LevelManager:getLevels() return self:getInstances() end
-function LevelManager:getActiveLevel() return self:getInstance(self.__level_number) end
-
-function LevelManager:getLevelNumber() return self.__level_number         end
-function LevelManager:setLevelNumber(value)   self.__level_number = value end
 
 levelManager = LevelManager(currentConfig:getLevelManagerConfig())

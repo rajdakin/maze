@@ -67,7 +67,8 @@ function main()
 		
 		levelManager:getActiveLevel():reverseMap(objects)
 		
-		if (movement == directions["up"]) or (movement == '\27[A') then
+		if (movement == "") then
+		elseif (movement == directions["up"]) or (movement == '\27[A') then
 			-- go up!
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("up") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() - levelManager:getActiveLevel():getColumnCount())
@@ -115,7 +116,7 @@ function main()
 			console:print("Unknown command: " .. movement .. "\n", LogLevel.ERROR, "maze.lua/main")
 		end
 		if not ((movement == "w ?") or (movement == "w ") or (movement == "m") or (movement == "map")
-		     or (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit")) then
+		     or (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit") or (movement == "")) then
 			local ret = levelManager:getActiveLevel():checkLevelEvents(game_ended, objects)
 			game_ended = ret.ended
 			objects = ret.objects

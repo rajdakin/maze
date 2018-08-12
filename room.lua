@@ -277,6 +277,9 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			console:printLore(".\n")
 		end
 	end
+	if self:getAttribute("exit") and (self:getAttribute("dir_exit") ~= self:getAttribute("dir_door")) and (self:getAttribute("dir_exit") ~= self:getAttribute("dir_reddoor")) then
+		console:printLore("You reached the exit. Fortunately enough, it is simply an open door with " .. '"EXIT"' .. " written on it, so you can simply walk outside.\nYou walk through that door and you exit the maze!")
+	end
 	if self:getAttribute("trap") then
 		console:printLore("You felt into a trap, and, with terrible pain, you DIE.\n")
 		return EventParsingResultExited(true, objects)

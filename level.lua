@@ -6,7 +6,6 @@ local contributionmodule = require(import_prefix .. "contribution")
 local utilmodule = require(import_prefix .. "util")
 
 local consolemodule = require(import_prefix .. "console")
-local managermodule = require(import_prefix .. "manager")
 local configmodule = require(import_prefix .. "config")
 local eventsmodule = require(import_prefix .. "events")
 local classmodule = require(import_prefix .. "class")

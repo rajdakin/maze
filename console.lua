@@ -1,8 +1,10 @@
-import_prefix = ...
+local args = {...}
+import_prefix = args[1]
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
 
 local utilmodule = require(import_prefix .. "util")
 
+local configmodule = require(import_prefix .. "config")
 local classmodule = require(import_prefix .. "class")
 
 local OutputModeClass = class(function(self, is_auto_valid, is_out, is_CPC)

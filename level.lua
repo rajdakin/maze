@@ -191,7 +191,7 @@ function Level:printEndingLore(death, objects)
 	if self.__map_reveal(death, objects) then
 		self:setAllRoomsSeenStatusAs(true)
 	end
-	return self.__win_level(death, objects)
+	return not death and self.__win_level(objects)
 end
 
 function Level:reverseMap(objects)

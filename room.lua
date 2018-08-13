@@ -421,6 +421,18 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					
 					self:setAttribute(prefix .. "door", false)
 					
+					if self:getAttribute(prefix .. "door_dir") == "up" then
+						up:setAttribute(prefix .. "door", false)
+					elseif self:getAttribute(prefix .. "door_dir") == "down" then
+						down:setAttribute(prefix .. "door", false)
+					elseif self:getAttribute(prefix .. "door_dir") == "left" then
+						left:setAttribute(prefix .. "door", false)
+					elseif self:getAttribute(prefix .. "door_dir") == "right" then
+						right:setAttribute(prefix .. "door", false)
+					else
+						console:log("Unknown door dir (opening the other size): " .. self:getAttribute(prefix .. "door_dir"), LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents:checkKeyDoor")
+					end
+					
 					if self:getAttribute(prefix .. "key") then
 						self:setAttribute(prefix .. "key", false)
 						up:setAttribute("near_" .. prefix .. "key", false)
@@ -444,7 +456,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				
 				console:printLore(
 					dictionary:translate(stateManager:getStatesStack(), "locked",
-						dictionary:translate(stateManager:getStatesStack(), tostring(self.getAttribute(prefix .. "door_dir"))))
+						dictionary:translate(stateManager:getStatesStack(), tostring(self:getAttribute(prefix .. "door_dir"))))
 				)
 				
 				stateManager:popState()

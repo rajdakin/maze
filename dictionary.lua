@@ -37,7 +37,7 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 		if nwsline and nwsline ~= "" and nwsline:sub(1, comment.len) ~= comment.str then
 			if nwsline:find("=") then
 				-- Line is an ID -> text instruction
-				local text_id, text = nwsline:gsub("=.*", ""), nwsline:gsub(".-= ?", "")
+				local text_id, text = nwsline:gsub("=.*", ""), nwsline:gsub(".-=", "")
 				
 				local err = false
 				

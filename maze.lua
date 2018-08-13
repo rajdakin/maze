@@ -157,13 +157,13 @@ function main()
 		sleep(1) console:printLore(".")
 		sleep(1) console:printLore(".")
 		sleep(2) console:printLore("\8\8\8?  ")
-		sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Nope\n")
+		sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Nope      ")
 		
 		if doNextLevel then levelManager:setLevelNumber(levelManager:getLevelNumber() + 1) sleep(1)
 		-- else break
 		end
 	end
-	return "\8\8\8\8(Yes, it is)"
+	return "\8\8\8\8\8\8\8\8\8\8(Yes, it is)"
 end
 
 console:printLore("Write 'h'<Enter> to get the help at any time.\n")

@@ -51,7 +51,7 @@ function Config:getConsoleConfig() return self.__consoleConfig end
 
 currentConfig = Config({
     ["levelManagerConfiguration"] = {["loadTestLevels"] = false},
-    ["levelConfiguration"] = {["minimap"] = true,
+    ["levelConfiguration"] = {["minimapDisplay"] = true,
                               ["minimapViewingSize"] = {3, 3},
                               ["mapYoffset"] = 7},
     ["consoleConfiguration"] = {["logLevel"] = 2,

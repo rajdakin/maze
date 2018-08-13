@@ -28,6 +28,7 @@ resetMaze()
 
 function main()
 	while levelManager:getActiveLevel() do
+		levelManager:getActiveLevel():restoreStart()
 		stateManager:pushMainState("ig")
 		
 		game_ended = false
@@ -71,6 +72,7 @@ function main()
 			end
 			
 			levelManager:getActiveLevel():reverseMap(objects)
+			console:printLore("\n")
 			
 			if (movement == "") or (movement == "h") or (movement == "help") then
 				console:printLore(
@@ -159,7 +161,7 @@ function main()
 		sleep(2) console:printLore("\8\8\8?  ")
 		sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Nope      ")
 		
-		if doNextLevel then levelManager:setLevelNumber(levelManager:getLevelNumber() + 1) sleep(1)
+		if doNextLevel then levelManager:setLevelNumber(levelManager:getLevelNumber() - 1) sleep(1)
 		-- else break
 		end
 	end

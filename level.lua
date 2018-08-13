@@ -39,6 +39,7 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			self.__column_count = level_datas["column_count"]
 			self.__old_room = level_datas["starting_room"]
 			self.__room_number = level_datas["starting_room"]
+			self.__starting_room = level_datas["starting_room"]
 			
 			self.__lores = level_datas["lores"]
 			self.__lore_begin = self.__lores[1]
@@ -71,6 +72,7 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			self.__column_count = level_datas["column_count"]
 			self.__old_room = level_datas["starting_room"]
 			self.__room_number = level_datas["starting_room"]
+			self.__starting_room = level_datas["starting_room"]
 			
 			self.__level_id = level_datas["__id"]
 			
@@ -118,6 +120,7 @@ function Level:setRoomAttribute(room, attributeName, value) self:getRoom(room):s
 function Level:getRoomNumber() return self.__room_number end
 function Level:setRoom(room) self.__old_room = self.__room_number; self.__room_number = room end
 function Level:restoreRoom() self.__room_number = self.__old_room end
+function Level:restoreStart() self.__room_number = self.__starting_room end
 
 function Level:getRooms() return self.__rooms end
 function Level:getActiveRoom()  return self:getRooms()[self:getRoomNumber()] end

@@ -43,10 +43,11 @@ function Room:canHear(event, position_in_row, up, down, left, right)
 end
 
 function Room:hasAccess(direction)
-	return self:getAttribute(direction)
-	 or (not self:getAttribute("door") and self:getAttribute("door_dir") == direction)
-	 or (not self:getAttribute("reddoor") and self:getAttribute("reddoor_dir") == direction)
-	 or (self:getAttribute("exitdir") == direction)
+	return (self:getAttribute(direction)
+	 or  (not self:getAttribute("door") and self:getAttribute("door_dir") == direction)
+	 or  (not self:getAttribute("reddoor") and self:getAttribute("reddoor_dir") == direction)
+	 or  (self:getAttribute("exitdir") == direction))
+	 and (self:getAttribute("exit_dir") ~= direction)
 end
 
 function Room:canSee(event, position_in_row, up, down, left, right)
@@ -64,14 +65,13 @@ function Room:printDoor(dir, doorType)
 		console:printLore("\27[01;33;" .. doorBGcolor["opengrave"] .. "m ")
 	elseif (self:getAttribute("grave") and (dir == "right")) or (self:getAttribute("graveyard") and (dir == "left")) then
 		console:printLore("\27[01;33;" .. doorBGcolor["grave"] .. "m ")
-	elseif (self:getAttribute(doorType) and (self:getAttribute("dir_" .. doorType) == dir)) then
-		console:printLore("\27[01;33;" .. doorBGcolor[doorType] .. "m")
+	elseif (self:getAttribute(doorType) and (self:getAttribute(doorType .. "_dir") == dir)) then
 		if self:getAttribute("exit") and (self:getAttribute("exit_dir") == dir) then
-			console:printLore("E")
+			console:printLore("\27[01;33;" .. doorBGcolor[doorType] .. "mE")
 		else
-			console:printLore(" ")
+			console:printLore("\27[01;33;" .. doorBGcolor[doorType] .. "m ")
 		end
-	elseif (not self:getAttribute(doorType)) and (self:getAttribute("dir_" .. doorType) == dir) then
+	elseif (not self:getAttribute(doorType)) and (self:getAttribute(doorType .. "_dir") == dir) then
 		console:printLore("\27[42m ")
 	else
 		console:printLore("\27[01;30;41;07m ")
@@ -186,10 +186,10 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				stateManager:pushState("grave")
 				
 				if self:getAttribute("deadlygrave") then
-					stateManage:pushState("deadly")
+					stateManager:pushState("deadly")
 					
 					local key = self:getAttribute("keyneeded")
-					stateManage:pushState(key)
+					stateManager:pushState(key)
 					
 					if self:getAttribute(key) then
 						console:printLore(
@@ -210,15 +210,27 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						
 						self:setAttribute("deadlygrave", false)
 						
+						if self:getAttribute("exitdir") == "up" then
+							up:setAttribute("down", true)
+						elseif self:getAttribute("exitdir") == "down" then
+							down:setAttribute("up", true)
+						elseif self:getAttribute("exitdir") == "left" then
+							left:setAttribute("right", true)
+						elseif self:getAttribute("exitdir") == "right" then
+							right:setAttribute("left", true)
+						else
+							console:print("Unknown grave's exit directon (opening the other size): " .. self:getAttribute("exitdir"), LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents")
+						end
+						
 						dictionary:setAlternative({"ig"}, key, "false")
-						dictionary:setAlternative({"ig", "keydoors", prefix .. "block", "key"}, "take", "true")
+						dictionary:setAlternative({"ig", "keydoors", key:gsub("key$", "") .. "block", "key"}, "take", "true")
 						objects[key] = false
 					elseif (key == "key") or (key == "redkey") then
 						console:printLore(
 							dictionary:translate(stateManager:getStatesStack(), "locked")
 						)
 						
-						return EventParsingReturnExited(true, objects)
+						return EventParsingResultExited(true, objects)
 					else
 						console:printLore(
 							dictionary:translate(stateManager:getStatesStack(), "unknown",
@@ -344,7 +356,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						dictionary:translate(stateManager:getStatesStack(), "no_sword")
 					)
 					
-					return EventParsingReturnExited(true, objects)
+					return EventParsingResultExited(true, objects)
 				end
 			end
 			
@@ -385,8 +397,10 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		end
 		
 		local function checkKeyDoor(prefix)
+			local exit_pushed = false
 			if self:getAttribute("exit") and (self:getAttribute("exit_dir") == self:getAttribute(prefix .. "door_dir")) then
 				stateManager:pushState("exit")
+				exit_pushed = true
 			end
 			
 			stateManager:pushState(prefix .. "group")
@@ -430,7 +444,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					elseif self:getAttribute(prefix .. "door_dir") == "right" then
 						right:setAttribute(prefix .. "door", false)
 					else
-						console:log("Unknown door dir (opening the other size): " .. self:getAttribute(prefix .. "door_dir"), LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents:checkKeyDoor")
+						console:print("Unknown door dir (opening the other size): " .. self:getAttribute(prefix .. "door_dir"), LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents:checkKeyDoor")
 					end
 					
 					if self:getAttribute(prefix .. "key") then
@@ -450,6 +464,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					)
 				end
 				
+				stateManager:popState()
 				stateManager:popState()
 			elseif self:getAttribute(prefix .. "door") then
 				stateManager:pushState("door")
@@ -502,7 +517,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			
 			stateManager:popState()
 			
-			if self:getAttribute("exit") and (self:getAttribute("exit_dir") == self:getAttribute(prefix .. "door_dir")) then
+			if exit_pushed then
 				stateManager:popState()
 			end
 		end
@@ -516,7 +531,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					dictionary:translate(stateManager:getStatesStack(), "exit")
 				)
 				
-				return EventParsingReturnExited(false, objects)
+				return EventParsingResultExited(false, objects)
 			end
 		end
 		
@@ -529,13 +544,17 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		if self:getAttribute("exit")
 		 and (self:getAttribute("door_dir") ~= self:getAttribute("exit_dir") or not self:getAttribute("door"))
 		 and (self:getAttribute("reddoor_dir") ~= self:getAttribute("exit_dir") or not self:getAttribute("reddoor")) then
-			dictionary:setAlternative(stateManager:getStatesStack(), "exit", "opened")
+			if self:getAttribute("exit")
+			 and (self:getAttribute("door_dir") ~= self:getAttribute("exit_dir"))
+			 and (self:getAttribute("reddoor_dir") ~= self:getAttribute("exit_dir")) then
+				dictionary:setAlternative(stateManager:getStatesStack(), "exit", "opened")
+				
+				console:printLore(
+					dictionary:translate(stateManager:getStatesStack(), "exit")
+				)
+			end
 			
-			console:printLore(
-				dictionary:translate(stateManager:getStatesStack(), "exit")
-			)
-			
-			return EventParsingReturnExited(false, objects)
+			return EventParsingResultExited(false, objects)
 		end
 		
 		if self:getAttribute("sword") then
@@ -639,9 +658,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			stateManager:pushState("graveyard")
 			
 			console:printLore(
-				dictionary:translate(stateManager:getStatesStack(), "lore",
-					dictionary:translate(stateManager:getStatesStack(), prefix .. "key")
-				) .. dictionary:translate(stateManager:getStatesStack(), "confirm")
+				dictionary:translate(stateManager:getStatesStack(), "lore") .. dictionary:translate(stateManager:getStatesStack(), "confirm")
 			)
 			
 			local returned = console:read()
@@ -658,13 +675,13 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				local dir = self:getAttribute("grave_dir")
 				if not dir then dir = "left" end
 				
-				return EventParsingReturnRoomChanged(dir, objects)
+				return EventParsingResultRoomChanging(dir, objects)
 			else
 				console:printLore(
 					dictionary:translate(stateManager:getStatesStack(), "cancel")
 				)
 				
-				return EventParsingReturnRoomRetore(objects)
+				return EventParsingResultRoomRestore(objects)
 			end
 			
 			stateManager:popState()

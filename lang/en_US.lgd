@@ -89,7 +89,7 @@ ig.trap.kill = You fell into a trap. A spiky one. You can confirm: spike hurts.%
 ig.exit:open = The exit is a simple opened door with "EXIT" written on top of it. You feel so disappointed that you almost turned back.%l
 ig.exit:opened = 
 
-ig.keydoors.exit.locked = You see the exit %s. You can't open it.
+ig.keydoors.exit.locked = You see the exit %s. It is locked. You can't open it.%l
 
 ig.keydoors.exit.group.kd.dynamic.openable = You see the exit, a standard door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
 ig.keydoors.exit.group.kd.inventory.openable = You see the exit, a standard door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
@@ -142,7 +142,7 @@ ig.near.redkey:false =
 ig.near.monster:true = A terrifying scream chills you to death, but it was too loud to be localizable.%l
 ig.near.monster:false = 
 
-ig.near.exit:seeable = You see a green light of the same color as the exit signs. You even hear a far thunderstorm! The exit is near...%l
+ig.near.exit:visible = You see a green light of the same color as the exit signs. You even hear a far thunderstorm! The exit is near...%l
 ig.near.exit:hearable = When you try to listen, you detect a thundrstorm. The exit is near, but behind a wall...%l
 ig.near.exit:far = You feel like there's something missing here...%l
 

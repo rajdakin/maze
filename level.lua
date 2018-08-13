@@ -32,10 +32,13 @@ local Level = class(function(self, level_datas, level_config, obs3)
 		local init = self:initialize()
 		self.initialize_status = {success = init.success, obsolete = true, opt = init}
 	else
-		if level_datas["level_array_version"] == 1 then
+		self.__array_version = level_datas["level_array_version"]
+		
+		if self.__array_version == 1 then
 			self.__column_count = level_datas["column_count"]
 			self.__old_room = level_datas["starting_room"]
 			self.__room_number = level_datas["starting_room"]
+			
 			self.__lores = level_datas["lores"]
 			self.__lore_begin = self.__lores[1]
 			
@@ -55,6 +58,11 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			self.__level_configuration = level_datas["level_conf"]
 			if self.__level_configuration then console:print("Using custom level configuration.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
 			else self.__level_configuration = level_config end
+			
+			self.__map_reveal = level_datas["map_reveal"]
+			self.__win_level = level_datas["win_level"]
+			if not self.__map_reveal then self.__map_reveal = function(dead, objects) return not dead end
+			if not self.__win_level  then self.__win_level  = function(      objects) return true     end
 			
 			local init = self:initialize()
 			self.initialize_status = {success = init.success, obsolete = false, opt = init}
@@ -118,10 +126,13 @@ function Level:printBeginingLore()
 	if self.__lore_begin and self.__lore_begin ~= "" then console:printLore(self.__lore_begin) console:printLore("\n") end
 end
 
-function Level:printEndingLore(death, sword)
+function Level:printEndingLore(death, objects)
 	if self.__lore_end[death] and self.__lore_end[death] ~= "" then console:printLore(self.__lore_end[death]) console:printLore("\n") end
-	-- Todo: use level's map reveal function
-	self:setAllRoomsSeenStatusAs(not death)
+	
+	if self.__map_reveal(death, objects) then
+		self:setAllRoomsSeenStatusAs(true)
+	end
+	return self.__win_level(death, objects)
 end
 
 function Level:reverseMap(objects)
@@ -282,8 +293,8 @@ function LevelManager:initializeLevels()
 	        "You arrived in a room. You don't know how you got here, or how to escape, neither where you are.\nYou can however move, and you feels you have a huge carrying capacity, like the one from video game's character.\nWhat do you do?",
 	        "After a long corridor, you found the map of the labyrinth you escaped. You continued to walk, but then you heard a \27[3mclick!\27[00m and you felt into the darkness...\n...Wait, not really...\n...Yeah, you just felt into an other maze."
 		},
-		["map_reveal"] = function(dead, objects)       return not dead  end, -- Not yet implemented
-		["win_level"]  = function(dead, objects)       return not dead  end, -- Not yet implemented
+		["map_reveal"] =       function(dead, objects) return not dead  end,
+		["win_level"]  =       function(      objects) return true      end,
 		["alternative_lore"] = function(dead, objects) return "default" end  -- Not yet implemented, array version 2
 	})
 	self:addLevel({["level_array_version"] = 1,

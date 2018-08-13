@@ -52,7 +52,7 @@ EventParsingResultRoomChanging = class(function(self, new_room_position, objects
 end, EventParsingResult)
 EventParsingResultRoomRestore = class(function(self, objects)
 	EventParsingResult.__init(self, 3, false, objects)
-end, EventParsingResult)
+end, EventParsingResultRoomChanging)
 
 
 RoomPrintingResult = class(function(self, id)

@@ -35,7 +35,7 @@ ig.help = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use 
 
 ig.move.fail = BOOMM!!%l
 ig.move.up = Moving up%l
-ig.move.dowm = Moving down%l
+ig.move.down = Moving down%l
 ig.move.left = Moving left%l
 ig.move.right = Moving right%l
 
@@ -47,12 +47,12 @@ ig.right = at your right
 ig.start = 
 
 ig.levels.lores.start.lore = 
-ig.levels.lores.end.death:default =  You DIE. Maybe next time you'll survive?%l
-ig.levels.lores.end.victory:default =  You WIN! Congratulations!%l
+ig.levels.lores.end.death:default = You DIE. Maybe next time you'll survive?%l
+ig.levels.lores.end.victory:default = You WIN! Congratulations!%l
 
-ig.levels.lores.start.1.lore = Hi
-ig.levels.lores.end,1.death:default = Hi
-ig.levels.lores.end.1.victory:default = Hi
+ig.levels.lores.start.starter.lore = You arrived in a room. You don't know how you got here, or how to escape, neither where you are.%lYou can however move, and you feel you have a huge carrying capacity, like the one from video game's character.%lWhat do you do?%l
+ig.levels.lores.end.starter.death:default = You DIE. Maybe next time you'll survive?%l
+ig.levels.lores.end.starter.victory:default = After a long corridor, you found the map of the labyrinth you escaped. You continued to walk, but then you heard a %c03mclick!%r and you felt into the darkness...%l...Wait, not really...%l...Yeah, you just felt into an other maze.%l
 
 ig.key:false = You don't have any key.
 ig.key:true = You do have a %c45;01;32mkey%r.
@@ -65,9 +65,9 @@ ig.map.key = You have a %c45;01;32mkey%r.%l
 ig.map.redkey = You have a %c46;01;31mred key...?%r.%l
 ig.map.sword = You have a %c01;39;40;07msword%r.%l
 
-ig.valiate =  ('Y' or 'y' to say yes, otherwise no): 
+ig.confirm =  ('Y' or 'y' to say yes, otherwise no): 
 
-ig.monster.room_sword.lore = In this room, there is a sword... and a MONSTER?!?
+ig.monster.room_sword.lore = In this room, there is a sword... and a MONSTER?!?%l
 
 ig.monster.room_sword.reach.lore = In a hurry, you rush to the sword. Do you want to take it? You don't have any.
 ig.monster.room_sword.reach.grabbed = You "read" the book, and you grab these words: "sword", "monster", "one max" and "disintegrate". After that you take the sword and kill the monster. The sword remains in the monster's body which disintegrates.%lYou now have no sword.%l
@@ -141,5 +141,22 @@ ig.near.monster:true = A terrifying scream chills you to death, but it was too l
 ig.near.monster:false = 
 
 ig.near.exit:seeable = You see a green light of the same color as the exit signs. You even hear a far thunderstorm! The exit is near...
-ig.near.exit:hearable = When you try to listen, youdetect a thundrstorm. The exit is near, but behind a wall...
-ig.near.exit:far = 
+ig.near.exit:hearable = When you try to listen, you detect a thundrstorm. The exit is near, but behind a wall...
+ig.near.exit:far = You feel like there's something missing here...%l
+
+ig.graveyard.lore = You arrive in a room. A special one. With dirt. And graves. One is open. Do you want to go in it?
+ig.graveyard.go = You decided to run in the stairs in that grave.%l
+ig.graveyard.cancel = You decided to turn back and ignore the call of that opening.%l
+
+ig.moving.grave.normal = You arrive in a grave, that you can exit. That's what you're doing.
+ig.moving.grave.deadly.unknown = You arrive in a grave, and there is nothing... but... an open exit door... (You were apparently supposed to have a "%s" to exit, but that's not yet implemented.)%l
+ig.moving.grave.deadly.locked = You arrive in a grave, that has a locked door.%lYou die.%l
+ig.moving.grave.deadly.dynamic = You arrive in a grave, that has a locked door.%lYou open it with the key lying on the floor.%l
+ig.moving.grave.deadly.inventory = You arrive in a grave, that has a locked door.%lYou open it with your key.%l
+
+ig.moving.grave.deadly.key.locked = You arrive in a grave, that has a locked normal door.%lYou can open it with the key that you saw a few rooms ago...%lNo?%l
+ig.moving.grave.deadly.key.dynamic = You arrive in a grave, that has a locked normal door.%lYou can open it with the key lying on the floor. At the prize of destroying a..%lboneful... sculpture?%l
+ig.moving.grave.deadly.key.inventory = You arrive in a grave, that has a locked normal door.%lYou can open it with your key. At the prize of loosing it forever.%l
+ig.moving.grave.deadly.redkey.locked = You arrive in a grave, that has a locked satanistic door.%lBeing satanistic, it will keep you trapped forever and beyond.%l
+ig.moving.grave.deadly.redkey.dynamic = You arrive in a grave, that has a locked horrible door.%lYou can open it with the key lying on the floor. At the prize of destroying a..%lsoulful... sculpture?
+ig.moving.grave.deadly.redkey.inventory = You arrive in a grave, that has a locked (and almost fascinating because it is unbelievably creepy) door.%lYou can open it with your key.%lAt the prize of loosing it forever. (Which is good.)%l

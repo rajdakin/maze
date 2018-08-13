@@ -37,7 +37,7 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 		if nwsline and nwsline ~= "" and nwsline:sub(1, comment.len) ~= comment.str then
 			if nwsline:find("=") then
 				-- Line is an ID -> text instruction
-				local text_id, text = nwsline:gsub("=.*", ""), nwsline:gsub(".-=", "")
+				local text_id, text = nwsline:gsub("=.*", ""), nwsline:gsub(".-= ?", "")
 				
 				local err = false
 				
@@ -130,53 +130,53 @@ function Lang:translate(state, str, ...)
 				local value = dicts[pos][str]
 				
 				if type(value) == "string" then
-					return dicts[pos][str]
+					return value
 				elseif (type(value) == "table") and value[" active"] then
 					return value[" active"]
+				elseif (type(value) == "table") then
 				end
 			end
 		end
 		
 		if self.__fallback then
-			self.__dict[str] = {[" active"] = self.__fallback:translate(state, str), [" default"] =	"nil"}
-			if not self.__alt_dicts[str] then self.__alt_dicts[str] = self.__dict[str] end
-			return self.__dict[str][" active"]
+			self.__dict[str] = self.__fallback:translate(state, str)
 		else
-			self.__dict[str] = str
-			return self.__dict[str]
+			local strtmp = "" for k, v in pairs(state) do strtmp = strtmp .. v .. "." end
+			self.__dict[str] = strtmp .. str .. "\n"
 		end
+		return self.__dict[str]
 	end
 	
 	local str = pure()
 	
 	local args, argp = {...}, 1
 	while str:find("%%[^%%]") and args[argp] do
-		local typ = str:gsub(".-(%%[^%%]).*", "%1")
+		local typ = str:gsub(".-%%([^%%]).*", "%1")
 		
 		if typ == "s" then                                      -- The pure string
-			str = str:gsub("%%s", args[argp])
+			str = str:gsub("%%s", args[argp], 1)
 		elseif typ == "b" then                                  -- 1 or 0
 			if args[argp] then
-				str = str:gsub("%%b", "1")
+				str = str:gsub("%%b", "1", 1)
 			else
-				str = str:gsub("%%b", "0")
+				str = str:gsub("%%b", "0", 1)
 			end
 		elseif typ == "y" then                                  -- yes or no
 			if args[argp] then
-				str = str:gsub("%%y", "yes")
+				str = str:gsub("%%y", "yes", 1)
 			else
-				str = str:gsub("%%y", "no")
+				str = str:gsub("%%y", "no", 1)
 			end
 		elseif typ == "n" then                                  -- A number or ?
 			if type(args[argp]) == "number" then
-				str = str:gsub("%%n", tostring(args[argp]))
+				str = str:gsub("%%n", tostring(args[argp]), 1)
 			elseif tonumber(args[argp]) then
-				str = str:gsub("%%n", args[argp])
+				str = str:gsub("%%n", args[argp], 1)
 			else
-				str = str:gsub("%%n", "?")
+				str = str:gsub("%%n", "?", 1)
 			end
 		else
-			console:print("Unknown replacement type: " .. type .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:translate")
+			console:print("Unknown replacement type: " .. typ .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:translate")
 			str = str:gsub("%%(.)", "%1", 1)
 		end
 		
@@ -217,15 +217,20 @@ function Lang:resetAlternative(alt)
 end
 
 function Lang:setAlternative(state, str, newUnlocalized)
-	if not self.__altdicts[str] then return self.__fallback:setAlternative(state, str, newUnlocalized) end
+	local statestr = "" for k, v in pairs(state) do statestr = statestr .. v .. "." end
+	
+	if not self.__alt_dicts[str] then
+		if self.__fallback then return self.__fallback:setAlternative(state, str, newUnlocalized)
+		else return false end
+	end
 	
 	if self.__alt_dicts[str][" actid"] == newUnlocalized then
 		return true
-	elseif self.__alt_dicts[str][newUnlocalized] then
-		self.__alt_dicts[str][" active"] = self.__alt_dicts[str][newUnlocalized]
-		self.__alt_dicts[str][" actid"] = newUnlocalized
+	--elseif self.__alt_dicts[str][newUnlocalized] then
+	--	self.__alt_dicts[str][" active"] = self.__alt_dicts[str][newUnlocalized]
+	--	self.__alt_dicts[str][" actid"] = newUnlocalized
 	end
-
+	
 	local dicts = {self.__dict}
 	
 	local max_pos = 1
@@ -240,12 +245,17 @@ function Lang:setAlternative(state, str, newUnlocalized)
 	for pos = max_pos, 1, -1 do
 		if dicts[pos][str] then
 			if type(dicts[pos][str]) == "table" then
-				dicts[pos][str][" active"] = dicts[pos][str][newUnlocalized]
-				dicts[pos][str][" actid"] = newUnlocalized
-				
-				if dicts[pos][str][" active"] then return true end
+				if dicts[pos][str][newUnlocalized] then
+					dicts[pos][str][" active"] = dicts[pos][str][newUnlocalized]
+					dicts[pos][str][" actid"] = newUnlocalized
+					
+					return true
+				else
+					console:print("Trying to set alternative while not having the alternative (" .. self.__lang_id .. "/" .. statestr .. str .. ":" .. newUnlocalized .. ")\n", LogLevel.INFO, "dictionary.lua/Lang:setAlternative")
+					return 0
+				end
 			else
-				console:print("Trying to set alternative while being a string (" .. str .. ")\n", LogLevel.WARNING_DEV, "dictionary.lua/Lang:setAlternative")
+				console:print("Trying to set alternative while being a string (" .. statestr .. str .. ")\n", LogLevel.WARNING_DEV, "dictionary.lua/Lang:setAlternative")
 			end
 		end
 	end
@@ -270,7 +280,7 @@ end)
 function Dictionary:setActiveLang(lang)    self.__active_lang = lang end
 function Dictionary:getActiveLang() return self.__active_lang end
 
-function Dictionary:translate(state, str) return self.__langs[self.__active_lang]:translate(state, str) end
+function Dictionary:translate(state, str, ...) return self.__langs[self.__active_lang]:translate(state, str, ...) end
 
 function Dictionary:resetAlternatives()
 	for k, lang in pairs(self.__langs) do

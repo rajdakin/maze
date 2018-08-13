@@ -13,14 +13,7 @@ directions["down"] = "d"
 directions["left"] = "l"
 directions["right"] = "r"
 
-cardinals = {}
-cardinals["up"] = "north"
-cardinals["down"] = "south"
-cardinals["left"] = "east"
-cardinals["right"] = "west"
-
 objects = {}
-
 objects["sword"] = false
 objects["key"] = false
 objects["redkey"] = false
@@ -34,7 +27,18 @@ end
 resetMaze()
 
 function main()
+	stateManager:pushMainState("ig")
+	
 	game_ended = false
+	
+	dictionary:resetAlternatives()
+	--[[dictionary:setAlternative({"ig"}, "sword", "false")
+	dictionary:setAlternative({"ig"}, "key", "false")
+	dictionary:setAlternative({"ig"}, "redkey", "false")
+	dictionary:setAlternative({"ig", "sword"}, "take", "false")
+	dictionary:setAlternative({"ig", "keydoors", "group", "key"}, "take", "false")
+	dictionary:setAlternative({"ig", "keydoors", "redgroup", "key"}, "take", "false")]]
+	
 	objects["sword"] = false
 	objects["key"] = false
 	objects["redkey"] = false
@@ -50,7 +54,7 @@ function main()
 			return "Internal error: " .. "[Level printing] " .. ret.reason.reason
 		end
 		
-		console:printLore('"' .. directions["up"] .. '", "' .. directions["down"] .. '", "' .. directions["left"] .. '", "' .. directions["right"] .. '" (directions), "wait" (if you want to act with what is in the same room as you), "exit" or "map" : ')
+		console:printLore(dictionary:translate(stateManager:getStatesStack(), "prompt"))
 		local returned = console:read()
 		local success, eos, movement = returned.success, returned.eos, returned.returned
 		if not success then
@@ -67,39 +71,51 @@ function main()
 		
 		levelManager:getActiveLevel():reverseMap(objects)
 		
-		if (movement == "") then
+		if (movement == "") or (movement == "h") or (movement == "help") then
+			console:printLore(
+				dictionary:translate(stateManager:getStatesStack(), "help",
+					directions["up"], directions["down"], directions["left"], directions["right"], dictionary:translate({"mm"}, "eqc"))
+			)
 		elseif (movement == directions["up"]) or (movement == '\27[A') then
 			-- go up!
+			stateManager:pushState("move")
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("up") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() - levelManager:getActiveLevel():getColumnCount())
-				console:printLore("Moving up\n")
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "up"))
 			else
-				console:printLore("BOOMM !!\n")
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "fail"))
 			end
+			stateManager:popState()
 		elseif (movement == directions["down"]) or (movement == '\27[B') then
 			-- go down!
+			stateManager:pushState("move")
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("down") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() + levelManager:getActiveLevel():getColumnCount())
-				console:printLore("Moving down\n")
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "down"))
 			else
-				console:printLore("BOOMM !!\n")
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "fail"))
 			end
+			stateManager:popState()
 		elseif (movement == directions["left"]) or (movement == '\27[D') then
 			-- go left!
+			stateManager:pushState("move")
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("left") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() - 1)
-				console:printLore("Moving left\n")
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "left"))
 			else
-				console:printLore("BOOMM !!\n")
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "fail"))
 			end
+			stateManager:popState()
 		elseif (movement == directions["right"]) or (movement == '\27[C') then
 			-- go right!
+			stateManager:pushState("move")
 			if levelManager:getActiveLevel():getActiveRoom():hasAccess("right") then
 				levelManager:getActiveLevel():setRoom(levelManager:getActiveLevel():getRoomNumber() + 1)
-				console:printLore("Moving right\n")
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "right"))
 			else
-				console:printLore("BOOMM !!\n")
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "fail"))
 			end
+			stateManager:popState()
 		elseif (movement == "w?") or (movement == "w ") or (movement == "m") or (movement == "map") then
 			-- print the map
 			ret = levelManager:getActiveLevel():printLevelMap(game_ended, objects, true)
@@ -116,7 +132,8 @@ function main()
 			console:print("Unknown command: " .. movement .. "\n", LogLevel.ERROR, "maze.lua/main")
 		end
 		if not ((movement == "w ?") or (movement == "w ") or (movement == "m") or (movement == "map")
-		     or (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit") or (movement == "")) then
+		     or (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit") or (movement == "") or (movement == "h")
+		     or (movement == "help")) then
 			local ret = levelManager:getActiveLevel():checkLevelEvents(game_ended, objects)
 			game_ended = ret.ended
 			objects = ret.objects
@@ -133,7 +150,7 @@ function main()
 			end
 		end
 	end
-	levelManager:getActiveLevel():printEndingLore(dead, objects["sword"])
+	levelManager:getActiveLevel():printEndingLore(dead, objects)
 	console:printLore("The end!")
 	sleep(1) console:printLore("\8.")
 	sleep(1) console:printLore(".")
@@ -143,6 +160,7 @@ function main()
 	return "(Yes, it is)"
 end
 
+console:printLore("Write 'h'<Enter> to get the help at any time.\n")
 console:printLore(main() .. "\n")
 console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")
 console:printLore("resetMaze()\n")

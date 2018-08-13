@@ -62,5 +62,25 @@ ig.sword.take:true = You take the sword.%l
 ig.sword.take:false = While trying to grab your second sword, you loose both.%l
 ig.sword.leave = You decide to leave the sword.%l
 
+ig.near.key:true = A reflect questions you, but you can't tell where does it comes from.%l
+ig.near.key:false = 
+
 ig.near.redkey:true = A red reflect questions you, but you can't tell where does it comes from.%l
 ig.near.redkey:false = 
+
+ig.near.exit:seeable = You see a green light of the same color as the exit signs. You even hear a far thunderstorm! The exit is near...
+ig.near.exit:hearable = When you try to listen, you detect a thundrstorm. The exit is near, but behind a wall...
+ig.near.exit:far = You feel like there's something missing here...%l
+
+ig.graveyard.lore = You arrive in a room with an open grave. Do you want to go in it?
+ig.graveyard.go = You decided to go in that grave.%l
+ig.graveyard.cancel = You decided to turn back.%l
+
+ig.moving.grave.deadly.unknown = You arrive in a grave, and there is an open exit door. (You were apparently supposed to have a "%s" to exit, but that's not yet implemented.)%l
+
+ig.moving.grave.deadly.key.locked = You arrive in a grave, that has a locked normal door.%lYou could've open it with a standard key, but you don't have any, nor there is in this room.%lYou are trapped.%l
+ig.moving.grave.deadly.key.dynamic = You arrive in a grave, that has a locked normal door.%lYou can open it with the key lying on the floor.%l
+ig.moving.grave.deadly.key.inventory = You arrive in a grave, that has a locked normal door.%lYou can open it with your key, but you will loose it.%l
+ig.moving.grave.deadly.redkey.locked = You arrive in a grave, that has a locked red door.%lYou could've open it with a red key, but you don't have any, nor there is in this room.%lYou are trapped.%l
+ig.moving.grave.deadly.redkey.dynamic = You arrive in a grave, that has a locked red door.%lYou can open it with the red key lying on the floor.%l
+ig.moving.grave.deadly.redkey.inventory = You arrive in a grave, that has a locked red door.%lYou can open it with your red key, but you will loose it.%l

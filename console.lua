@@ -23,6 +23,8 @@ local OutputMode = enum(function(self, name, ...)
 end, OutputModeClass,
 {SOUT  = {true,  true,  true }, -- Slow standard OUTput
  FOUT  = {true,  true,  false}, -- Fast standard OUTput
+ SNOU  = {false, true,  true }, -- Slow (Non-auto) standard OUTput
+ FNOU  = {false, true,  false}, -- Fast (Non-auto) standard OUTput
  SERR  = {false, false, true }, -- Slow standard ERRor output
  FERR  = {false, false, false}, -- Fast standard ERRor output
  FATAL = {true,  false, false}} -- FATAL error output
@@ -54,8 +56,8 @@ end, LogLevelClass,
  ERROR       = {"Error",             1, function(config) return true                     end, function(args)                             return OutputMode.FERR                                 end},
  WARNING     = {"Warning",           2, function(config) return true                     end, function(args)                             return OutputMode.FERR                                 end},
  WARNING_DEV = {"Developer warning", 2, function(config) return config:isDeveloperMode() end, function(args)                             return OutputMode.FERR                                 end},
- INFO        = {"Info",              3, function(config) return true                     end, function(args) if (args[2] == "fast") then return OutputMode.FOUT else return OutputMode.SOUT end end},
- LOG         = {"Log",               4, function(config) return true                     end, function(args)                             return OutputMode.FOUT                                 end}}
+ INFO        = {"Info",              3, function(config) return true                     end, function(args) if (args[2] == "fast") then return OutputMode.FNOU else return OutputMode.SNOU end end},
+ LOG         = {"Log",               4, function(config) return true                     end, function(args)                             return OutputMode.FNOU                                end}}
 )
 
 local Log = class(function(self, config)

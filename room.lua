@@ -437,12 +437,16 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					
 					if self:getAttribute(prefix .. "door_dir") == "up" then
 						up:setAttribute(prefix .. "door", false)
+						up:setAttribute(prefix .. "door_dir", "down")
 					elseif self:getAttribute(prefix .. "door_dir") == "down" then
 						down:setAttribute(prefix .. "door", false)
+						down:setAttribute(prefix .. "door_dir", "up")
 					elseif self:getAttribute(prefix .. "door_dir") == "left" then
 						left:setAttribute(prefix .. "door", false)
+						left:setAttribute(prefix .. "door_dir", "right")
 					elseif self:getAttribute(prefix .. "door_dir") == "right" then
 						right:setAttribute(prefix .. "door", false)
+						right:setAttribute(prefix .. "door_dir", "left")
 					else
 						console:print("Unknown door dir (opening the other size): " .. self:getAttribute(prefix .. "door_dir"), LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents:checkKeyDoor")
 					end

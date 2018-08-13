@@ -15,16 +15,12 @@ local roommodule = require(import_prefix .. "room")
 local Level = class(function(self, level_datas, level_config, obs3)
 	if type(level_datas) == "number" then
 		self.__column_count = level_config
-		self.__old_room = level_datas
-		self.__room_number = level_datas
+		self.__starting_room = level_datas
+		self.__starting_rooms_datas = obs3
+		
 		self.__lores = {"", ""}
 		self.__lore_begin = ""
 		self.__lore_end   = {[false] = "", [true] = "You DIED..."}
-		
-		self.__rooms = {}
-		for i = 1 - level_config, getArrayLength(obs3) - level_config do
-			self.__rooms[i] = Room(obs3[i])
-		end
 		
 		self.__level_configuration = currentConfig:getLevelManagerConfig():getLevelConfig()
 		
@@ -37,9 +33,8 @@ local Level = class(function(self, level_datas, level_config, obs3)
 		
 		if self.__array_version == 1 then
 			self.__column_count = level_datas["column_count"]
-			self.__old_room = level_datas["starting_room"]
-			self.__room_number = level_datas["starting_room"]
 			self.__starting_room = level_datas["starting_room"]
+			self.__starting_rooms_datas = level_datas["rooms_datas"]
 			
 			self.__lores = level_datas["lores"]
 			self.__lore_begin = self.__lores[1]
@@ -51,11 +46,6 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			elseif self.lores[2][false] then
 				if self.__lores[2][true] then self.__lore_end = {[false] = self.__lores[2][false], [true] = self.__lores[2][true]} else self.__lore_end = {[false] = self.__lores[2][false], [true] = generic_death} end
 			else self.__lore_end = {[false] = "", [true] = generic_death} end
-			
-			self.__rooms = {}
-			for i = 1 - self.__column_count, getArrayLength(level_datas["rooms_datas"]) - self.__column_count do
-				self.__rooms[i] = Room(level_datas["rooms_datas"][i])
-			end
 			
 			self.__level_configuration = level_datas["level_conf"]
 			if self.__level_configuration then console:print("Using custom level configuration.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
@@ -70,16 +60,10 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			self.initialize_status = {success = init.success, obsolete = false, old = true, opt = init}
 		elseif self.__array_version == 2 then
 			self.__column_count = level_datas["column_count"]
-			self.__old_room = level_datas["starting_room"]
-			self.__room_number = level_datas["starting_room"]
 			self.__starting_room = level_datas["starting_room"]
+			self.__starting_rooms_datas = level_datas["rooms_datas"]
 			
 			self.__level_id = level_datas["__id"]
-			
-			self.__rooms = {}
-			for i = 1 - self.__column_count, getArrayLength(level_datas["rooms_datas"]) - self.__column_count do
-				self.__rooms[i] = Room(level_datas["rooms_datas"][i])
-			end
 			
 			self.__level_configuration = level_datas["level_conf"]
 			if self.__level_configuration then console:print("Using custom level configuration.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
@@ -120,7 +104,6 @@ function Level:setRoomAttribute(room, attributeName, value) self:getRoom(room):s
 function Level:getRoomNumber() return self.__room_number end
 function Level:setRoom(room) self.__old_room = self.__room_number; self.__room_number = room end
 function Level:restoreRoom() self.__room_number = self.__old_room end
-function Level:restoreStart() self.__room_number = self.__starting_room end
 
 function Level:getRooms() return self.__rooms end
 function Level:getActiveRoom()  return self:getRooms()[self:getRoomNumber()] end
@@ -137,13 +120,25 @@ function Level:setAllRoomsSeenStatusAs(seen)
 	end
 end
 
+function Level:resetRoomsDatas()
+	self.__rooms = {}
+	for i = 1 - self.__column_count, getArrayLength(self.__starting_rooms_datas) - self.__column_count do
+		local room_datas = {} for k, v in pairs(self.__starting_rooms_datas[i]) do room_datas[k] = v end
+		self.__rooms[i] = Room(room_datas)
+	end
+end
+
 function Level:initialize()
 	local roomInit
 	
+	self.__old_room = self.__starting_room
+	self.__room_number = self.__starting_room
+	self:resetRoomsDatas()
+	
 	for k, v in pairs(self:getRooms()) do
 		roomInit = true
-		roomInit = roomInit and v:initialize() if not roomInit then console:print("Error during room initialization", LogLevel.ERROR, "level.lua/Level:initialize") end
-		roomInit = roomInit and v:setUnreachable() if not roomInit then console:print("Error during room 'unreachablization'", LogLevel.ERROR, "level.lua/Level:initialize") end
+		roomInit = roomInit and v:initialize() if not roomInit then console:print("Error during room initialization\n", LogLevel.ERROR, "level.lua/Level:initialize") return {success = false, details = "room:initialize"} end
+		roomInit = roomInit and v:setUnreachable() if not roomInit then console:print("Error during room 'unreachablization'\n", LogLevel.ERROR, "level.lua/Level:initialize") return {success = false, details = "room:setUnreachable"} end
 		
 		if not roomInit then return {success = false} end
 	end

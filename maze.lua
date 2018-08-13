@@ -28,10 +28,12 @@ resetMaze()
 
 function main()
 	while levelManager:getActiveLevel() do
-		levelManager:getActiveLevel():restoreStart()
+		levelManager:getActiveLevel():initialize()
+		resetMaze()
 		stateManager:pushMainState("ig")
 		
 		game_ended = false
+		dead = false
 		
 		dictionary:resetAlternatives()
 		--[[dictionary:setAlternative({"ig"}, "sword", "false")
@@ -123,12 +125,14 @@ function main()
 				-- print the map
 				ret = levelManager:getActiveLevel():printLevelMap(game_ended, objects, true)
 				if ret:iskind(LevelPrintingErrored) then
-					console:printLore("\n")
+					console:printLore("\27[00m\n")
 					return "Internal error: " .. "[Level printing] " .. ret.reason.reason
 				end
 			elseif (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit") then
 				game_ended = true
 				dead = true
+				
+				return "Exit."
 			elseif (movement == "w") or (movement == "wait") then
 				console:printLore("Waiting...\n")
 			else
@@ -145,12 +149,9 @@ function main()
 					print()
 					return "Ended because of: " .. ret.reason
 				elseif ret:iskind(EventParsingResultExited) then
-					resetMaze()
 					dead = ret.dead
-					if not dead then
-						levelManager:getActiveLevel():setAllRoomsSeenStatusAs(true)
-					end
 				end
+				if dead then resetMaze() end
 			end
 		end
 		local doNextLevel = levelManager:getActiveLevel():printEndingLore(dead, objects)
@@ -164,6 +165,8 @@ function main()
 		if doNextLevel then levelManager:setLevelNumber(levelManager:getLevelNumber() + 1) sleep(1)
 		-- else break
 		end
+		
+		stateManager:popMainState()
 	end
 	return "\8\8\8\8\8\8\8\8\8\8(Yes, it is)"
 end

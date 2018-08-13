@@ -1,0 +1,145 @@
+# English (America)
+
+# General purpose strings
+ok = OK
+cancel = Cancel
+
+# Main Menu strings
+mm.reset = Reset
+mm.play = Play
+mm.options = Options
+mm.profiles = Profiles
+# exit/quit/close debate...
+ mm.eqc:exit = Exit
+ mm.eqc:quit = Quit
+ mm.eqc:close = Close
+ mm.eqc:term = Terminate
+ mm.eqc:kill = Kill
+
+mm.eqcmenu.confirm = Do you really want to quit? :(
+mm.eqcmenu.yes = Yeah, gemme outa here!
+mm.eqcmenu.no = Nah, it's OK...
+
+# Options strings
+opt.advanced = Advanced options
+opt.not_exit = I don't like %s!
+
+opt.adv.vlength = How many lines vertically? (%n)
+opt.adv.dev = Developer mode: %y
+opt.adv.loglv = Logging level: %n
+
+# In-game string
+ig.prompt = Command: 
+
+ig.help = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%s: "exit"%lThis help: "help"%lPrint the full map: "map"%l%lYou can always write the first letter only.%l
+
+ig.move.fail = BOOMM!!%l
+ig.move.up = Moving up%l
+ig.move.dowm = Moving down%l
+ig.move.left = Moving left%l
+ig.move.right = Moving right%l
+
+ig.nil = %c3mliterally nowhere%r
+ig.up = in front of you
+ig.down = behind you
+ig.left = at your left
+ig.right = at your right
+ig.start = 
+
+ig.levels.lores.start.lore = 
+ig.levels.lores.end.death:default =  You DIE. Maybe next time you'll survive?%l
+ig.levels.lores.end.victory:default =  You WIN! Congratulations!%l
+
+ig.levels.lores.start.1.lore = Hi
+ig.levels.lores.end,1.death:default = Hi
+ig.levels.lores.end.1.victory:default = Hi
+
+ig.key:false = You don't have any key.
+ig.key:true = You do have a %c45;01;32mkey%r.
+ig.redkey:false = You don't have any red key...?
+ig.redkey:true = You do have a %c46;01;31mred key...?%r.
+ig.sword:false = You don't have any sword.
+ig.sword:true = You do have a %c01;39;40;07msword%r.
+
+ig.map.key = You have a %c45;01;32mkey%r.%l
+ig.map.redkey = You have a %c46;01;31mred key...?%r.%l
+ig.map.sword = You have a %c01;39;40;07msword%r.%l
+
+ig.valiate =  ('Y' or 'y' to say yes, otherwise no): 
+
+ig.monster.room_sword.lore = In this room, there is a sword... and a MONSTER?!?
+
+ig.monster.room_sword.reach.lore = In a hurry, you rush to the sword. Do you want to take it? You don't have any.
+ig.monster.room_sword.reach.grabbed = You "read" the book, and you grab these words: "sword", "monster", "one max" and "disintegrate". After that you take the sword and kill the monster. The sword remains in the monster's body which disintegrates.%lYou now have no sword.%l
+ig.monster.room_sword.reach.timeout = You read the book, and... you read it too slowly, the monster kills you.%l
+ig.monster.room_sword.reach.cancel = Well... Due to... you being... a true pacifist? you refused to... spare your life.%l%lAnd so you die.%lCongratulation, I guess?%l
+
+ig.monster.room_sword.fail:fail = You failed to reach the sword.%l
+ig.monster.room_sword.fail:rock = You rush to the sword... and... you trip.%l
+ig.monster.room_sword.fail:side_stitch = You rush, and you learn that you're not a sportman because you gain a side stitch.%l
+ig.monster.room_sword.fail:frozen = You rush, and - wait, actually you can't, it terrifies you too much.%l
+ig.monster.room_sword.fail:too_slow = You rush, and you learn you're not Ulsain Bolt because you're WAAAY too slow.%lLike, you're running at .001 mph.%l
+
+ig.monster.no_sword = Before you realize what happen, a huge mass comes toward you and jumps on you.%lYou can confirm, it is heavy.%lToo heavy.%l
+ig.monster.sword = Before you realize what happen, a huge mass comes toward you and jumps on you. And on your sword that was fortunately pointing toward the sky.%lThey both disintegrates, letting you wondering what happened and where is your sword.%l
+
+ig.trap.fall = You fell into a trap. Literally. You are now elsewhere.%l
+ig.trap.kill = You fell into a trap. A spiky one. You can confirm: spike hurts.%l
+
+ig.exit:open = The exit is a simple opened door with "EXIT" written on top of it. You feel so disappointed that you almost turned back.%l
+ig.exit:opened = 
+
+ig.keydoors.exit.group.kd.dynamic.openable = You see the exit, a standard door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
+ig.keydoors.exit.group.kd.inventory.openable = You see the exit, a standard door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
+ig.keydoors.exit.group.open = The exit is a closed door that you open with your key.%l
+
+ig.keydoors.exit.redgroup.kd.dynamic.openable = You see the exit, a weird door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
+ig.keydoors.exit.redgroup.kd.inventory.openable = You see the exit, a repulsive door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
+ig.keydoors.exit.redgroup.open = The exit is a closed door that you open with your key.%l
+
+ig.keydoors.exit.keepclose = You decide to keep that only and unique exit closed.%l
+
+ig.keydoors.keepclose = You decide to keep that door closed.%l
+
+ig.keydoors.group.kd.dynamic.openable = You see a door %s. You can probably open it with the key on the floor. Do you want to lose it?
+ig.keydoors.group.kd.inventory.openable = You see a door %s. You can probably open it with your key. Do you want to lose it?
+ig.keydoors.group.kd.open = You use your key to open the door %s. Due to your wonderful talent of breaking in %c02;03;31mirony detected%r, the key remains stuck in the locker, but at least the door opens. You don't have that key anymore.%l
+
+ig.keydoors.group.door.locked = You see a locked door %s.%l
+
+ig.keydoors.group.key.lore = You see a key lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other normal key (what does that even means?) (%s), and it is single-use (why is that?). Do you want to take it?
+ig.keydoors.group.key.take:true = You took the key. Nothing happens.%l
+ig.keydoors.group.key.take:false = You took the key. Both key explodes.%l
+ig.keydoors.group.key.leave = You leave the key. Nothing happens.%l
+
+ig.keydoors.redgroup.kd.dynamic.openable = You see a door you don't want to approach %s. You can probably open it with the... red key? on the floor. Do you want to use it? (I think you do.)
+ig.keydoors.redgroup.kd.inventory.openable = You see a door you don't want to approach %s. You can probably open it with your... red key? Do you want to lose it? (I think you do.)
+ig.keydoors.redgroup.kd.open = You decide to get rid of that bloody key. By approaching an even more terrifying door. You use your key to open the door %s, when the door suddenly opens by sliding upwards! The key remains stuck in the locker. You don't have any... red key? anymore.%l
+
+ig.keydoors.redgroup.door.locked = You see a terrific door %s. And not a beautiful one.%l
+
+ig.keydoors.redgroup.key.lore = You see a repulsively red key lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other hell's key (what does that even means?) (%s), and: it is single-use (why is that?). Do you want to take it?
+ig.keydoors.redgroup.key.take:true = You took the hell's key. Nothing happens.%l
+ig.keydoors.redgroup.key.take:false = You took the red key. Both key explodes.%l
+ig.keydoors.redgroup.key.leave = You leave the bloody key. Nothing happen.%l
+
+ig.sword.lore = You see a sword lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other sword (what does that even means?) (%s), and it is single-use (why is that?). Do you want to take it?
+ig.sword.take:true = You take the sword. Nothing happens.%l
+ig.sword.take:false = You take the sword. Both swords explodes.%l
+ig.sword.leave = You leave the sword. Nothing happens.%l
+
+ig.near.sword:true = You briefly see a sharpened blade in one of the mirrors of the room.%l
+ig.near.sword:false = 
+
+ig.near.key:true = You briefly see a shining, but you can't tell from where it comes.%l
+ig.near.key:false = 
+
+ig.near.redkey:true = A death promess made of light questions you, but you couldn't tell where does it comes from.%l
+ig.near.redkey:false = 
+
+ig.near.monster:true = A terrifying scream chills you to death, but it was too loud to be localizable.%l
+ig.near.monster:false = 
+
+ig.near.exit:seeable = You see a green light of the same color as the exit signs. You even hear a far thunderstorm! The exit is near...
+ig.near.exit:hearable = When you try to listen, youdetect a thundrstorm. The exit is near, but behind a wall...
+ig.near.exit:far = 

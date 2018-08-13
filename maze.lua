@@ -36,6 +36,7 @@ function main()
 		dead = false
 		
 		dictionary:resetAlternatives()
+		dictionary:setAlternative({"ig"}, "help", tostring(levelManager:getActiveLevel():getLevelConfiguration():doesDisplayFullMap()))
 		--[[dictionary:setAlternative({"ig"}, "sword", "false")
 		dictionary:setAlternative({"ig"}, "key", "false")
 		dictionary:setAlternative({"ig"}, "redkey", "false")
@@ -127,6 +128,8 @@ function main()
 				if ret:iskind(LevelPrintingErrored) then
 					console:printLore("\27[00m\n")
 					return "Internal error: " .. "[Level printing] " .. ret.reason.reason
+				elseif ret:iskind(LevelPrintingIgnored) then
+					console:printLore("\27[A")
 				end
 			elseif (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit") then
 				game_ended = true

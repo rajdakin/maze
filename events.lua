@@ -16,7 +16,7 @@ function Event:iskind(clss)
 	
 	if inst.__id then
 		if inst.__subid then return (inst.__id == self.__id) and (inst.__subid == self.__subid)
-		elseif inst.__subids then return (inst.__subids[self.__subid] ~= nil)
+		elseif inst.__subids then return (inst.__id == self.__id) and inst.__subids[self.__subid]
 		else return inst.__id == self.__id
 		end
 	end
@@ -79,19 +79,19 @@ RoomPrintingDone = class(function(self)
 end, RoomPrintingSuccess)
 
 
-LevelInitializingResult = class(function(self)
-	Event.__init(self, 2, nil)
+LevelInitializingResult = class(function(self, id)
+	Event.__init(self, 2, id)
 end, Event)
 
 levelInitializingErrorSubIDs = {}
 LevelInitializingError = class(function(self, id)
-	LevelInitializingResult.__init(self)
+	LevelInitializingResult.__init(self, id)
 	levelInitializingErrorSubIDs[id] = true
 	self.__subids = levelInitializingErrorSubIDs
 end, LevelInitializingResult)
 levelInitializingSuccessSubIDs = {}
 LevelInitializingSuccess = class(function(self, id)
-	LevelInitializingResult.__init(self)
+	LevelInitializingResult.__init(self, id)
 	levelInitializingSuccessSubIDs[id] = true
 	self.__subids = levelInitializingSuccessSubIDs
 end, LevelInitializingResult)
@@ -108,20 +108,20 @@ LevelInitializingWarn = class(function(self, reason)
 end, LevelInitializingSuccess)
 
 
-LevelPrintingResult = class(function(self)
-	Event.__init(self, 3, nil)
+LevelPrintingResult = class(function(self, id)
+	Event.__init(self, 3, id)
 end, Event)
 
 levelPrintingErrorSubIDs = {}
 LevelPrintingError = class(function(self, id)
-	LevelPrintingResult.__init(self)
-	levelPrintingErrorSubIDs[id] = true
+	LevelPrintingResult.__init(self, id)
+	if id then levelPrintingErrorSubIDs[id] = true end
 	self.__subids = levelPrintingErrorSubIDs
 end, LevelPrintingResult)
 levelPrintingSuccessSubIDs = {}
 LevelPrintingSuccess = class(function(self, id)
-	LevelPrintingResult.__init(self)
-	levelPrintingSuccessSubIDs[id] = true
+	LevelPrintingResult.__init(self, id)
+	if id then levelPrintingSuccessSubIDs[id] = true end
 	self.__subids = levelPrintingSuccessSubIDs
 end, LevelPrintingResult)
 

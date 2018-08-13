@@ -8,11 +8,13 @@ local classmodule = require(import_prefix .. "class")
 
 local LevelConfig = class(function(self, levelConfiguration)
 	self.__displayMinimap = levelConfiguration["minimapDisplay"]
+	self.__displayMap = levelConfiguration["mapDisplayable"]
 	self.__minimapViewingSize = levelConfiguration["minimapViewingSize"]
 	self.__mapOffset = {0, levelConfiguration["mapYoffset"]} -- used in the reverseMap function
 end)
 
 function LevelConfig:doesDisplayMinimap() return self.__displayMinimap  end
+function LevelConfig:doesDisplayFullMap() return self.__displayMap      end
 function LevelConfig:getCamSize  () return self.__minimapViewingSize    end
 function LevelConfig:getCamWidth () return self.__minimapViewingSize[1] end
 function LevelConfig:getCamHeight() return self.__minimapViewingSize[2] end
@@ -53,6 +55,7 @@ currentConfig = Config({
     ["levelManagerConfiguration"] = {["loadTestLevels"] = false},
     ["levelConfiguration"] = {["minimapDisplay"] = true,
                               ["minimapViewingSize"] = {3, 3},
+                              ["mapDisplayable"] = true,
                               ["mapYoffset"] = 7},
     ["consoleConfiguration"] = {["logLevel"] = 2,
                                 ["developerMode"] = false}

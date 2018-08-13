@@ -178,7 +178,7 @@ function Level:printEndingLore(death, objects)
 	if self.__array_version == 2 then
 		self:__setupLevelLoresState("end")
 		
-		local ret = self:__alternative_lore(death, objects)
+		local ret = self.__alternative_lore(death, objects)
 		local state, alt = ret.state, ret.alt
 		
 		dictionary:setAlternative(stateManager:getStatesStack(), state, alt)

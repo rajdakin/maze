@@ -161,7 +161,7 @@ function main()
 		sleep(2) console:printLore("\8\8\8?  ")
 		sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Nope      ")
 		
-		if doNextLevel then levelManager:setLevelNumber(levelManager:getLevelNumber() - 1) sleep(1)
+		if doNextLevel then levelManager:setLevelNumber(levelManager:getLevelNumber() + 1) sleep(1)
 		-- else break
 		end
 	end

@@ -11,7 +11,7 @@ color magenta "%c([^%]|%[^r])*%r"
 
 color red "%"
 color brightred "%."
-color brightgreen "%(%|b|c|j|l|n|r|s|y)"
+color brightgreen "%(%|B|b|c|j|l|n|r|s|y)"
 
 color brightred "%c[^m]*m?"
 color brightgreen "%c(0[1-9]|[1-9][0-9]?)(;(0[1-9]|[1-9][0-9]?))*m"

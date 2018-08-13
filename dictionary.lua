@@ -157,9 +157,15 @@ function Lang:translate(state, str, ...)
 			str = str:gsub("%%s", args[argp], 1)
 		elseif typ == "b" then                                  -- 1 or 0
 			if args[argp] then
-				str = str:gsub("%%b", "1", 1)
+				str = str:gsub("%%b", "yes", 1)
 			else
-				str = str:gsub("%%b", "0", 1)
+				str = str:gsub("%%b", "no", 1)
+			end
+		elseif typ == "B" then
+			if args[argp] then
+				str = str:gsub("%%b", "Yes", 1)
+			else
+				str = str:gsub("%%b", "No", 1)
 			end
 		elseif typ == "y" then                                  -- yes or no
 			if args[argp] then

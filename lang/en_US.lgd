@@ -23,6 +23,7 @@ mm.eqcmenu.no = Nah, it's OK...
 # Options strings
 opt.advanced = Advanced options
 opt.not_exit = I don't like %s!
+opt.enable_minimap = Enable minimap? %b
 
 opt.adv.vlength = How many lines vertically? (%n)
 opt.adv.dev = Developer mode: %y

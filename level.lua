@@ -214,6 +214,8 @@ function Level:reverseMap(objects)
 end
 
 function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
+	if not doesDisplayAllMap and not self:getLevelConfiguration():doesDisplayMinimap() then return end
+	
 	console:printLore("E = exit, S = sword, K = key, k = \27[9mred\27[00m \27[02;31mblood\27[00my key, \27[44m \27[00m = door, \27[41m \27[00m = red door, \27[45m \27[00m = grave to grave's origin,   = nothing particular, \27[01;30;07;47m?\27[00m = not yet discovered, \27[01;30;41;07m \27[00m = wall, \27[31mM\27[00m = monster, \27[31mT\27[00m = trap, \27[01;30;41;07mU\27[00m = unreachable\n")
 	console:printLore("\n")
 	if objects and objects["key"] or objects["redkey"] or objects["sword"] then

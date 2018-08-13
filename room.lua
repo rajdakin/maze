@@ -41,16 +41,16 @@ end
 
 function Room:hasAccess(direction)
 	return self:getAttribute(direction)
-	 or (not self:getAttribute("door") and self:getAttribute("dir_door") == direction)
-	 or (not self:getAttribute("reddoor") and self:getAttribute("dir_reddoor") == direction)
+	 or (not self:getAttribute("door") and self:getAttribute("door_dir") == direction)
+	 or (not self:getAttribute("reddoor") and self:getAttribute("reddoor_dir") == direction)
 	 or (self:getAttribute("exitdir") == direction)
 end
 
 function Room:canSee(event, position_in_row, up, down, left, right)
 	return (self:hasAccess("up") and self:canHear(event, position_in_row, up))
-	 or (self:hasAccess("down") and self:canHear(event, position_in_row, down))
-	 or (self:hasAccess("left") and self:canHear(event, position_in_row, left))
-	 or (self:hasAccess("right") and self:canHear(event, position_in_row, right))
+	 or (self:hasAccess("down") and self:canHear(event, position_in_row, nil, down))
+	 or (self:hasAccess("left") and self:canHear(event, position_in_row, nil, nil, left))
+	 or (self:hasAccess("right") and self:canHear(event, position_in_row, nil, nil, nil, right))
 end
 
 local doorBGcolor = {["door"] = "44", ["reddoor"] = "41", ["grave"] = "45", ["opengrave"] = "0"}

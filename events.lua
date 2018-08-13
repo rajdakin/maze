@@ -132,6 +132,9 @@ end, LevelPrintingError)
 LevelPrintingDone = class(function(self)
 	LevelPrintingSuccess.__init(self, 1)
 end, LevelPrintingSuccess)
+LevelPrintingIgnored = class(function(self)
+	LevelPrintingSuccess.__init(self, 2)
+end, LevelPrintingSuccess)
 
 --EventParsingResult.__init = nil
 --RoomPrintingResult.__init = nil

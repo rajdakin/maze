@@ -134,13 +134,27 @@ function main()
 				
 				return "Exit."
 			elseif (movement == "w") or (movement == "wait") then
-				console:printLore("Waiting...\n")
+				stateManager:pushState("wait")
+				
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "lore"))
+				
+				stateManager:popState()
+			elseif (movement == "suicide") then
+				stateManager:pushState("suicide")
+				
+				console:printLore(dictionary:translate(stateManager:getStatesStack(), "lore"))
+				
+				game_ended = true
+				dead = true
+				resetMaze()
+				
+				stateManager:popState()
 			else
 				console:print("Unknown command: " .. movement .. "\n", LogLevel.ERROR, "maze.lua/main")
 			end
 			if not ((movement == "w ?") or (movement == "w ") or (movement == "m") or (movement == "map")
 			     or (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit") or (movement == "") or (movement == "h")
-		    	 or (movement == "help")) then
+		         or (movement == "help") or (movement == "suicide")) then
 				local ret = levelManager:getActiveLevel():checkLevelEvents(game_ended, objects)
 				game_ended = ret.ended
 				objects = ret.objects

@@ -32,13 +32,17 @@ opt.adv.loglv = Logging level: %n
 # In-game string
 ig.prompt = Command: 
 
-ig.help = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%s: "exit"%lThis help: "help"%lPrint the full map: "map"%l%lYou can always write the first letter only.%l
+ig.help = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%s: "exit"%lThis help: "help"%lPrint the full map: "map"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
 
 ig.move.fail = BOOMM!!%l
 ig.move.up = Moving up%l
 ig.move.down = Moving down%l
 ig.move.left = Moving left%l
 ig.move.right = Moving right%l
+
+ig.wait.lore = Waiting...%l
+
+ig.suicide.lore = Woah! seriously? Okay...%l
 
 ig.nil = %c3mliterally nowhere%r
 ig.up = in front of you

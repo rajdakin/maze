@@ -74,6 +74,7 @@ ig.redkey:true = You do have a %c46;01;31mred key...?%r.
 ig.sword:false = You don't have any sword.
 ig.sword:true = You do have a %c01;39;40;07msword%r.
 
+ig.map.legend = E = exit, S = sword, K = key, k = %c9mred%r %c02;31mblood%ry key, %c44m %r = door, %c41m %r = red door, %c45m %r = grave to grave's origin,   = nothing particular, %c01;30;07;47m?%r = not yet discovered, %c01;30;41;07m %r = wall, %c31mM%r = monster, %c31mT%r = trap, %c01;30;41;07mU%r = unreachable%l%l
 ig.map.key = You have a %c45;01;32mkey%r.%l
 ig.map.redkey = You have a %c46;01;31mred key...?%r.%l
 ig.map.sword = You have a %c01;39;40;07msword%r.%l

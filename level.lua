@@ -201,14 +201,14 @@ end
 function Level:reverseMap(objects)
 	if not self:getLevelConfiguration():doesDisplayMinimap() then return end
 	
-	if objects and objects["key"] or objects["redkey"] or objects["sword"] then
-		if objects["key"] then
+	if objects and objects:hasAnyBool() then
+		if objects:getObject("key") then
 			console:printLore("\27[A")
 		end
-		if objects["redkey"] then
+		if objects:getObject("redkey") then
 			console:printLore("\27[A")
 		end
-		if objects["sword"] then
+		if objects:getObject("sword") then
 			console:printLore("\27[A")
 		end
 		console:printLore("\27[A")
@@ -224,14 +224,14 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 	stateManager:pushState("map")
 	
 	console:printLore(dictionary:translate(stateManager:getStatesStack(), "legend"))
-	if objects and (objects["key"] or objects["redkey"] or objects["sword"]) then
-		if objects["key"] then
+	if objects and objects:hasAnyBool() then
+		if objects:getObject("key") then
 			console:printLore(dictionary:translate(stateManager:getStatesStack(), "key"))
 		end
-		if objects["redkey"] then
+		if objects:getObject("redkey") then
 			console:printLore(dictionary:translate(stateManager:getStatesStack(), "redkey"))
 		end
-		if objects["sword"] then
+		if objects:getObject("sword") then
 			console:printLore(dictionary:translate(stateManager:getStatesStack(), "sword"))
 		end
 		console:printLore("\n")

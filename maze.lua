@@ -5,6 +5,7 @@ if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else 
 local utilmodule = require(import_prefix .. "util")
 
 local consolemodule = require(import_prefix .. "console")
+local objectsmodule = require(import_prefix .. "objects")
 local levelmodule = require(import_prefix .. "level")
 
 directions = {}
@@ -13,10 +14,7 @@ directions["down"] = "d"
 directions["left"] = "l"
 directions["right"] = "r"
 
-objects = {}
-objects["sword"] = false
-objects["key"] = false
-objects["redkey"] = false
+objects = Objects(1)
 
 game_ended = false
 
@@ -39,16 +37,9 @@ function main()
 		
 		dictionary:resetAlternatives()
 		dictionary:setAlternative({"ig"}, "help", tostring(levelManager:getActiveLevel():getLevelConfiguration():doesDisplayFullMap()))
-		--[[dictionary:setAlternative({"ig"}, "sword", "false")
-		dictionary:setAlternative({"ig"}, "key", "false")
-		dictionary:setAlternative({"ig"}, "redkey", "false")
-		dictionary:setAlternative({"ig", "sword"}, "take", "false")
-		dictionary:setAlternative({"ig", "keydoors", "group", "key"}, "take", "false")
-		dictionary:setAlternative({"ig", "keydoors", "redgroup", "key"}, "take", "false")]]
 		
-		objects["sword"] = false
-		objects["key"] = false
-		objects["redkey"] = false
+		objects:initialize(1)
+		
 		levelManager:getActiveLevel():printBeginingLore()
 		levelManager:getActiveLevel():refreshActiveRoomNearEvents()
 		while not game_ended do	-- here starts interactive
@@ -201,7 +192,7 @@ if (levelManager:getLevel(lvnum - 1) and not levelManager:getLevel(lvnum - 1):ge
 	console:printLore("levelManager:getLevel(levelManager:getLevelNumber() - 1):getLevelConfiguration().__displayMap = true\n")
 end
 console:printLore("To see the map (if enabled), write:\n")
-console:printLore("levelManager:getLevel(levelManager:getLevelNumber() - 1):printLevelMap(true, {}, true)\n")
+console:printLore("levelManager:getLevel(levelManager:getLevelNumber() - 1):printLevelMap(true, Objects(1), true)\n")
 console:printLore("(Note: if you exitd the level using the exit command or equivalent, remove the ' - 1' part.)\n\n")
 if dead then
 	console:printLore("You died, so you haven't got the entire map.\n")

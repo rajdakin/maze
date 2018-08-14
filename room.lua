@@ -42,6 +42,12 @@ function Room:canHear(event, position_in_row, up, down, left, right)
 	 or ((position_in_row ~= 0) and right and right:getAttribute(event))
 end
 
+function Room:unheared(event, position_in_row, up, down, left, right)
+	return (up and up:getAttribute(event) and not up:getAttribute("saw")) or (down and down:getAttribute(event) and not down:getAttribute("saw"))
+	 or ((position_in_row ~= 1) and left and left:getAttribute(event) and not left:getAttribute("saw"))
+	 or ((position_in_row ~= 0) and right and right:getAttribute(event) and not right:getAttribute("saw"))
+end
+
 function Room:hasAccess(direction)
 	return (self:getAttribute(direction)
 	 or  (not self:getAttribute("door") and self:getAttribute("door_dir") == direction)
@@ -55,6 +61,13 @@ function Room:canSee(event, position_in_row, up, down, left, right)
 	 or (self:hasAccess("down") and self:canHear(event, position_in_row, nil, down))
 	 or (self:hasAccess("left") and self:canHear(event, position_in_row, nil, nil, left))
 	 or (self:hasAccess("right") and self:canHear(event, position_in_row, nil, nil, nil, right))
+end
+
+function Room:unseen(event, position_in_row, up, down, left, right)
+	return (self:hasAccess("up") and self:canHear(event, position_in_row, up) and not up:getAttribute("saw"))
+	 or (self:hasAccess("down") and self:canHear(event, position_in_row, nil, down) and not down:getAttribute("saw"))
+	 or (self:hasAccess("left") and self:canHear(event, position_in_row, nil, nil, left) and not left:getAttribute("saw"))
+	 or (self:hasAccess("right") and self:canHear(event, position_in_row, nil, nil, nil, right) and not right:getAttribute("saw"))
 end
 
 local doorBGcolor = {["door"] = "44", ["reddoor"] = "41", ["grave"] = "45", ["opengrave"] = "0"}
@@ -144,30 +157,32 @@ function Room:printRoom(objects, isActiveRoom)
 end
 
 function Room:refreshRoomNearEvents(position_in_row, up, down, left, right)
-	if self:canSee("key", position_in_row, up, down, left, right) then
+	if self:unseen("key", position_in_row, up, down, left, right) then
 		self:setAttribute("near_key", true)
 	else
 		self:setAttribute("near_key", false)
 	end
-	if self:canSee("redkey", position_in_row, up, down, left, right) then
+	if self:unseen("redkey", position_in_row, up, down, left, right) then
 		self:setAttribute("near_redkey", true)
 	else
 		self:setAttribute("near_redkey", false)
 	end
-	if self:canSee("sword", position_in_row, up, down, left, right) then
+	if self:unseen("sword", position_in_row, up, down, left, right) then
 		self:setAttribute("near_sword", true)
 	else
 		self:setAttribute("near_sword", false)
 	end
-	if self:canHear("monster", position_in_row, up, down, left, right) then
+	if self:unheared("monster", position_in_row, up, down, left, right) then
 		self:setAttribute("near_monster", true)
 	else
 		self:setAttribute("near_monster", false)
 	end
-	if self:canSee("exit", position_in_row, up, down, left, right) then
+	if self:unseen("exit", position_in_row, up, down, left, right) then
 		self:setAttribute("near_exit", "visible")
-	elseif self:canHear("exit", position_in_row, up, down, left, right) then
+	elseif self:unheared("exit", position_in_row, up, down, left, right) then
 		self:setAttribute("near_exit", "hearable")
+	elseif self:canHear("exit", position_in_row, up, down, left, right) then
+		self:setAttribute("near_exit", "near")
 	else
 		self:setAttribute("near_exit", "far")
 	end
@@ -198,11 +213,17 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						
 						self:setAttribute("deadlygrave", false)
 						
-						self:setAttribute(key, false)
 						up:setAttribute("near_" .. key, false)
 						down:setAttribute("near_" .. key, false)
 						left:setAttribute("near_" .. key, false)
 						right:setAttribute("near_" .. key, false)
+						
+						up:setAttribute("__n" .. key, false)
+						down:setAttribute("__n" .. key, false)
+						left:setAttribute("__n" .. key, false)
+						right:setAttribute("__n" .. key, false)
+						
+						self:setAttribute(key, false)
 					elseif objects[key] then
 						console:printLore(
 							dictionary:translate(stateManager:getStatesStack(), "inventory")
@@ -257,6 +278,16 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		if self:getAttribute("monster") then
 			stateManager:pushState("monster")
 			
+			up:setAttribute("near_monster", false)
+			down:setAttribute("near_monster", false)
+			left:setAttribute("near_monster", false)
+			right:setAttribute("near_monster", false)
+			
+			up:setAttribute("__nmonster", false)
+			down:setAttribute("__nmonster", false)
+			left:setAttribute("__nmonster", false)
+			right:setAttribute("__nmonster", false)
+			
 			if objects["sword"] then
 				console:printLore(
 					dictionary:translate(stateManager:getStatesStack(), "sword")
@@ -267,15 +298,20 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				
 				objects["sword"] = false
 				self:setAttribute("monster", false)
-				up:setAttribute("near_monster", false)
-				down:setAttribute("near_monster", false)
-				left:setAttribute("near_monster", false)
-				right:setAttribute("near_monster", false)
-				
 				stateManager:popState()
 			else
 				if self:getAttribute("sword") then
 					stateManager:pushState("room_sword")
+					
+					up:setAttribute("near_sword", false)
+					down:setAttribute("near_sword", false)
+					left:setAttribute("near_sword", false)
+					right:setAttribute("near_sword", false)
+					
+					up:setAttribute("__nsword", false)
+					down:setAttribute("__nsword", false)
+					left:setAttribute("__nsword", false)
+					right:setAttribute("__nsword", false)
 					
 					local canReachSword = falseCoin(85)
 					
@@ -304,14 +340,6 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 								
 								self:setAttribute("sword", false)
 								self:setAttribute("monster", false)
-								up:setAttribute("near_sword", false)
-								up:setAttribute("near_monster", false)
-								down:setAttribute("near_sword", false)
-								down:setAttribute("near_monster", false)
-								left:setAttribute("near_sword", false)
-								left:setAttribute("near_monster", false)
-								right:setAttribute("near_sword", false)
-								right:setAttribute("near_monster", false)
 							else
 								console:printLore(
 									dictionary:translate(stateManager:getStatesStack(), "timeout")
@@ -457,6 +485,11 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						down:setAttribute("near_" .. prefix .. "key", false)
 						left:setAttribute("near_" .. prefix .. "key", false)
 						right:setAttribute("near_" .. prefix .. "key", false)
+						
+						up:setAttribute("__n" .. prefix .. "key", false)
+						down:setAttribute("__n" .. prefix .. "key", false)
+						left:setAttribute("__n" .. prefix .. "key", false)
+						right:setAttribute("__n" .. prefix .. "key", false)
 					else
 						dictionary:setAlternative({"ig"}, prefix .. "key", "false")
 						dictionary:setAlternative({"ig", "keydoors", prefix .. "block", "key"}, "take", "true")
@@ -484,6 +517,16 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			if self:getAttribute(prefix .. "key") then
 				stateManager:pushState("key")
 				
+				up:setAttribute("near_" .. prefix .. "key", false)
+				down:setAttribute("near_" .. prefix .. "key", false)
+				left:setAttribute("near_" .. prefix .. "key", false)
+				right:setAttribute("near_" .. prefix .. "key", false)
+				
+				up:setAttribute("__n" .. prefix .. "key", false)
+				down:setAttribute("__n" .. prefix .. "key", false)
+				left:setAttribute("__n" .. prefix .. "key", false)
+				right:setAttribute("__n" .. prefix .. "key", false)
+				
 				console:printLore(
 					dictionary:translate(stateManager:getStatesStack(), "lore",
 						dictionary:translate(stateManager:getStatesStack(), prefix .. "key")
@@ -503,20 +546,12 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					
 					if difficulty == 4 then
 						self:setAttribute(prefix .. "key", false)
-						up:setAttribute("near_" .. prefix .. "key", false)
-						down:setAttribute("near_" .. prefix .. "key", false)
-						left:setAttribute("near_" .. prefix .. "key", false)
-						right:setAttribute("near_" .. prefix .. "key", false)
 						
 						dictionary:setAlternative({"ig"}, prefix .. "key", tostring(not objects[prefix .. "key"]))
 						dictionary:setAlternative(stateManager:getStatesStack(), "take", tostring(objects[prefix .. "key"]))
 						objects[prefix .. "key"] = not objects[prefix .. "key"]
 					elseif difficulty == 3 then
 						self:setAttribute(prefix .. "key", false)
-						up:setAttribute("near_" .. prefix .. "key", false)
-						down:setAttribute("near_" .. prefix .. "key", false)
-						left:setAttribute("near_" .. prefix .. "key", false)
-						right:setAttribute("near_" .. prefix .. "key", false)
 						
 						if objects[prefix .. "key"] then
 							dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
@@ -529,6 +564,8 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						if objects[prefix .. "key"] then
 							dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
 						else
+							self:setAttribute(prefix .. "key", false)
+							
 							dictionary:setAlternative({"ig"}, prefix .. "key", "true")
 							dictionary:setAlternative(stateManager:getStatesStack(), "take", "easy")
 							objects[prefix .. "key"] = true
@@ -551,6 +588,16 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		end
 		
 		if self:getAttribute("exit") then
+			up:setAttribute("near_exit", false)
+			down:setAttribute("near_exit", false)
+			left:setAttribute("near_exit", false)
+			right:setAttribute("near_exit", false)
+			
+			up:setAttribute("__nexit", false)
+			down:setAttribute("__nexit", false)
+			left:setAttribute("__nexit", false)
+			right:setAttribute("__nexit", false)
+			
 			if (self:getAttribute("door_dir") ~= self:getAttribute("exit_dir") or not self:getAttribute("door"))
 			 and (self:getAttribute("reddoor_dir") ~= self:getAttribute("exit_dir") or not self:getAttribute("reddoor")) then
 				dictionary:setAlternative(stateManager:getStatesStack(), "exit", "open")
@@ -588,6 +635,16 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 		if self:getAttribute("sword") then
 			stateManager:pushState("sword")
 			
+			up:setAttribute("near_sword", false)
+			down:setAttribute("near_sword", false)
+			left:setAttribute("near_sword", false)
+			right:setAttribute("near_sword", false)
+			
+			up:setAttribute("__nsword", false)
+			down:setAttribute("__nsword", false)
+			left:setAttribute("__nsword", false)
+			right:setAttribute("__nsword", false)
+			
 			console:printLore(
 				dictionary:translate(stateManager:getStatesStack(), "lore",
 					dictionary:translate(stateManager:getStatesStack(), "sword")
@@ -608,21 +665,11 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				if difficulty == 4 then
 					self:setAttribute("sword", false)
 					
-					up:setAttribute("near_sword", false)
-					down:setAttribute("near_sword", false)
-					left:setAttribute("near_sword", false)
-					right:setAttribute("near_sword", false)
-					
 					dictionary:setAlternative({"ig"}, "sword", tostring(not objects["sword"]))
 					dictionary:setAlternative(stateManager:getStatesStack(), "take", tostring(objects["sword"]))
 					objects["sword"] = not objects["sword"]
 				elseif difficulty == 3 then
 					self:setAttribute("sword", false)
-					
-					up:setAttribute("near_sword", false)
-					down:setAttribute("near_sword", false)
-					left:setAttribute("near_sword", false)
-					right:setAttribute("near_sword", false)
 					
 					if objects["sword"] then
 						dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
@@ -635,6 +682,8 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					if objects["sword"] then
 						dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
 					else
+						self:setAttribute("sword", false)
+						
 						dictionary:setAlternative({"ig"}, "sword", "true")
 						dictionary:setAlternative(stateManager:getStatesStack(), "take", "easy")
 						objects["sword"] = true

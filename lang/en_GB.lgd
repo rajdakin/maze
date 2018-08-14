@@ -79,6 +79,7 @@ ig.near.redkey:false =
 ig.near.exit:visible = You see a green light of the same color as the exit signs. You even hear a far thunderstorm! The exit is near...
 ig.near.exit:hearable = When you try to listen, you detect a thundrstorm. The exit is near, but behind a wall...
 ig.near.exit:far = You feel like there's something missing here...%l
+ig.near.exit:near = 
 
 ig.graveyard.lore = You arrive in a room with an open grave. Do you want to go in it?
 ig.graveyard.go = You decided to go in that grave.%l

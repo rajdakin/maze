@@ -248,7 +248,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						end
 						
 						dictionary:setAlternative({"ig"}, key, "false")
-						dictionary:setAlternative({"ig", "keydoors", key:gsub("key$", "") .. "block", "key"}, "take", "true")
+						dictionary:setAlternative({"ig", "keydoors", key:gsub("key$", "") .. "group", "key"}, "take", "true")
 						objects:setObject(key, false)
 					elseif (key == "key") or (key == "redkey") then
 						console:printLore(

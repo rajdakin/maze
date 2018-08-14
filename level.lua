@@ -201,7 +201,7 @@ end
 function Level:reverseMap(objects)
 	if not self:getLevelConfiguration():doesDisplayMinimap() then return end
 	
-	if objects and objects:hasAnyBool() then
+	if objects and objects:hasAnyPhysical() then
 		if objects:getObject("key") then
 			console:printLore("\27[A")
 		end
@@ -224,7 +224,7 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 	stateManager:pushState("map")
 	
 	console:printLore(dictionary:translate(stateManager:getStatesStack(), "legend"))
-	if objects and objects:hasAnyBool() then
+	if objects and objects:hasAnyPhysical() then
 		if objects:getObject("key") then
 			console:printLore(dictionary:translate(stateManager:getStatesStack(), "key"))
 		end

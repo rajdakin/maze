@@ -247,8 +247,6 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 							console:print("Unknown grave's exit directon (opening the other size): " .. self:getAttribute("exitdir"), LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents")
 						end
 						
-						dictionary:setAlternative({"ig"}, key, "false")
-						dictionary:setAlternative({"ig", "keydoors", key:gsub("key$", "") .. "group", "key"}, "take", "true")
 						objects:setObject(key, false)
 					elseif (key == "key") or (key == "redkey") then
 						console:printLore(
@@ -296,9 +294,6 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				console:printLore(
 					dictionary:translate(stateManager:getStatesStack(), "sword")
 				)
-				
-				dictionary:setAlternative({"ig"}, "sword", "false")
-				dictionary:setAlternative({"ig", "sword"}, "take", "true")
 				
 				objects:setObject("sword", false)
 				self:setAttribute("monster", false)
@@ -495,8 +490,6 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						left:setAttribute("__n" .. prefix .. "key", false)
 						right:setAttribute("__n" .. prefix .. "key", false)
 					else
-						dictionary:setAlternative({"ig"}, prefix .. "key", "false")
-						dictionary:setAlternative({"ig", "keydoors", prefix .. "block", "key"}, "take", "true")
 						objects:setObject(prefix .. "key", false)
 					end
 				else
@@ -552,18 +545,14 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					if difficulty == 4 then
 						self:setAttribute(prefix .. "key", false)
 						
-						dictionary:setAlternative({"ig"}, prefix .. "key", tostring(not hasKey))
-						dictionary:setAlternative(stateManager:getStatesStack(), "take", tostring(hasKey))
-						objects:setObject(prefix .. "key", not hasKey)
+						objects:setObject(prefix .. "key", not hasKey, difficulty)
 					elseif difficulty == 3 then
 						self:setAttribute(prefix .. "key", false)
 						
 						if hasKey then
 							dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
 						else
-							dictionary:setAlternative({"ig"}, prefix .. "key", "true")
-							dictionary:setAlternative(stateManager:getStatesStack(), "take", "norm")
-							objects:setObject(prefix .. "key", true)
+							objects:setObject(prefix .. "key", true, difficulty)
 						end
 					else
 						if hasKey then
@@ -571,9 +560,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						else
 							self:setAttribute(prefix .. "key", false)
 							
-							dictionary:setAlternative({"ig"}, prefix .. "key", "true")
-							dictionary:setAlternative(stateManager:getStatesStack(), "take", "easy")
-							objects:setObject(prefix .. "key", true)
+							objects:setObject(prefix .. "key", true, difficulty)
 						end
 					end
 				else
@@ -671,28 +658,18 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				if difficulty == 4 then
 					self:setAttribute("sword", false)
 					
-					dictionary:setAlternative({"ig"}, "sword", tostring(not hasSword))
-					dictionary:setAlternative(stateManager:getStatesStack(), "take", tostring(hasSword))
-					objects:setObject("sword", not hasSword)
+					objects:setObject("sword", not hasSword, difficulty)
 				elseif difficulty == 3 then
 					self:setAttribute("sword", false)
 					
-					if hasSword then
-						dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
-					else
-						dictionary:setAlternative({"ig"}, "sword", "true")
-						dictionary:setAlternative(stateManager:getStatesStack(), "take", "norm")
-						objects:setObject("sword", true)
+					if not hasSword then
+						objects:setObject("sword", true, difficulty)
 					end
 				else
-					if hasSword then
-						dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
-					else
+					if not hasSword then
 						self:setAttribute("sword", false)
 						
-						dictionary:setAlternative({"ig"}, "sword", "true")
-						dictionary:setAlternative(stateManager:getStatesStack(), "take", "easy")
-						objects:setObject("sword", true)
+						objects:setObject("sword", true, difficulty)
 					end
 				end
 			else

@@ -11,6 +11,8 @@ local LevelConfig = class(function(self, levelConfiguration)
 	self.__displayMap = levelConfiguration["mapDisplayable"]
 	self.__minimapViewingSize = levelConfiguration["minimapViewingSize"]
 	self.__mapOffset = {0, levelConfiguration["mapYoffset"]} -- used in the reverseMap function
+	
+	self.__difficulty = levelConfiguration["difficulty"]
 end)
 
 function LevelConfig:doesDisplayMinimap() return self.__displayMinimap  end
@@ -22,6 +24,8 @@ function LevelConfig:getCamHeight() return self.__minimapViewingSize[2] end
 function LevelConfig:getMapOffset () return self.__mapOffset    end
 function LevelConfig:getMapXoffset() return self.__mapOffset[1] end
 function LevelConfig:getMapYoffset() return self.__mapOffset[2] end
+
+function LevelConfig:getDifficulty() return self.__difficulty end
 
 local LevelManagerConfig = class(function(self, levelManagerConfiguration, levelConfiguration)
 	self.__levelConfig = LevelConfig(levelConfiguration)
@@ -56,7 +60,8 @@ currentConfig = Config({
     ["levelConfiguration"] = {["minimapDisplay"] = true,
                               ["minimapViewingSize"] = {3, 3},
                               ["mapDisplayable"] = true,
-                              ["mapYoffset"] = 7},
+                              ["mapYoffset"] = 7,
+                              ["difficulty"] = 3},
     ["consoleConfiguration"] = {["logLevel"] = 2,
                                 ["developerMode"] = false}
 })

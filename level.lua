@@ -124,9 +124,12 @@ function Level:setAllRoomsSeenStatusAs(seen)
 end
 
 function Level:resetRoomsDatas()
-	self.__rooms = {}
+	if not self.__rooms then self.__rooms = {} end
+	
 	for i = 1 - self.__column_count, getArrayLength(self.__starting_rooms_datas) - self.__column_count do
 		local room_datas = {} for k, v in pairs(self.__starting_rooms_datas[i]) do room_datas[k] = v end
+		local saw = self.__rooms[i] and self.__rooms[i]:getAttribute("saw") and (self:getLevelConfiguration():getDifficulty() <= 1)
+		room_datas.saw = saw
 		self.__rooms[i] = Room(room_datas)
 	end
 end
@@ -279,7 +282,7 @@ function Level:checkLevelEvents(is_ended, objects)
 	local i = self:getRoomNumber()
 	ret = self:getRoom(i):checkRoomEvents(is_ended, objects, i % self:getColumnCount(),
 	                                      self:getRoom(i - self:getColumnCount()), self:getRoom(i + self:getColumnCount()), 
-										  self:getRoom(i - 1), self:getRoom(i + 1), false)
+										  self:getRoom(i - 1), self:getRoom(i + 1), false, self:getLevelConfiguration():getDifficulty())
 	is_ended = ret.ended
 	objects = ret.objects
 	while ret:isinstance(EventParsingResultRoomChanging) do
@@ -302,7 +305,7 @@ function Level:checkLevelEvents(is_ended, objects)
 		i = self:getRoomNumber()
 		ret = self:getRoom(i):checkRoomEvents(is_ended, objects, i % self:getColumnCount(),
 		                                      self:getRoom(i - self:getColumnCount()), self:getRoom(i + self:getColumnCount()), 
-											  self:getRoom(i - 1), self:getRoom(i + 1), true)
+		                                      self:getRoom(i - 1), self:getRoom(i + 1), true, self:getLevelConfiguration():getDifficulty())
 		is_ended = ret.ended
 		objects = ret.objects
 	end
@@ -390,6 +393,11 @@ function LevelManager:initializeLevels()
 	add_contrib_nontest_levels(self)
 	
 	if self:getConfig():doLoadTestLevels() then
+		self:addTestLevel("diff_test", {["level_array_version"] = 1, ["starting_room"] = 1, ["column_count"] = 3,
+		    ["rooms_datas"] = {[-2] = {},                                               [-1] = {},                                               [0] = {},
+		                       {right = true, key = true, redkey = true, sword = true}, {right = true, key = true, redkey = true, sword = true}, {exit = true, exit_dir = "right"},
+		                       {},                                                      {},                                                      {}}
+		})
 		self:addTestLevel(-1, {["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                                                                  [0] = {},
 		                                                                                                                 {exit = true, exit_dir = "left",                reddoor = true, reddoor_dir = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveyard = true},
 		                                                                                                                 {                                redkey = true},                                                                                                                            {up = true,              key = true},

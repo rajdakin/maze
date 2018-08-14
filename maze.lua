@@ -21,7 +21,9 @@ objects["redkey"] = false
 game_ended = false
 
 function resetMaze()
-	levelManager:getActiveLevel():setAllRoomsSeenStatusAs(false)
+	if levelManager:getActiveLevel():getLevelConfiguration():getDifficulty() > 1 then
+		levelManager:getActiveLevel():setAllRoomsSeenStatusAs(false)
+	end
 end
 
 resetMaze()
@@ -191,10 +193,14 @@ end
 console:printLore("Write 'h'<Enter> to get the help at any time.\n")
 console:printLore(main() .. "\n")
 console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")
-console:printLore("resetMaze()\n")
-console:printLore("main()\n")
-console:printLore("\nTo see the map, write:\n")
-console:printLore("levelManager:getActiveLevel():printLevelMap(true, {}, true)\n")
+console:printLore("main()\n\n")
+if not levelManager:getLevel(levelManager:getLevelNumber() - 1):getLevelConfiguration():doesDisplayFullMap() then
+	console:printLore("\nThe map is disabled.\nTo enable it, write:\n")
+	console:printLore("levelManager:getLevel(levelManager:getLevelNumber() - 1):getLevelConfiguration().__displayMap = true\n")
+end
+console:printLore("To see the map (if enabled), write:\n")
+console:printLore("levelManager:getLevel(levelManager:getLevelNumber() - 1):printLevelMap(true, {}, true)\n")
+console:printLore("(Note: if you exitd the level using the exit command or equivlent, remove the ' - 1' part.)\n\n")
 if dead then
 	console:printLore("You died, so you haven't got the entire map.\n")
 else

@@ -230,12 +230,12 @@ function Lang:setAlternative(state, str, newUnlocalized)
 		else return false end
 	end
 	
-	if self.__alt_dicts[str][" actid"] == newUnlocalized then
-		return true
+	--if self.__alt_dicts[str][" actid"] == newUnlocalized then
+	--	return true
 	--elseif self.__alt_dicts[str][newUnlocalized] then
 	--	self.__alt_dicts[str][" active"] = self.__alt_dicts[str][newUnlocalized]
 	--	self.__alt_dicts[str][" actid"] = newUnlocalized
-	end
+	--end
 	
 	local dicts = {self.__dict}
 	

@@ -173,7 +173,7 @@ function Room:refreshRoomNearEvents(position_in_row, up, down, left, right)
 	end
 end
 
-function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down, left, right, moved_from_elsewhere)
+function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down, left, right, moved_from_elsewhere, difficulty)
 	self:setAttribute("saw", true)
 	
 	local function createEvents()
@@ -501,15 +501,39 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						dictionary:translate(stateManager:getStatesStack(), "take")
 					)
 					
-					self:setAttribute(prefix .. "key", false)
-					up:setAttribute("near_" .. prefix .. "key", false)
-					down:setAttribute("near_" .. prefix .. "key", false)
-					left:setAttribute("near_" .. prefix .. "key", false)
-					right:setAttribute("near_" .. prefix .. "key", false)
-					
-					dictionary:setAlternative({"ig"}, prefix .. "key", tostring(not objects[prefix .. "key"]))
-					dictionary:setAlternative(stateManager:getStatesStack(), "take", tostring(objects[prefix .. "key"]))
-					objects[prefix .. "key"] = not objects[prefix .. "key"]
+					if difficulty == 4 then
+						self:setAttribute(prefix .. "key", false)
+						up:setAttribute("near_" .. prefix .. "key", false)
+						down:setAttribute("near_" .. prefix .. "key", false)
+						left:setAttribute("near_" .. prefix .. "key", false)
+						right:setAttribute("near_" .. prefix .. "key", false)
+						
+						dictionary:setAlternative({"ig"}, prefix .. "key", tostring(not objects[prefix .. "key"]))
+						dictionary:setAlternative(stateManager:getStatesStack(), "take", tostring(objects[prefix .. "key"]))
+						objects[prefix .. "key"] = not objects[prefix .. "key"]
+					elseif difficulty == 3 then
+						self:setAttribute(prefix .. "key", false)
+						up:setAttribute("near_" .. prefix .. "key", false)
+						down:setAttribute("near_" .. prefix .. "key", false)
+						left:setAttribute("near_" .. prefix .. "key", false)
+						right:setAttribute("near_" .. prefix .. "key", false)
+						
+						if objects[prefix .. "key"] then
+							dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
+						else
+							dictionary:setAlternative({"ig"}, prefix .. "key", "true")
+							dictionary:setAlternative(stateManager:getStatesStack(), "take", "norm")
+							objects[prefix .. "key"] = true
+						end
+					else
+						if objects[prefix .. "key"] then
+							dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
+						else
+							dictionary:setAlternative({"ig"}, prefix .. "key", "true")
+							dictionary:setAlternative(stateManager:getStatesStack(), "take", "easy")
+							objects[prefix .. "key"] = true
+						end
+					end
 				else
 					console:printLore(
 						dictionary:translate(stateManager:getStatesStack(), "leave")
@@ -581,16 +605,41 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					dictionary:translate(stateManager:getStatesStack(), "take")
 				)
 				
-				self:setAttribute("sword", false)
-				
-				up:setAttribute("near_sword", false)
-				down:setAttribute("near_sword", false)
-				left:setAttribute("near_sword", false)
-				right:setAttribute("near_sword", false)
-				
-				dictionary:setAlternative({"ig"}, "sword", tostring(not objects["sword"]))
-				dictionary:setAlternative(stateManager:getStatesStack(), "take", tostring(objects["sword"]))
-				objects["sword"] = not objects["sword"]
+				if difficulty == 4 then
+					self:setAttribute("sword", false)
+					
+					up:setAttribute("near_sword", false)
+					down:setAttribute("near_sword", false)
+					left:setAttribute("near_sword", false)
+					right:setAttribute("near_sword", false)
+					
+					dictionary:setAlternative({"ig"}, "sword", tostring(not objects["sword"]))
+					dictionary:setAlternative(stateManager:getStatesStack(), "take", tostring(objects["sword"]))
+					objects["sword"] = not objects["sword"]
+				elseif difficulty == 3 then
+					self:setAttribute("sword", false)
+					
+					up:setAttribute("near_sword", false)
+					down:setAttribute("near_sword", false)
+					left:setAttribute("near_sword", false)
+					right:setAttribute("near_sword", false)
+					
+					if objects["sword"] then
+						dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
+					else
+						dictionary:setAlternative({"ig"}, "sword", "true")
+						dictionary:setAlternative(stateManager:getStatesStack(), "take", "norm")
+						objects["sword"] = true
+					end
+				else
+					if objects["sword"] then
+						dictionary:setAlternative(stateManager:getStatesStack(), "take", "false")
+					else
+						dictionary:setAlternative({"ig"}, "sword", "true")
+						dictionary:setAlternative(stateManager:getStatesStack(), "take", "easy")
+						objects["sword"] = true
+					end
+				end
 			else
 				console:printLore(
 					dictionary:translate(stateManager:getStatesStack(), "leave")

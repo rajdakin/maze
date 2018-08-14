@@ -48,6 +48,8 @@ ig.keydoors.group.open = You use your key to open the door %s. Unfortunately, th
 ig.keydoors.group.key.lore = You see a key lying in a book, that says: you can only have one key at a time (%s), and it is a single-use key. Do you want to take it?
 ig.keydoors.group.key.take:true = You take the key.%l
 ig.keydoors.group.key.take:false = While trying to grab your second key, you loose both.%l
+ig.keydoors.group.key.take:norm = While trying to grab your second key, you loose one of them.%l
+ig.keydoors.group.key.take:easy = On second thought, you let the key where it is.%l
 ig.keydoors.group.key.leave = You leave the key.%l
 
 ig.keydoors.redgroup.dynamic.openable = You see a red door %s. You can open it with the red key on the floor. Do you want to use it?
@@ -57,11 +59,15 @@ ig.keydoors.redgroup.open = You decide to use that red key to open the door %s, 
 ig.keydoors.redgroup.key.lore = You see a red key lying in a book, that says: you can only have one red key at a time (%s), and it is a single-use key. Do you want to take it?
 ig.keydoors.redgroup.key.take:true = You take the red key.%l
 ig.keydoors.redgroup.key.take:false = While trying to grab your second red key, you loose both.%l
+ig.keydoors.redgroup.key.take:norm = While trying to grab your second red key, you loose one of them.%l
+ig.keydoors.redgroup.key.take:easy = On second thought, you let the key where it is.%l
 ig.keydoors.redgroup.key.leave = You decide to leave the red key.%l
 
 ig.sword.lore = You see a sword lying in a book, that says: you can only have one sword at a time (%s), and it is a single-use key. Do you want to take it?
 ig.sword.take:true = You take the sword.%l
 ig.sword.take:false = While trying to grab your second sword, you loose both.%l
+ig.sword.take:norm = While trying to grab your second sword, you loose one of them.%l
+ig.sword.take:easy = On second thought, you let the sword where it is.%l
 ig.sword.leave = You decide to leave the sword.%l
 
 ig.near.key:true = A reflect questions you, but you can't tell where does it comes from.%l

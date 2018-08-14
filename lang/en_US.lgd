@@ -24,6 +24,12 @@ mm.eqcmenu.no = Nah, it's OK...
 opt.advanced = Advanced options
 opt.not_exit = I don't like %s!
 opt.enable_minimap = Enable minimap? %B.
+opt.difficulty.option = Difficulty: %s
+
+opt.difficulty.value:1 = Very easy
+opt.difficulty.value:2 = Easy
+opt.difficulty.value:3 = Normal
+opt.difficulty.value:4 = Hard
 
 opt.adv.vlength = How many lines vertically? (%n)
 opt.adv.dev = Developer mode: %y
@@ -119,6 +125,8 @@ ig.keydoors.group.door.locked = You see a locked door %s.%l
 ig.keydoors.group.key.lore = You see a key lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other normal key (what does that even means?) (%s), and it is single-use (why is that?). Do you want to take it?
 ig.keydoors.group.key.take:true = You took the key. Nothing happens.%l
 ig.keydoors.group.key.take:false = You took the key. Both key explodes.%l
+ig.keydoors.group.key.take:norm = You took the key. It explodes.%l
+ig.keydoors.group.key.take:easy = After thinking a little, you realize it's not a good idea.%l
 ig.keydoors.group.key.leave = You leave the key. Nothing happens.%l
 
 ig.keydoors.redgroup.kd.dynamic.openable = You see a door you don't want to approach %s. You can probably open it with the... red key? on the floor. Do you want to use it? (I think you do.)
@@ -130,11 +138,15 @@ ig.keydoors.redgroup.door.locked = You see a terrific door %s. And not a beautif
 ig.keydoors.redgroup.key.lore = You see a repulsively red key lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other hell's key (what does that even means?) (%s), and: it is single-use (why is that?). Do you want to take it?
 ig.keydoors.redgroup.key.take:true = You took the hell's key. Nothing happens.%l
 ig.keydoors.redgroup.key.take:false = You took the red key. Both key explodes.%l
+ig.keydoors.redgroup.key.take:norm = You took the red key. It explodes.%l
+ig.keydoors.redgroup.key.take:easy = After thinking a little, you realize it's not a good idea.%l
 ig.keydoors.redgroup.key.leave = You leave the bloody key. Nothing happen.%l
 
 ig.sword.lore = You see a sword lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other sword (what does that even means?) (%s), and it is single-use (why is that?). Do you want to take it?
 ig.sword.take:true = You take the sword. Nothing happens.%l
 ig.sword.take:false = You take the sword. Both swords explodes.%l
+ig.sword.take:norm = You took the red key. It explodes.%l
+ig.sword.take:easy = After thinking a little, you realize it's not a good idea.%l
 ig.sword.leave = You leave the sword. Nothing happens.%l
 
 ig.near.sword:true = You briefly see a sharpened blade in one of the mirrors of the room.%l

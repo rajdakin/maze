@@ -39,5 +39,8 @@ luac.out
 *.x86_64
 *.hex
 
-# Every TODO files (refer to the projects)
+# Every TODO files (refer to the projects for what I want to/am do(ing))
 TODO
+
+# The settings file
+/settings.cfg

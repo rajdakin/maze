@@ -33,11 +33,11 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 		linecount = linecount + 1
 		
 		-- File parsing: one line = one instruction, except when empty
-		nwsline = line:gsub("^%s+", ""):gsub("(%g[%w_%.%:]-)%s*= ?", "%1=")
+		nwsline = line:gsub("^%s+", ""):gsub("(%g[%w_%.%:]-)%s*= ?", "%1=", 1)
 		if nwsline and nwsline ~= "" and nwsline:sub(1, comment.len) ~= comment.str then
 			if nwsline:find("=") then
 				-- Line is an ID -> text instruction
-				local text_id, text = nwsline:gsub("=.*", ""), nwsline:gsub(".-=", "")
+				local text_id, text = nwsline:gsub("=.*", "", 1), nwsline:gsub(".-=", "", 1)
 				
 				local err = false
 				
@@ -155,23 +155,29 @@ function Lang:translate(state, str, ...)
 		
 		if typ == "s" then                                      -- The pure string
 			str = str:gsub("%%s", args[argp], 1)
-		elseif typ == "b" then                                  -- 1 or 0
+		elseif typ == "b" then                                  -- on or off
 			if args[argp] then
-				str = str:gsub("%%b", "yes", 1)
+				str = str:gsub("%%b", "on", 1)
 			else
-				str = str:gsub("%%b", "no", 1)
+				str = str:gsub("%%b", "off", 1)
 			end
-		elseif typ == "B" then
+		elseif typ == "B" then                                  -- On or Off
 			if args[argp] then
-				str = str:gsub("%%b", "Yes", 1)
+				str = str:gsub("%%b", "On", 1)
 			else
-				str = str:gsub("%%b", "No", 1)
+				str = str:gsub("%%b", "Off", 1)
 			end
 		elseif typ == "y" then                                  -- yes or no
 			if args[argp] then
 				str = str:gsub("%%y", "yes", 1)
 			else
 				str = str:gsub("%%y", "no", 1)
+			end
+		elseif typ == "Y" then                                  -- Yes or No
+			if args[argp] then
+				str = str:gsub("%%y", "Yes", 1)
+			else
+				str = str:gsub("%%y", "No", 1)
 			end
 		elseif typ == "n" then                                  -- A number or ?
 			if type(args[argp]) == "number" then

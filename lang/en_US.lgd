@@ -23,7 +23,7 @@ mm.eqcmenu.no = Nah, it's OK...
 # Options strings
 opt.advanced = Advanced options
 opt.not_exit = I don't like %s!
-opt.enable_minimap = Enable minimap? %B.
+opt.enable_minimap = Enable minimap? %Y.
 opt.difficulty.option = Difficulty: %s
 
 opt.difficulty.value:1 = Very easy
@@ -34,7 +34,7 @@ opt.difficulty.value:4 = Hard
 opt.adv.vlength = How many lines vertically? (%n)
 opt.adv.dev = Developer mode: %y
 opt.adv.loglv = Logging level: %n
-opt.adv.enable_map = Enable the full map? %B.
+opt.adv.enable_map = Enable the full map? %Y.
 
 # In-game string
 ig.prompt = Command: 

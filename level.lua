@@ -277,6 +277,8 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 	end
 	console:printLore("\27[00m\n\n")
 	
+	stateManager:popMainState()
+	
 	return LevelPrintingDone()
 end
 

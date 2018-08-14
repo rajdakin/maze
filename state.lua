@@ -34,7 +34,7 @@ end
 
 function StateManager:popMainState()
 	if self.__main_count == 1 then self.__exit = true
-	elseif slf.__main_count == 0 then return nil end
+	elseif self.__main_count == 0 then return nil end
 	
 	while self.__states[2] do self:popState() end
 	

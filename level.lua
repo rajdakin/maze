@@ -37,13 +37,16 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			self.__starting_rooms_datas = level_datas["rooms_datas"]
 			
 			self.__lores = level_datas["lores"]
-			self.__lore_begin = self.__lores[1]
+			
+			if self.__lores then
+				self.__lore_begin = self.__lores[1]
+			end
 			
 			local generic_death = "You DIED..."
-			if type(self.__lores[2]) == "string" then self.__lore_end = {[false] = self.__lores[2], [true] = generic_end}
-			elseif self.__lores[2][1] then
+			if self.__lores and (type(self.__lores[2]) == "string") then self.__lore_end = {[false] = self.__lores[2], [true] = generic_death}
+			elseif self.__lores and self.__lores[2][1] then
 				if self.__lores[2][2] then self.__lore_end = {[false] = self.__lores[2][1], [true] = self.__lores[2][2]} else self.__lore_end = {[false] = self.__lores[2][1], [true] = generic_death} end
-			elseif self.lores[2][false] then
+			elseif self.__lores and self.lores[2][false] then
 				if self.__lores[2][true] then self.__lore_end = {[false] = self.__lores[2][false], [true] = self.__lores[2][true]} else self.__lore_end = {[false] = self.__lores[2][false], [true] = generic_death} end
 			else self.__lore_end = {[false] = "", [true] = generic_death} end
 			

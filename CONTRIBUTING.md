@@ -36,23 +36,24 @@ It is possible that you created it wrong even if it display `.lgd` at the end of
 After that, in that file, write the translations.
 
 A few notes:
-- Each string before the `.` is a state. If there is no translations found in the requested state, it will move one step up. If there is still no trnslation in the root state, it asks the fallback (if one).
+- Each string before the final `.` is a state. If there is no translations found in the requested state, it will move one step up. If there is still no trnslation in the root state, it asks the fallback (if one).
 - The `:` is an alternative marker. Before is the group name, after is the alternative name. The first time it sees a `:`, it set the group alternative to this alternative and set the default to this alternative.
-- You can add some things:
+- You can add some things (upper case means the letter may be upper case, in which case it will cpitalize the first letter):
   1. `%%`: replaced by `%` at translation time.
-  2. `%b`: replaced by `X` or `O` at translation time.
+  2. `%b`: replaced by `on` or `off` at translation time. Upper case supported
   3. `%c[]m`: replaced by a color at reading time. The color is what replaces `[]` (see ASCII escape code `ESC[`). No check.
-  4. `%j`: replaced by a ^J at translation time.
+  4. `%j`: replaced by a ^J (= one character back, it does not remove the character, space does) at reading time.
   5. `%l`: replaced by a new line at reading time.
   6. `%n`: replaced by a number or `?` at translation time.
-  7. `%r`: replaced by the modifiers reset (color, bold...) at reading time.
+  7. `%r`: replaced by the modifiers reset (color, bold... = `%c00m`) at reading time.
   8. `%s`: replaced by a string at translation time.
-  9. `%y`: replaced by `yes` or `no` at translation time.
+  9. `%y`: replaced by `yes` or `no` at translation time. UUpper case supported.
 - Inside the `lang` folder is a file named `lgd.nanorc`. It is a file coloration only supported by nano.
   - To enable it in *nix, edit the file `~/.nanorc` (the file `.nanorc` in your home folder) and append `include [maze_loc]/lang/lgd.nanorc` where `[maze_loc]` is where you put this maze = where is this file.
   - It will write the state + name(s) in yellow, the `=` sign in red, and the translation in green.
-  - It will tell you where are the valid (bold green)/invalid (bold red or red if at end of line) `%.`, but also if the `%c` is valid: there must be no `%cm`, `%c0m`, `%c00m`, any invalid 3+ digit numbers, anything else than numbers or `;`, a finishing `m` letter.
+  - It will tell you where are the valid (bold green)/invalid (bold red or red if at end of line) `%.`, but also if the `%c` is valid: there must be no `%cm`, `%c0m`, `%c00m`, any invalid 3+ digit numbers, anything else than numbers or `;`, a finishing `m` letter. Eventually it will color in magenta the text between the %c and the %r.
   - It will tell you wether and how many extra spaces before and after there is
+  - It will tell you which state+names are registered in brightyellow
 
 ## Creating levels
 If you want to submit a level, please put the code in `add_contrib_nontest_levels` in [contribution.lua@line1]( contribution.lua#L1) for a real level or in `add_contrib_nontest_levels` in [contribution.lua@line13]( contribution.lua#L13) for a test level

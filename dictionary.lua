@@ -108,7 +108,9 @@ end)
 function Lang:getName() return self.__lang_name end
 function Lang:getID() return self.__lang_id end
 
-function Lang:translate(state, str, ...)
+function Lang:translate(state, str, origin, ...)
+	if not origin then origin = self end
+	
 	local function pure()
 		local dicts = {self.__dict}
 		
@@ -139,47 +141,48 @@ function Lang:translate(state, str, ...)
 		end
 		
 		if self.__fallback then
-			self.__dict[str] = self.__fallback:translate(state, str)
+			self.__dict[str] = {[" active"] = self.__fallback:translate(state, str, origin), [" default"] = "nil"}
+			return self.__dict[str][" active"]
 		else
 			local strtmp = "" for k, v in pairs(state) do strtmp = strtmp .. v .. "." end
 			self.__dict[str] = strtmp .. str .. "\n"
+			return self.__dict[str]
 		end
-		return self.__dict[str]
 	end
 	
 	local str = pure()
 	
 	local args, argp = {...}, 1
-	while str:find("%%[^%%]") and args[argp] do
-		local typ = str:gsub(".-%%([^%%]).*", "%1")
+	while str:find("%%[^%%I]") and args[argp] do
+		local typ = str:gsub(".-%%([^%%I]).*", "%1")
 		
-		if typ == "s" then                                      -- The pure string
+		if typ == "s" then      -- The simple string
 			str = str:gsub("%%s", args[argp], 1)
-		elseif typ == "b" then                                  -- on or off
+		elseif typ == "b" then  -- on or off
 			if args[argp] then
 				str = str:gsub("%%b", "on", 1)
 			else
 				str = str:gsub("%%b", "off", 1)
 			end
-		elseif typ == "B" then                                  -- On or Off
+		elseif typ == "B" then  -- On or Off
 			if args[argp] then
 				str = str:gsub("%%b", "On", 1)
 			else
 				str = str:gsub("%%b", "Off", 1)
 			end
-		elseif typ == "y" then                                  -- yes or no
+		elseif typ == "y" then  -- yes or no
 			if args[argp] then
 				str = str:gsub("%%y", "yes", 1)
 			else
 				str = str:gsub("%%y", "no", 1)
 			end
-		elseif typ == "Y" then                                  -- Yes or No
+		elseif typ == "Y" then  -- Yes or No
 			if args[argp] then
 				str = str:gsub("%%y", "Yes", 1)
 			else
 				str = str:gsub("%%y", "No", 1)
 			end
-		elseif typ == "n" then                                  -- A number or ?
+		elseif typ == "n" then  -- A number or ?
 			if type(args[argp]) == "number" then
 				str = str:gsub("%%n", tostring(args[argp]), 1)
 			elseif tonumber(args[argp]) then
@@ -189,10 +192,40 @@ function Lang:translate(state, str, ...)
 			end
 		else
 			console:print("Unknown replacement type: " .. typ .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:translate")
-			str = str:gsub("%%(.)", "%1", 1)
+			str = str:gsub("%%([^%%I])", "%1", 1)
 		end
 		
 		argp = argp + 1
+	end
+	
+	while str:find("%%I") do  -- Insert another translation
+		local text = str:sub(str:find("%%I") + 2)
+		text = text:gsub("[ %t].*", "")
+		
+		if text == "" then
+			console:print("Insertion value needed with %I", LogLevel.WARNING, "dictionary.lua/Lang:translate:(%I parsing)")
+			str = str:gsub("%%I[ %t]", "I", 1)
+		elseif text:find(":") then
+			console:print("Bad insertion value '" .. text .. "': alternatives are unsupported", LogLevel.WARNING, "dictionary.lua/Lang:translate:(%I parsing)")
+			str = str:gsub("%%I(.-)[ %t]", "%1", 1)
+		else
+			local spos, epos = str:find("%%I"), str:find("%%I") + text:len() + 2
+			
+			local states, stcount = {}, 0
+			while text:find("%.") do
+				states[stcount + 1], text = text:sub(1, text:find("%.") - 1), text:sub(text:find("%.") + 1)
+				stcount = stcount + 1
+			end
+			
+			local success, ret = pcall(origin:translate(states, text, origin))
+			
+			if success then
+				str = str:gsub("%%I[^ %t]+.", ret, 1)
+			else
+				console:print("Error while translating '" .. str:sub(bpos + 2, epos - 1) .. "' (probably a stack overflow: infinite translation loop)", LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)")
+				console:print(ret, LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)")
+			end
+		end
 	end
 	
 	str = str:gsub("%%%%", "%%")
@@ -209,7 +242,7 @@ function Lang:resetAlternative(alt)
 					elseif v[" default"] == "string" then
 						v[" active"] = v[" defarg"]
 					elseif v[" default"] == "nil" then
-						v[" active"] = nil
+						tbl[k] = nil
 					else
 						console:print("Unknown default type: " .. v[" default"] .. "\n", LogLevel.WARNING_DEV, "dictionary.lua/Lang:resetAlternative:resetTable")
 					end
@@ -220,9 +253,25 @@ function Lang:resetAlternative(alt)
 		end
 	end
 	
+	local function resetNils(tbl)
+		for k, v in pairs(tbl) do
+			if type(v) == "table" then
+				if v[" default"] then
+					if v[" default"] == "nil" then
+						tbl[k] = nil
+					end
+				else
+					resetNils(v)
+				end
+			end
+		end
+	end
+	
 	if alt and self.__alt_dicts[alt] then
 		console:print("Warning: resetting a single alternative (" .. tostring(alt) .. ") may be unstable\n", LogLevel.LOG, "dictionary.lua/Lang:resetAlternative")
 		resetAlt(self.__alt_dicts[alt])
+	elseif alt == " nil" then
+		resetNils(self.__dict)
 	else
 		resetAlt(self.__dict)
 	end
@@ -231,17 +280,12 @@ end
 function Lang:setAlternative(state, str, newUnlocalized)
 	local statestr = "" for k, v in pairs(state) do statestr = statestr .. v .. "." end
 	
+	self:resetAlternative(" nil")
+	
 	if not self.__alt_dicts[str] then
 		if self.__fallback then return self.__fallback:setAlternative(state, str, newUnlocalized)
 		else return false end
 	end
-	
-	--if self.__alt_dicts[str][" actid"] == newUnlocalized then
-	--	return true
-	--elseif self.__alt_dicts[str][newUnlocalized] then
-	--	self.__alt_dicts[str][" active"] = self.__alt_dicts[str][newUnlocalized]
-	--	self.__alt_dicts[str][" actid"] = newUnlocalized
-	--end
 	
 	local dicts = {self.__dict}
 	
@@ -292,7 +336,7 @@ end)
 function Dictionary:setActiveLang(lang)    self.__active_lang = lang end
 function Dictionary:getActiveLang() return self.__active_lang end
 
-function Dictionary:translate(state, str, ...) return self.__langs[self.__active_lang]:translate(state, str, ...) end
+function Dictionary:translate(state, str, ...) return self.__langs[self.__active_lang]:translate(state, str, nil, ...) end
 
 function Dictionary:resetAlternatives()
 	for k, lang in pairs(self.__langs) do

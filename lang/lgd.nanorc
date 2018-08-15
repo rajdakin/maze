@@ -19,11 +19,17 @@ color magenta "%c([^%]|%[^r])*%r"
 ## Every standard %, by default every of them is wrong
 color red "%"
 color brightred "%."
-color brightgreen "%(%|b|B|c|j|l|n|r|s|y|Y)"
+color brightgreen "%(%|b|B|c|I|j|l|n|r|s|y|Y)"
 
 ## Formatting coloration
 color brightred "%c[^m]*m?"
 color brightgreen "%c(0[1-9]|[1-9][0-9]?)(;(0[1-9]|[1-9][0-9]?))*m"
+
+## Formatting insertion
+color brightred "%I[^	 ]*[	 ]?"
+color ,red "%I[^	 \.:]+(\.[^	 \.:]+)*[ 	]"
+color magenta "%I[^	 \.:]+(\.[^	 \.:]+)*"
+color brightgreen "%I"
 
 ## Equals sign
 color red "^[ 	]*[^ 	=\.:][^=\.:]*(\.[^ 	=\.:][^=\.:]*)*(:[^ 	=\.:][^=\.:]*)?[ 	]*="
@@ -62,6 +68,8 @@ color brightyellow "^[ 	]*(ig\.(moving\.(grave\.)?)?)?(normal)"
 color brightyellow "^[ 	]*(ig\.(moving\.(grave\.(deadly\.)?)?)?)?(unknown|locked|dynamic|inventory)"
 color brightyellow "^[ 	]*(ig\.(moving\.(grave\.(deadly\.((red)?key\.)?)?)?)?)?(locked|dynamic|inventory)"
 
+## Every line without any `=' is invalid
 color brightred "^[^=]+$"
 
+## Comments
 color blue "#.*"

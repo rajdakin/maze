@@ -110,7 +110,7 @@ local Console = class(function(self, consoleConfig, logConfig)
 end)
 
 function Console:read(...)
-	success, result = pcall(self.__in, ...)
+	local success, result = pcall(self.__in, ...)
 	if not success then
 		return {success = false, eos = error, returned = result}
 	end

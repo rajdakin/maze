@@ -150,66 +150,66 @@ function Lang:translate(state, str, origin, ...)
 		end
 	end
 	
-	local str = pure()
+	local newstr = pure()
 	
 	local args, argp = {...}, 1
-	while str:find("%%[^%%I]") and args[argp] do
-		local typ = str:gsub(".-%%([^%%I]).*", "%1")
+	while newstr:find("%%[^%%I]") and args[argp] do
+		local typ = newstr:gsub(".-%%([^%%I]).*", "%1")
 		
 		if typ == "s" then      -- The simple string
-			str = str:gsub("%%s", args[argp], 1)
+			newstr = newstr:gsub("%%s", args[argp], 1)
 		elseif typ == "b" then  -- on or off
 			if args[argp] then
-				str = str:gsub("%%b", "on", 1)
+				newstr = newstr:gsub("%%b", "on", 1)
 			else
-				str = str:gsub("%%b", "off", 1)
+				newstr = newstr:gsub("%%b", "off", 1)
 			end
 		elseif typ == "B" then  -- On or Off
 			if args[argp] then
-				str = str:gsub("%%b", "On", 1)
+				newstr = newstr:gsub("%%b", "On", 1)
 			else
-				str = str:gsub("%%b", "Off", 1)
+				newstr = newstr:gsub("%%b", "Off", 1)
 			end
 		elseif typ == "y" then  -- yes or no
 			if args[argp] then
-				str = str:gsub("%%y", "yes", 1)
+				newstr = newstr:gsub("%%y", "yes", 1)
 			else
-				str = str:gsub("%%y", "no", 1)
+				newstr = newstr:gsub("%%y", "no", 1)
 			end
 		elseif typ == "Y" then  -- Yes or No
 			if args[argp] then
-				str = str:gsub("%%y", "Yes", 1)
+				newstr = newstr:gsub("%%y", "Yes", 1)
 			else
-				str = str:gsub("%%y", "No", 1)
+				newstr = newstr:gsub("%%y", "No", 1)
 			end
 		elseif typ == "n" then  -- A number or ?
 			if type(args[argp]) == "number" then
-				str = str:gsub("%%n", tostring(args[argp]), 1)
+				newstr = newstr:gsub("%%n", tostring(args[argp]), 1)
 			elseif tonumber(args[argp]) then
-				str = str:gsub("%%n", args[argp], 1)
+				newstr = newstr:gsub("%%n", args[argp], 1)
 			else
-				str = str:gsub("%%n", "?", 1)
+				newstr = newstr:gsub("%%n", "?", 1)
 			end
 		else
 			console:print("Unknown replacement type: " .. typ .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:translate")
-			str = str:gsub("%%([^%%I])", "%1", 1)
+			newstr = newstr:gsub("%%([^%%I])", "%1", 1)
 		end
 		
 		argp = argp + 1
 	end
 	
-	while str:find("%%I") do  -- Insert another translation
-		local text = str:sub(str:find("%%I") + 2)
+	while newstr:find("%%I") do  -- Insert another translation
+		local text = newstr:sub(newstr:find("%%I") + 2)
 		text = text:gsub("[ %t].*", "")
 		
 		if text == "" then
 			console:print("Insertion value needed with %I", LogLevel.WARNING, "dictionary.lua/Lang:translate:(%I parsing)")
-			str = str:gsub("%%I[ %t]", "I", 1)
+			newstr = newstr:gsub("%%I[ %t]", "I", 1)
 		elseif text:find(":") then
 			console:print("Bad insertion value '" .. text .. "': alternatives are unsupported", LogLevel.WARNING, "dictionary.lua/Lang:translate:(%I parsing)")
-			str = str:gsub("%%I(.-)[ %t]", "%1", 1)
+			newstr = newstr:gsub("%%I(.-)[ %t]", "%1", 1)
 		else
-			local spos, epos = str:find("%%I"), str:find("%%I") + text:len() + 2
+			local spos, epos = newstr:find("%%I"), newstr:find("%%I") + text:len() + 2
 			
 			local states, stcount = {}, 0
 			while text:find("%.") do
@@ -217,19 +217,21 @@ function Lang:translate(state, str, origin, ...)
 				stcount = stcount + 1
 			end
 			
-			local success, ret = pcall(origin:translate(states, text, origin))
+			local success, ret = pcall(origin.translate, origin, states, text, origin)
 			
 			if success then
-				str = str:gsub("%%I[^ %t]+.", ret, 1)
+				newstr = newstr:gsub("%%I[^ %t]+.", ret, 1)
 			else
-				console:print("Error while translating '" .. str:sub(bpos + 2, epos - 1) .. "' (probably a stack overflow: infinite translation loop)", LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)")
-				console:print(ret, LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)")
+				local strtmp = "" for k, v in pairs(state) do strtmp = strtmp .. v .. "." end
+				console:print("Error while translating '" .. newstr:sub(spos + 2, epos - 1) .. "' for string '" .. strtmp .. str .. "' (probably a stack overflow: infinite translation loop)\n", LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)")
+				console:print(ret, LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)") console:printLore("\n")
+				newstr = newstr:gsub("%%I[^ %t]+.", "Ie", 1)
 			end
 		end
 	end
 	
-	str = str:gsub("%%%%", "%%")
-	return str
+	newstr = newstr:gsub("%%%%", "%%")
+	return newstr
 end
 
 function Lang:resetAlternative(alt)

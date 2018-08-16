@@ -318,7 +318,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						stateManager:pushState("reach")
 						
 						console:printLore(
-							dictionary.translate(stateManager:getStatesStack(), "lore") .. dictionary.translate(stateManager:getStatesStack(), "confirm")
+							dictionary.translate(stateManager:getStatesStack(), "lore")
 						)
 						
 						local watch, time = Watch(), 0
@@ -445,7 +445,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				console:printLore(
 					dictionary:translate(stateManager:getStatesStack(), "openable",
 						dictionary:translate(stateManager:getStatesStack(), tostring(self:getAttribute(prefix .. "door_dir")))
-					) .. dictionary:translate(stateManager:getStatesStack(), "confirm")
+					)
 				)
 				
 				local returned = console:read()
@@ -525,9 +525,8 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 				right:setAttribute("__n" .. prefix .. "key", false)
 				
 				console:printLore(
-					dictionary:translate(stateManager:getStatesStack(), "lore",
-						dictionary:translate(stateManager:getStatesStack(), prefix .. "key")
-					) .. dictionary:translate(stateManager:getStatesStack(), "confirm")
+					dictionary:translate(stateManager:getStatesStack(), "lore"
+					)
 				)
 				
 				local returned = console:read()
@@ -638,9 +637,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			right:setAttribute("__nsword", false)
 			
 			console:printLore(
-				dictionary:translate(stateManager:getStatesStack(), "lore",
-					dictionary:translate(stateManager:getStatesStack(), "sword")
-				) .. dictionary:translate(stateManager:getStatesStack(), "confirm")
+				dictionary:translate(stateManager:getStatesStack(), "lore")
 			)
 			
 			local returned = console:read()
@@ -743,7 +740,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 			stateManager:pushState("graveyard")
 			
 			console:printLore(
-				dictionary:translate(stateManager:getStatesStack(), "lore") .. dictionary:translate(stateManager:getStatesStack(), "confirm")
+				dictionary:translate(stateManager:getStatesStack(), "lore")
 			)
 			
 			local returned = console:read()

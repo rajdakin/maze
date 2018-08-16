@@ -1,7 +1,7 @@
 # English (Great Britain)
 
 # Main Menu strings
-mm.ok = Accept
+ok = Accept
 
 mm.eqcmenu.confirm = Do you really want to quit?
 mm.eqcmenu.yes = Yes
@@ -31,19 +31,19 @@ ig.trap.kill = You fall into a trap and die due the spikes in it.%l
 ig.exit:open = The exit is an open door. You walk through it.%l
 ig.exit:opened = 
 
-ig.keydoors.exit.group.dynamic.openable = You see the exit %s. You can open it with the key on the floor. Do you want to use it?
-ig.keydoors.exit.group.inventory.openable = You see the exit %s. You can open it with your key. Do you want to use it?
-ig.keydoors.exit.group.open = You use your key to open the exit %s. The key remains stuck in the locker, but the exit opens.%l
-ig.keydoors.exit.redgroup.dynamic.openable = You see the exit %s. You can open it with the red key on the floor. Do you want to use it?
-ig.keydoors.exit.redgroup.inventory.openable = You see the exit %s. You can open it with your red key. Do you want to use it?
-ig.keydoors.exit.redgroup.open = You use your key to open the exit %s. The red key remains stuck in the locker and the door goes away, but the exit opens.%l
+ig.keydoors.exit.group.kd.dynamic.openable = You see the exit %s. You can open it with the key on the floor. Do you want to use it?%Iig.confirm 
+ig.keydoors.exit.group.kd.inventory.openable = You see the exit %s. You can open it with your key. Do you want to use it?%Iig.confirm 
+ig.keydoors.exit.group.kd.open = You use your key to open the exit %s. The key remains stuck in the locker, but the exit opens.%l
+ig.keydoors.exit.redgroup.kd.dynamic.openable = You see the exit %s. You can open it with the red key on the floor. Do you want to use it?%Iig.confirm 
+ig.keydoors.exit.redgroup.kd.inventory.openable = You see the exit %s. You can open it with your red key. Do you want to use it?%Iig.confirm 
+ig.keydoors.exit.redgroup.kd.open = You use your key to open the exit %s. The red key remains stuck in the locker and the door goes away, but the exit opens.%l
 
 ig.keydoors.keepclose = You decide to keep that door closed.%l
 ig.keydoors.locked = You see a locked door %s.%l
 
-ig.keydoors.group.dynamic.openable = You see a door %s. You can open it with the key on the floor. Do you want to use it?
-ig.keydoors.group.inventory.openable = You see a door %s. You can open it with your key. Do you want to use it?
-ig.keydoors.group.open = You use your key to open the door %s. Unfortunately, the key remains stuck in the locker, but at least the door opens. You don't have that key anymore.%l
+ig.keydoors.group.kd.dynamic.openable = You see a door %s. You can open it with the key on the floor. Do you want to use it?%Iig.confirm 
+ig.keydoors.group.kd.inventory.openable = You see a door %s. You can open it with your key. Do you want to use it?%Iig.confirm 
+ig.keydoors.group.kd.open = You use your key to open the door %s. Unfortunately, the key remains stuck in the locker, but at least the door opens. You don't have that key anymore.%l
 
 ig.keydoors.group.key.lore = You see a key lying in a book, that says: you can only have one key at a time (%s), and it is a single-use key. Do you want to take it?
 ig.keydoors.group.key.take:true = You take the key.%l
@@ -52,9 +52,9 @@ ig.keydoors.group.key.take:norm = While trying to grab your second key, you loos
 ig.keydoors.group.key.take:easy = On second thought, you let the key where it is.%l
 ig.keydoors.group.key.leave = You leave the key.%l
 
-ig.keydoors.redgroup.dynamic.openable = You see a red door %s. You can open it with the red key on the floor. Do you want to use it?
-ig.keydoors.redgroup.inventory.openable = You see a door you don't want to approach %s. You can probably open it with your red key. Do you want to lose it?
-ig.keydoors.redgroup.open = You decide to use that red key to open the door %s, when the door suddently opens by sliding upwards. The key remains stuck in the locker. You don't have any red key anymore.%l
+ig.keydoors.redgroup.kd.dynamic.openable = You see a red door %s. You can open it with the red key on the floor. Do you want to use it?
+ig.keydoors.redgroup.kd.inventory.openable = You see a door you don't want to approach %s. You can probably open it with your red key. Do you want to lose it?
+ig.keydoors.redgroup.kd.open = You decide to use that red key to open the door %s, when the door suddently opens by sliding upwards. The key remains stuck in the locker. You don't have any red key anymore.%l
 
 ig.keydoors.redgroup.key.lore = You see a red key lying in a book, that says: you can only have one red key at a time (%s), and it is a single-use key. Do you want to take it?
 ig.keydoors.redgroup.key.take:true = You take the red key.%l
@@ -63,7 +63,7 @@ ig.keydoors.redgroup.key.take:norm = While trying to grab your second red key, y
 ig.keydoors.redgroup.key.take:easy = On second thought, you let the key where it is.%l
 ig.keydoors.redgroup.key.leave = You decide to leave the red key.%l
 
-ig.sword.lore = You see a sword lying in a book, that says: you can only have one sword at a time (%s), and it is a single-use key. Do you want to take it?
+ig.sword.lore = You see a sword lying in a book, that says: you can only have one sword at a time (%s), and it is a single-use key. Do you want to take it?%Iig.confirm 
 ig.sword.take:true = You take the sword.%l
 ig.sword.take:false = While trying to grab your second sword, you loose both.%l
 ig.sword.take:norm = While trying to grab your second sword, you loose one of them.%l
@@ -81,7 +81,7 @@ ig.near.exit:hearable = When you try to listen, you detect a thundrstorm. The ex
 ig.near.exit:far = You feel like there's something missing here...%l
 ig.near.exit:near = 
 
-ig.graveyard.lore = You arrive in a room with an open grave. Do you want to go in it?
+ig.graveyard.lore = You arrive in a room with an open grave. Do you want to go in it?%Iig.confirm 
 ig.graveyard.go = You decided to go in that grave.%l
 ig.graveyard.cancel = You decided to turn back.%l
 

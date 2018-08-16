@@ -73,7 +73,7 @@ function main()
 			if (movement == "") or (movement == "h") or (movement == "help") then
 				console:printLore(
 					dictionary:translate(stateManager:getStatesStack(), "help",
-						directions["up"], directions["down"], directions["left"], directions["right"], dictionary:translate({"mm"}, "eqc"))
+						directions["up"], directions["down"], directions["left"], directions["right"])
 				)
 			elseif (movement == directions["up"]) or (movement == '\27[A') then
 				-- go up!

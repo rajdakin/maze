@@ -22,9 +22,9 @@ mm.eqcmenu.no = Nah, it's OK...
 
 # Options strings
 opt.advanced = Advanced options
-opt.not_exit = I don't like %s!
+opt.not_exit = I don't like %Imm.eqc !
 opt.enable_minimap = Enable minimap? %Y.
-opt.difficulty.option = Difficulty: %s
+opt.difficulty.option = Difficulty: %Iopt.difficulty.value 
 
 opt.difficulty.value:1 = Very easy
 opt.difficulty.value:2 = Easy
@@ -39,8 +39,8 @@ opt.adv.enable_map = Enable the full map? %Y.
 # In-game string
 ig.prompt = Command: 
 
-ig.help:true = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%s: "exit"%lThis help: "help"%lPrint the full map: "map"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
-ig.help:false = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%s: "exit"%lThis help: "help"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
+ig.help:true  = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%Imm.eqc : "exit"%lThis help: "help"%lPrint the full map: "map"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
+ig.help:false = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%Imm.eqc : "exit"%lThis help: "help"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
 
 ig.move.fail = BOOMM!!%l
 ig.move.up = Moving up%l
@@ -83,7 +83,7 @@ ig.confirm =  ('Y' or 'y' to say yes, otherwise no):
 
 ig.monster.room_sword.lore = In this room, there is a sword... and a MONSTER?!?%l
 
-ig.monster.room_sword.reach.lore = In a hurry, you rush to the sword. Do you want to take it? You don't have any.
+ig.monster.room_sword.reach.lore = In a hurry, you rush to the sword. Do you want to take it? You don't have any.%Iig.monster.room_sword.reach.confirm 
 ig.monster.room_sword.reach.grabbed = You "read" the book, and you grab these words: "sword", "monster", "one max" and "disintegrate". After that you take the sword and kill the monster. The sword remains in the monster's body which disintegrates.%lYou now have no sword.%l
 ig.monster.room_sword.reach.timeout = You read the book, and... you read it too slowly, the monster kills you.%l
 ig.monster.room_sword.reach.cancel = Well... Due to... you being... a true pacifist? you refused to... spare your life.%l%lAnd so you die.%lCongratulation, I guess?%l
@@ -105,45 +105,45 @@ ig.exit:opened =
 
 ig.keydoors.exit.locked = You see the exit %s. It is locked. You can't open it.%l
 
-ig.keydoors.exit.group.kd.dynamic.openable = You see the exit, a standard door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
-ig.keydoors.exit.group.kd.inventory.openable = You see the exit, a standard door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
+ig.keydoors.exit.group.kd.dynamic.openable = You see the exit, a standard door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?%Iig.keydoors.exit.group.kd.dynamic.confirm 
+ig.keydoors.exit.group.kd.inventory.openable = You see the exit, a standard door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?%Iig.keydoors.exit.group.kd.inventory.confirm 
 ig.keydoors.exit.group.open = The exit is a closed door that you open with your key.%l
 
-ig.keydoors.exit.redgroup.kd.dynamic.openable = You see the exit, a weird door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
-ig.keydoors.exit.redgroup.kd.inventory.openable = You see the exit, a repulsive door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?
+ig.keydoors.exit.redgroup.kd.dynamic.openable = You see the exit, a weird door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?%Iig.keydoors.exit.redgroup.kd.dynamic.confirm 
+ig.keydoors.exit.redgroup.kd.inventory.openable = You see the exit, a repulsive door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?%Iig.keydoors.exit.redgroup.kd.inventory.confirm 
 ig.keydoors.exit.redgroup.open = The exit is a closed door that you open with your key.%l
 
 ig.keydoors.exit.keepclose = You decide to keep that only and unique exit closed.%l
 
 ig.keydoors.keepclose = You decide to keep that door closed.%l
 
-ig.keydoors.group.kd.dynamic.openable = You see a door %s. You can probably open it with the key on the floor. Do you want to lose it?
-ig.keydoors.group.kd.inventory.openable = You see a door %s. You can probably open it with your key. Do you want to lose it?
+ig.keydoors.group.kd.dynamic.openable = You see a door %s. You can probably open it with the key on the floor. Do you want to lose it?%Iig.keydoors.group.kd.dynamic.confirm 
+ig.keydoors.group.kd.inventory.openable = You see a door %s. You can probably open it with your key. Do you want to lose it?%Iig.keydoors.group.kd.inventory.confirm 
 ig.keydoors.group.kd.open = You use your key to open the door %s. Due to your wonderful talent of breaking in %c02;03;31mirony detected%r, the key remains stuck in the locker, but at least the door opens. You don't have that key anymore.%l
 
 ig.keydoors.group.door.locked = You see a locked door %s.%l
 
-ig.keydoors.group.key.lore = You see a key lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other normal key (what does that even means?) (%s), and it is single-use (why is that?). Do you want to take it?
+ig.keydoors.redgroup.kd.dynamic.openable = You see a door you don't want to approach %s. You can probably open it with the... red key? on the floor. Do you want to use it? (I think you do.)%Iig.keydoors.redgroup.kd.dynamic.confirm 
+ig.keydoors.redgroup.kd.inventory.openable = You see a door you don't want to approach %s. You can probably open it with your... red key? Do you want to lose it? (I think you do.)%Iig.keydoors.redgroup.kd.inventory.confirm 
+ig.keydoors.redgroup.kd.open = You decide to get rid of that bloody key. By approaching an even more terrifying door. You use your key to open the door %s, when the door suddenly opens by sliding upwards! The key remains stuck in the locker. You don't have any... red key? anymore.%l
+
+ig.keydoors.redgroup.door.locked = You see a terrific door %s. And not a beautiful one.%l
+
+ig.keydoors.group.key.lore = You see a key lying on the floor. Except that you must read %c09mthis text%r a book, so no. It says: you must not have any other normal key (what does that even means?) (%Iig.keydoors.group.key.key ), and it is single-use (why is that?). Do you want to take it?%Iig.keydoors.group.key.confirm 
 ig.keydoors.group.key.take:true = You took the key. Nothing happens.%l
 ig.keydoors.group.key.take:false = You took the key. Both key explodes.%l
 ig.keydoors.group.key.take:norm = You took the key. It explodes.%l
 ig.keydoors.group.key.take:easy = After thinking a little, you realize it's not a good idea.%l
 ig.keydoors.group.key.leave = You leave the key. Nothing happens.%l
 
-ig.keydoors.redgroup.kd.dynamic.openable = You see a door you don't want to approach %s. You can probably open it with the... red key? on the floor. Do you want to use it? (I think you do.)
-ig.keydoors.redgroup.kd.inventory.openable = You see a door you don't want to approach %s. You can probably open it with your... red key? Do you want to lose it? (I think you do.)
-ig.keydoors.redgroup.kd.open = You decide to get rid of that bloody key. By approaching an even more terrifying door. You use your key to open the door %s, when the door suddenly opens by sliding upwards! The key remains stuck in the locker. You don't have any... red key? anymore.%l
-
-ig.keydoors.redgroup.door.locked = You see a terrific door %s. And not a beautiful one.%l
-
-ig.keydoors.redgroup.key.lore = You see a repulsively red key lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other hell's key (what does that even means?) (%s), and: it is single-use (why is that?). Do you want to take it?
+ig.keydoors.redgroup.key.lore = You see a repulsively red key lying on the floor. Except that you must read %c09mthis text%r a book, so no. It says: you must not have any other hell's key (what does that even means?) (%Iig.keydoors.redgroup.key.redkey ), and: it is single-use (why is that?). Do you want to take it?%Iig.keydoors.redgroup.key.confirm 
 ig.keydoors.redgroup.key.take:true = You took the hell's key. Nothing happens.%l
 ig.keydoors.redgroup.key.take:false = You took the red key. Both key explodes.%l
 ig.keydoors.redgroup.key.take:norm = You took the red key. It explodes.%l
 ig.keydoors.redgroup.key.take:easy = After thinking a little, you realize it's not a good idea.%l
 ig.keydoors.redgroup.key.leave = You leave the bloody key. Nothing happen.%l
 
-ig.sword.lore = You see a sword lying on the floor. Except that you must read %c09mthis text%ra book, so no. It says: you must not have any other sword (what does that even means?) (%s), and it is single-use (why is that?). Do you want to take it?
+ig.sword.lore = You see a sword lying on the floor. Except that you must read %c09mthis text%r a book, so no. It says: you must not have any other sword (what does that even means?) (%Iig.sword.sword ), and it is single-use (why is that?). Do you want to take it?%Iig.sword.confirm 
 ig.sword.take:true = You take the sword. Nothing happens.%l
 ig.sword.take:false = You take the sword. Both swords explodes.%l
 ig.sword.take:norm = You took the red key. It explodes.%l
@@ -167,7 +167,7 @@ ig.near.exit:hearable = When you try to listen, you detect a thundrstorm. The ex
 ig.near.exit:far = You feel like there's something missing here...%l
 ig.near.exit:near = 
 
-ig.graveyard.lore = You arrive in a room. A special one. With dirt. And graves. One is open. Do you want to go in it?
+ig.graveyard.lore = You arrive in a room. A special one. With dirt. And graves. One is open. Do you want to go in it?%Iig.graveyard.confirm 
 ig.graveyard.go = You decided to run in the stairs in that grave.%l
 ig.graveyard.cancel = You decided to turn back and ignore the call of that opening.%l
 

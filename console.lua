@@ -17,8 +17,7 @@ function OutputModeClass:isValid() return self.__is_auto_valid end
 function OutputModeClass:isCharPerChar() return self.__is_CPC end
 function OutputModeClass:isErrorMode() return not self.__out end
 
-local OutputMode = enum(function(self, name, ...)
-	args = {...} args = args[1]
+local OutputMode = enum(function(self, name, args)
 	OutputModeClass.__init(self, args[1], args[2], args[3])
 end, OutputModeClass,
 {SOUT  = {true,  true,  true }, -- Slow standard OUTput
@@ -48,8 +47,7 @@ function LogLevelClass:isValid(...)
 	     and self.__config_check(currentConfig:getConsoleConfig()))
 end
 
-LogLevel = enum(function(self, name, ...)
-	args = {...} args = args[1]
+LogLevel = enum(function(self, name, args)
 	LogLevelClass.__init(self, args[1], args[2], args[3], args[4])
 end, LogLevelClass,
 {FATAL_ERROR = {"Fatal error",       0, function(config) return true                     end, function(args) return OutputMode.FATAL end},

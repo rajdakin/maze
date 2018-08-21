@@ -7,7 +7,7 @@ local utilmodule = require(import_prefix .. "util")
 local consolemodule = require(import_prefix .. "console")
 local classmodule = require(import_prefix .. "class")
 
-local comment = {str = "#", len = 1}
+local comment = "#"
 
 id2lang = {}
 local Lang = class(function(self, lang_name, lang_id, fallback_id)
@@ -34,7 +34,7 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 		
 		-- File parsing: one line = one instruction, except when empty
 		nwsline = line:gsub("^%s+", ""):gsub("(%g[%w_%.%:]-)%s*= ?", "%1=", 1)
-		if nwsline and nwsline ~= "" and nwsline:sub(1, comment.len) ~= comment.str then
+		if nwsline and nwsline ~= "" and not nwsline:find("^" .. comment) then
 			if nwsline:find("=") then
 				-- Line is an ID -> text instruction
 				local text_id, text = nwsline:gsub("=.*", "", 1), nwsline:gsub(".-=", "", 1)
@@ -230,7 +230,7 @@ function Lang:translate(state, str, origin, ...)
 		end
 	end
 	
-	newstr = newstr:gsub("%%%%", "%%")
+	newstr = newstr:gsub("%%%%[ %t]?", "%%")
 	return newstr
 end
 

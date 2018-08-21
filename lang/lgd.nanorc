@@ -16,6 +16,9 @@ color green "^[ 	]*[^ 	=\.:][^=\.:]*(\.[^ 	=\.:][^=\.:]*)*(:[^ 	=\.:][^=\.:]*)?[
 ## Formatted strings
 color magenta "%c([^%]|%[^r])*%r"
 
+## %%
+color ,red "%%[	 ]"
+
 ## Every standard %, by default every of them is wrong
 color red "%"
 color brightred "%."

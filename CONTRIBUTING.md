@@ -6,8 +6,8 @@ If you want to add an other lang, here is how to do it.
 ### 1. Adding the dictionary module
 In [dictionary.lua@line250](dictionary.lua#L250), there is a line like `langs = {{`...
 
-After the first opening curly bracket, insert this:
-`{id = "[id]", name = "[name]", fallback = "[fallback]"}, `
+Before the last closing curly bracket, insert this:
+`, {id = "[id]", name = "[name]", fallback = "[fallback]"}`
 where:
 - `[id]` is the lang ID (usually two lowercase letters, then a `_`, then two uppercase letters). It will be reused internally and **must be unique**.
 - `[name]` is the display name of the lang. It will only be used to display on the screen.
@@ -22,11 +22,11 @@ Two lines ahead, there is `self.__active_lang = langs[1].id`. Replace what is af
 Finally, go in the `lang` directory and create a file named `[id].lgd` (where `[id]` is the ID). (`lgd` means LanG Dictionary.)
 
 You may create this file by using the Notepad (Windows), Nano (command-line *nix), Mousepad (*nix), Notepad++ (Windows and MacOS?) or any other **RAW TEXT** file editor. (That means, OpenOffice won't work.)
-Then save a new/empty file **and remove EVERYTHING from the save name, including the `.txt`**.
+Then save a new/empty file **and remove EVERYTHING from the save name, including the `.txt`** to replace it with the file name.
 
-**Beware: if the file finishes by `.txt`, you created it wrong**. It won't work.
+**Beware: if the file name finishes by `.txt`, you created it wrong**. It won't work.
 
-**Beware: if it is written anywhere that this file is a text file, you very likely created it wrong**. It won't work.
+**Beware: if it is written anywhere that this file is a text file, you very likely created it wrong**. It probably won't work.
 
 It is possible that you created it wrong even if it display `.lgd` at the end of the name: you simply hid the file extensions.
 

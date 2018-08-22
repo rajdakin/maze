@@ -91,12 +91,6 @@ local Level = class(function(self, level_datas, level_config, obs3)
 	end
 end)
 
-function Level:refreshActiveRoomNearEvents()
-	self:getActiveRoom():refreshRoomNearEvents(self:getRoomNumber() % self:getColumnCount(),
-		self:getRoom(self:getRoomNumber() - self:getColumnCount()), self:getRoom(self:getRoomNumber() + self:getColumnCount()),
-		self:getRoom(self:getRoomNumber() - 1), self:getRoom(self:getRoomNumber() + 1))
-end
-
 function Level:getMapSize() return getArrayLength(self:getRooms()) - 2 * self:getColumnCount() end
 
 function Level:getLevelConfiguration() return self.__level_configuration end
@@ -151,6 +145,10 @@ function Level:initialize()
 		
 		if not roomInit then return {success = false} end
 	end
+	
+	self:getActiveRoom():refreshRoomNearEvents(self:getRoomNumber() % self:getColumnCount(),
+		self:getRoom(self:getRoomNumber() - self:getColumnCount()), self:getRoom(self:getRoomNumber() + self:getColumnCount()),
+		self:getRoom(self:getRoomNumber() - 1), self:getRoom(self:getRoomNumber() + 1))
 	
 	return {success = true}
 end

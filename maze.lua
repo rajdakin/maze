@@ -41,7 +41,6 @@ function main()
 		objects:initialize(1)
 		
 		levelManager:getActiveLevel():printBeginingLore()
-		levelManager:getActiveLevel():refreshActiveRoomNearEvents()
 		while not game_ended do	-- here starts interactive
 			levelManager:getActiveLevel():setActiveRoomAttribute("saw", true)
 			console:printLore("\n")

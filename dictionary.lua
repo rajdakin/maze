@@ -22,7 +22,7 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 	self.__lang_id = lang_id
 	self.__lang_name = lang_name
 	
-	if fallback_id ~= nil then fallback_id = "en_US" end
+	if fallback_id == nil then fallback_id = "en_US" end
 	if lang_id ~= fallback_id then self.__fallback = fallback_id
 	else                           self.__fallback = false       end
 	

@@ -24,8 +24,6 @@ local Level = class(function(self, level_datas, level_config, obs3)
 		
 		self.__level_configuration = currentConfig:getLevelManagerConfig():getLevelConfig()
 		
-		console:print("Warning: obsolete level instanciation used. Please use the new version.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
-		
 		local init = self:initialize()
 		self.initialize_status = {success = init.success, obsolete = true, old = true, opt = init}
 	else
@@ -85,6 +83,11 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			console:print("Error: unknown level array version.", LogLevel.ERROR, "level.lua/Level:(init)")
 			self.initialize_status = {success = false, opt = "Bad level array version."}
 		end
+	end
+	
+	local status = self.initialize_status
+	if status.obsolete then console:print("Warning: obsolete level instanciation used. Please use the new version.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
+	elseif status.old then console:print("Old level instanciation used. A new version is available.", LogLevel.LOG, "level.lua/Level:(init)")
 	end
 end)
 

@@ -95,8 +95,8 @@ function Level:getMapSize() return getArrayLength(self:getRooms()) - 2 * self:ge
 
 function Level:getLevelConfiguration() return self.__level_configuration end
 
-function Level:getActiveRoomAttribute(attributeName) return self:getRoom(self.__room_number):getAttribute(attributeName)        end
-function Level:setActiveRoomAttribute(attributeName, value) self:getRoom(self.__room_number):setAttribute(attributeName, value) end
+function Level:getActiveRoomAttribute(attributeName) return self:getRoomAttribute(self:getRoomNumber(), attributeName)        end
+function Level:setActiveRoomAttribute(attributeName, value) self:setRoomAttribute(self:getRoomNumber(), attributeName, value) end
 
 function Level:getRoomAttribute(room, attributeName) return self:getRoom(room):getAttribute(attributeName)        end
 function Level:setRoomAttribute(room, attributeName, value) self:getRoom(room):setAttribute(attributeName, value) end
@@ -165,21 +165,21 @@ function Level:__setupLevelLoresState(loreState)
 end
 
 function Level:printBeginingLore()
+	self:__setupLevelLoresState("start")
 	if self.__array_version == 2 then
-		self:__setupLevelLoresState("start")
 		console:printLore(
 			dictionary:translate(stateManager:getStatesStack(), "lore")
 		)
-		stateManager:popMainState()
 	else
 		if self.__lore_begin and self.__lore_begin ~= "" then console:printLore(self.__lore_begin) console:printLore("\n") end
 	end
+	stateManager:popMainState()
 end
 
 function Level:printEndingLore(death, objects)
+	self:__setupLevelLoresState("end")
+	
 	if self.__array_version == 2 then
-		self:__setupLevelLoresState("end")
-		
 		local ret = self.__alternative_lore(death, objects)
 		local state, alt = ret.state, ret.alt
 		
@@ -188,10 +188,10 @@ function Level:printEndingLore(death, objects)
 		console:printLore(
 			dictionary:translate(stateManager:getStatesStack(), state)
 		)
-		stateManager:popMainState()
 	else
 		if self.__lore_end[death] and self.__lore_end[death] ~= "" then console:printLore(self.__lore_end[death]) console:printLore("\n") end
 	end
+	stateManager:popMainState()
 	
 	if self.__map_reveal(death, objects) then
 		self:setAllRoomsSeenStatusAs(true)

@@ -26,6 +26,8 @@ function StateManager:getState()
 end
 
 function StateManager:pushMainState(main_state)
+	if main_state == nil then return end
+	
 	self.__main_states[self.__main_count + 1] = {main_state}
 	self.__main_count = self.__main_count + 1
 	
@@ -49,6 +51,8 @@ function StateManager:popMainState()
 end
 
 function StateManager:pushState(state)
+	if state == nil then return end
+	
 	self.__states[self.__count + 1] = state
 	self.__count = self.__count + 1
 end

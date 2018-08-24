@@ -12,6 +12,13 @@ local eventsmodule = require(import_prefix .. "events")
 local classmodule = require(import_prefix .. "class")
 local roommodule = require(import_prefix .. "room")
 
+--[[ Level - the level class
+	Holds the level's room and logic functions
+	
+	level_datas - the level datas
+	level_config - the default level configuration = the level config of the level manager config
+	obs3 - the 3rd level argument, used only for an obsolete way of instanciating the level.
+]]
 local Level = class(function(self, level_datas, level_config, obs3)
 	if type(level_datas) == "number" then
 		self.__column_count = level_config
@@ -199,6 +206,7 @@ function Level:printEndingLore(death, objects)
 	return not death and self.__win_level(objects)
 end
 
+-- reverseMap - moves the cursor up to revert the minimap display
 function Level:reverseMap(objects)
 	if not self:getLevelConfiguration():doesDisplayMinimap() then return end
 	
@@ -318,7 +326,10 @@ function Level:checkLevelEvents(is_ended, objects)
 	return ret
 end
 
-LevelManager = class(function(self, levelManagerConfig)
+--[[ LevelManager - the level manager class [singleton]
+	Holds a config and the levels
+]]
+local LevelManager = class(function(self, levelManagerConfig)
 	self.__config = levelManagerConfig
 	
 	self:initialize()
@@ -423,4 +434,5 @@ function LevelManager:initializeLevels()
 	end
 end
 
+-- levelManager - the LevelManager main singleton
 levelManager = LevelManager(currentConfig:getLevelManagerConfig())

@@ -18,14 +18,14 @@ objects = Objects(1)
 
 game_ended = false
 
+-- resetMaze - reset the "seen" status of the maze (iff the current difficulty is greater than very easy)
 function resetMaze()
 	if levelManager:getActiveLevel():getLevelConfiguration():getDifficulty() > 1 then
 		levelManager:getActiveLevel():setAllRoomsSeenStatusAs(false)
 	end
 end
 
-resetMaze()
-
+-- main - run all levels from the active level up to the final one, processing all the logic in the same time
 function main()
 	while levelManager:getActiveLevel() do
 		levelManager:getActiveLevel():initialize()
@@ -180,6 +180,7 @@ function main()
 	return "\8\8\8\8\8\8\8\8\8\8(Yes, it is)"
 end
 
+-- This is the pre- and post-messages
 console:printLore("Write 'h'<Enter> to get the help at any time.\n")
 console:printLore(main() .. "\n")
 console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")

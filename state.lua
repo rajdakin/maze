@@ -6,6 +6,11 @@ local utilmodule = require(import_prefix .. "util")
 
 local classmodule = require(import_prefix .. "class")
 
+--[[ StateManager - the state manager class [singleton]
+	Holds a state stack
+	
+	main_state - the initial main state
+]]
 local StateManager = class(function(self, main_state)
 	self.__exit = false
 	
@@ -21,10 +26,12 @@ function StateManager:getMainStatesStack() return self.__main_states end
 function StateManager:getStatesCount()     return self.__count      end
 function StateManager:getMainStatesCount() return self.__main_count end
 
+-- getState - alias for getStatesStack - [later returns a state class]
 function StateManager:getState()
 	return self:getStatesStack()
 end
 
+-- pushMainState - store the old main state and reset the stack to put the new main_state on top
 function StateManager:pushMainState(main_state)
 	if main_state == nil then return end
 	
@@ -34,6 +41,7 @@ function StateManager:pushMainState(main_state)
 	self.__states = self.__main_states[self.__main_count]
 end
 
+-- popMainState - restore the last stored main state
 function StateManager:popMainState()
 	if self.__main_count == 1 then self.__exit = true
 	elseif self.__main_count == 0 then return nil end
@@ -68,4 +76,5 @@ function StateManager:popState()
 	return state
 end
 
+-- stateManager - the state manager singleton
 stateManager = StateManager("mm")

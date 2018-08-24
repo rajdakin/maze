@@ -6,6 +6,11 @@ local utilmodule = require(import_prefix .. "util")
 
 local classmodule = require(import_prefix .. "class")
 
+--[[ Event - the events superclass
+	
+	mainid - event's type
+	subid - event's subtype
+]]
 local Event = class(function(self, mainid, subid)
 	self.__id = mainid
 	self.__subid = subid
@@ -22,6 +27,12 @@ function Event:iskind(clss)
 	end
 end
 
+--[[ EventParsingResult - room event parsing return type
+	
+	id - event subid
+	is_ended - if the level is finished
+	objects - the finishing objects
+]]
 EventParsingResult = class(function(self, id, is_ended, objects)
 	Event.__init(self, 0, id)
 	self.ended = is_ended
@@ -31,8 +42,15 @@ end, Event)
 -- 0 is definite
 eventParsingResultEndedReasons = {[-1] = "Internal error", [0] = "User request"}
 
+--[[
+	EventParsingResultEnded - crashed due to reasonsStrings[reasonId] = reason_registering_string
+	EventParsingResultDone - worked, no further details. objects -> finishing objects
+	EventParsingResultExited - escaped. death -> has died, objects -> finishing objects
+	EventParsingResultRoomChanging - changing room. new_room_position -> new room ID/relative position, objects -> finishing objects
+	EventParsingResultRoomRestore - changing room to old room. objects -> finishing objects
+]]
 EventParsingResultEnded = class(function(self, reasonId, reason_registering_string)
-	EventParsingResult.__init(self, -1)
+	EventParsingResult.__init(self, -1, 0)
 	self.reasonId = reasonId
 	if reasonId then
 		if not eventParsingResultEndedReasons[reasonId] then eventParsingResultEndedReasons[reasonId] = reason_registring_string end
@@ -54,11 +72,18 @@ EventParsingResultRoomRestore = class(function(self, objects)
 	EventParsingResult.__init(self, 3, false, objects)
 end, EventParsingResultRoomChanging)
 
-
+--[[ RoomPrintingResult - room printing return type
+	
+	id - event subid
+]]
 RoomPrintingResult = class(function(self, id)
 	Event.__init(self, 1, id)
 end, Event)
 
+--[[
+	RoomPrintingError - error while printing room
+	RoomPrintingSuccess - finished printing room
+]]
 roomPrintingErrorSubIDs = {}
 RoomPrintingError = class(function(self, id)
 	if id then roomPrintingErrorSubIDs[id] = true end
@@ -70,6 +95,10 @@ RoomPrintingSuccess = class(function(self, id)
 	self.__subids = roomPrintingSuccessSubIDs
 end, RoomPrintingResult)
 
+--[[
+	RoomPrintingErrorMalformedCall - error due to bad call to function: reason.
+	RoomPrintingDone - finished.
+]]
 RoomPrintingErrorMalformedCall = class(function(self, reason)
 	RoomPrintingError.__init(self, -1)
 	if reason then self.reason = reason else self.reason = "" end
@@ -78,40 +107,18 @@ RoomPrintingDone = class(function(self)
 	RoomPrintingSuccess.__init(self, 0)
 end, RoomPrintingSuccess)
 
-
-LevelInitializingResult = class(function(self, id)
+--[[ LevelPrintingResult - level printing return type
+	
+	id - event subid
+]]
+LevelPrintingResult = class(function(self, id)
 	Event.__init(self, 2, id)
 end, Event)
 
-levelInitializingErrorSubIDs = {}
-LevelInitializingError = class(function(self, id)
-	LevelInitializingResult.__init(self, id)
-	levelInitializingErrorSubIDs[id] = true
-	self.__subids = levelInitializingErrorSubIDs
-end, LevelInitializingResult)
-levelInitializingSuccessSubIDs = {}
-LevelInitializingSuccess = class(function(self, id)
-	LevelInitializingResult.__init(self, id)
-	levelInitializingSuccessSubIDs[id] = true
-	self.__subids = levelInitializingSuccessSubIDs
-end, LevelInitializingResult)
-
-LevelInitializingErrored = class(function(self, reason)
-	LevelInitializingError.__init(self, -1)
-	if reason then self.reason = reason else self.reason = "" end
-end, LevelInitializingError)
-LevelInitializingDone = class(function(self)
-	LevelInitializingSuccess.__init(self, 1)
-end, LevelInitializingSuccess)
-LevelInitializingWarn = class(function(self, reason)
-	LevelInitializingSuccess.__init(self, 2)
-end, LevelInitializingSuccess)
-
-
-LevelPrintingResult = class(function(self, id)
-	Event.__init(self, 3, id)
-end, Event)
-
+--[[
+	LevelPrintingError - error while printing level
+	LevelPrintingSuccess - finished printing level
+]]
 levelPrintingErrorSubIDs = {}
 LevelPrintingError = class(function(self, id)
 	LevelPrintingResult.__init(self, id)
@@ -125,6 +132,11 @@ LevelPrintingSuccess = class(function(self, id)
 	self.__subids = levelPrintingSuccessSubIDs
 end, LevelPrintingResult)
 
+--[[
+	LevelPrintingErrored - error: reason.
+	LevelPrintingDone - finished.
+	LevelPrintingIgnored - ignored due to bad configuration state.
+]]
 LevelPrintingErrored = class(function(self, reason)
 	LevelPrintingError.__init(self, -1)
 	if reason then self.reason = reason else self.reason = "" end
@@ -138,5 +150,4 @@ end, LevelPrintingSuccess)
 
 --EventParsingResult.__init = nil
 --RoomPrintingResult.__init = nil
---LevelInitializingResult.__init = nil
 --LevelPrintingResult.__init = nil

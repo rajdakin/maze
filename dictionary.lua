@@ -9,7 +9,17 @@ local classmodule = require(import_prefix .. "class")
 
 local comment = "#"
 
-id2lang = {}
+local id2lang = {}
+
+--[[ Lang - the lang class
+	Holds any translation for the corresponding lang
+	
+	See also - lang/README.md
+	
+	lang_name - the displayable string of the lang name
+	lang_id - the lang UID, used internally and while loading
+	fallback_id - the lang fallback UID
+]]
 local Lang = class(function(self, lang_name, lang_id, fallback_id)
 	if id2lang[lang_id] then
 		console:print("Lang already defined: " .. lang_id .. "\n", LogLevel.ERROR, "dictionary.lua/Lang:(init)")
@@ -32,11 +42,9 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 	for line in io.lines(import_prefix .. "lang/" .. lang_id .. ".lgd") do
 		linecount = linecount + 1
 		
-		-- File parsing: one line = one instruction, except when empty
 		nwsline = line:gsub("^%s+", ""):gsub("(%g[%w_%.%:]-)%s*= ?", "%1=", 1)
 		if nwsline and nwsline ~= "" and not nwsline:find("^" .. comment) then
 			if nwsline:find("=") then
-				-- Line is an ID -> text instruction
 				local text_id, text = nwsline:gsub("=.*", "", 1), nwsline:gsub(".-=", "", 1)
 				
 				local err = false
@@ -56,6 +64,10 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 					end
 				end
 				
+				-- The %c[]m is replaced by \27[[]m
+				-- The %j    is replaced by \8
+				-- The %l    is replaced by \n
+				-- The %r    is replaced by \27[00m
 				text = text
 					:gsub("%%c([^m]+m)", "\27[%1" )
 					:gsub("%%j",         "\8"     )
@@ -325,40 +337,56 @@ function Lang:setAlternative(state, str, newUnlocalized)
 	end
 end
 
-local langs = {{id = "en_US", name = "English (America)"}, {id = "en_GB", name = "Serious english (Great Britain)"}}
+-- langs - the registered langs
+local langs = {{id = "en_US", name = "English (America)", fallback = false}, {id = "en_GB", name = "Serious english (Great Britain)"}}
+
+--[[ Dictionary - the dictionary class [singleton]
+	Holds all registered langs and the active lang UID
+]]
 local Dictionary = class(function(self)
 	self.__active_lang = langs[1].id
 	
 	self.__langs = {}
 	for k, lang in pairs(langs) do
-		if not self.__langs[lang_id] then self.__langs[lang.id] = Lang(lang.name, lang.id, lang,fallback) end
+		if not self.__langs[lang_id] then self.__langs[lang.id] = Lang(lang.name, lang.id, lang.fallback) end
 	end
 end)
 
+--[[
+	setActiveLang - set the active lang UID
+	getActiveLang - get the active lang UID
+]]
 function Dictionary:setActiveLang(lang)    self.__active_lang = lang end
 function Dictionary:getActiveLang() return self.__active_lang end
 
-function Dictionary:translate(state, str, ...) return self.__langs[self.__active_lang]:translate(state, str, nil, ...) end
+-- translate - translates the string str in state state, using the active lang
+function Dictionary:translate(state, str, ...) return self.__langs[self:getActiveLang()]:translate(state, str, nil, ...) end
 
+-- resetAlternatives - reset every alternatives in every langs
 function Dictionary:resetAlternatives()
 	for k, lang in pairs(self.__langs) do
 		lang:resetAlternative()
 	end
 end
 
+-- setAlternative - set the alternative for the string str in state state to newUnlocalized
 function Dictionary:setAlternative(state, str, newUnlocalized)
 	local ret
 	
-	ret = self.__langs[self.__active_lang]:setAlternative(state, str, newUnlocalized)
+	ret = self.__langs[self:getActiveLang()]:setAlternative(state, str, newUnlocalized)
 	for k, lang in pairs(self.__langs) do
-		if k ~= self.__active_lang then lang:setAlternative(state, str, newUnlocalized) end
+		if k ~= self:getActiveLang() then lang:setAlternative(state, str, newUnlocalized) end
 	end
 	
 	return ret
 end
 
+-- dictionary - the dictionary singleton
 dictionary = Dictionary()
 
+--[[
+	The langs post-init, used to validate/invalidate the fallbacks
+]]
 for lang_id, lang in pairs(id2lang) do
 	if lang.__fallback then
 		if not id2lang[lang.__fallback] then console:print("No lang fallback for lang " .. lang:getName() .. " (" .. lang:getID() .. "), should have been " .. lang.__fallback .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:(post init)") lang.__fallback = false

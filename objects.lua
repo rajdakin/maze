@@ -9,6 +9,14 @@ local dictionarymodule = require(import_prefix .. "dictionary")
 local consolemodule = require(import_prefix .. "console")
 local classmodule = require(import_prefix .. "class")
 
+--[[ Objects - the object manager class
+	Holds values.
+	Value types are: any lua type, "held"
+	
+	See also - Objects:initialize
+	
+	objKind - object group kind
+]]
 Objects = class(function(self, objKind)
 	self:initialize(objKind)
 end)
@@ -21,6 +29,17 @@ function Objects:resetObject  (object)        self.__objects[object] = self.__ad
 function Objects:getObjectType(object) if self:hasObject   (object)                                    then return self.__added_objects[object].type else return nil   end end
 function Objects:has          (object) if self:getObjectRaw(object) and self:getObjectRaw(object) ~= 0 then return true                              else return false end end
 
+--[[
+	getObject - return the requested object according to its type
+	setObject - set    the requested object according to its type
+	
+	object type:
+	- boolean: get returns true or false; set sets true or false
+	- nil: get returns nil; set sets nil
+	- string: get returns a string; set sets a string
+	- number: get returns a number; set sets a number (defaults to 0)
+	- held: get returns a number or false; set sets a number or false and sets alternatives accordingly (set on creating time)
+]]
 function Objects:getObject(object)
 	if not self:hasObject(object) then return nil end
 	
@@ -65,6 +84,7 @@ function Objects:setObject(object, value, ...)
 	self:setObjectRaw(object, value)
 end
 
+-- hasAnyPhysical - returns whether any of the object of type "held" is at least one
 function Objects:hasAnyPhysical()
 	for k, v in pairs(self.__objects) do
 		if self:getObjectType(k) == "held" and v then return true end
@@ -73,6 +93,12 @@ function Objects:hasAnyPhysical()
 	return false
 end
 
+--[[
+	addObject - add the object object with the corresponding startValue and its optional type overriding, also set the alternatives re-set
+	
+	The alternatives re-set are the optional options and are grouped by three.
+	The first option is the state. The second is the name. The third is a function that takes in whether there is an object, and output the new alternative.
+]]
 function Objects:addObject(object, startValue, typ, ...)
 	if self.__objects[object] then console:print("Trying to re-add object " .. tostring(object) .. "\n", LogLevel.WARNING, "objects.lua/Objects:addObject") return end
 	
@@ -82,6 +108,13 @@ function Objects:addObject(object, startValue, typ, ...)
 	self.__objects[object] = startValue
 end
 
+--[[ initialize - The Objects initializer
+	(Re)initializes the object with the corresponding object kind
+	
+	objKind - object group kind:
+	- 1: standard physical objects (key, red key, sword)
+	otherwise empty set
+]]
 function Objects:initialize(objKind)
 	self.__objects = {}
 	self.__added_objects = {}

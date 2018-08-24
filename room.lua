@@ -10,6 +10,11 @@ local eventsmodule = require(import_prefix .. "events")
 local classmodule = require(import_prefix .. "class")
 local statemodule = require(import_prefix .. "state")
 
+--[[ Room - the Room class
+	Holds the data and the logic of a single room.
+	
+	room_datas - the room datas
+]]
 Room = class(function(self, room_datas)
 	self.__datas = room_datas
 end)
@@ -17,6 +22,7 @@ end)
 function Room:getAttribute(attributeName) return self.__datas[attributeName]         end
 function Room:setAttribute(attributeName, value) self.__datas[attributeName] = value end
 
+-- setUnreachable - set the room's unreachable status.
 local list_data = {"exit", "up", "down", "left", "right", "monster", "sword", "key", "door", "trap", "redkey", "reddoor", "grave", "graveyard"}
 local list_data_unreachable = {"saw"}
 function Room:setUnreachable()
@@ -29,6 +35,7 @@ function Room:setUnreachable()
 	return true
 end
 
+-- initialize - initialize the room (does not reset it)
 function Room:initialize()
 	for k, v in pairs(list_data) do
 		if not self:getAttribute(v) then self:setAttribute(v, false) end
@@ -40,18 +47,21 @@ function Room:initialize()
 	return true
 end
 
+-- canHear - return whether event is an attribute of one of the rooms up, down, left or right
 function Room:canHear(event, position_in_row, up, down, left, right)
 	return (up and up:getAttribute(event)) or (down and down:getAttribute(event))
 	 or ((position_in_row ~= 1) and left and left:getAttribute(event))
 	 or ((position_in_row ~= 0) and right and right:getAttribute(event))
 end
 
+-- unheared - return whether event is an attribute of one of the rooms up, down, left and right and at least one hasn't been seen
 function Room:unheared(event, position_in_row, up, down, left, right)
 	return (up and up:getAttribute(event) and not up:getAttribute("saw")) or (down and down:getAttribute(event) and not down:getAttribute("saw"))
 	 or ((position_in_row ~= 1) and left and left:getAttribute(event) and not left:getAttribute("saw"))
 	 or ((position_in_row ~= 0) and right and right:getAttribute(event) and not right:getAttribute("saw"))
 end
 
+-- hasAccess - return if there is an access in direction or if there is an open door in this direction
 function Room:hasAccess(direction)
 	return (self:getAttribute(direction)
 	 or  (not self:getAttribute("door") and self:getAttribute("door_dir") == direction)
@@ -60,6 +70,7 @@ function Room:hasAccess(direction)
 	 and (self:getAttribute("exit_dir") ~= direction)
 end
 
+-- canHear - return whether event is an attribute of one of the rooms up, down, left or right and it is possible to access it
 function Room:canSee(event, position_in_row, up, down, left, right)
 	return (self:hasAccess("up") and self:canHear(event, position_in_row, up))
 	 or (self:hasAccess("down") and self:canHear(event, position_in_row, nil, down))
@@ -67,6 +78,7 @@ function Room:canSee(event, position_in_row, up, down, left, right)
 	 or (self:hasAccess("right") and self:canHear(event, position_in_row, nil, nil, nil, right))
 end
 
+-- unseen - return whether event is an attribute of one of the rooms up, down, left and right, it is possible to access it and at least one hasn't been seen
 function Room:unseen(event, position_in_row, up, down, left, right)
 	return (self:hasAccess("up") and self:canHear(event, position_in_row, up) and not up:getAttribute("saw"))
 	 or (self:hasAccess("down") and self:canHear(event, position_in_row, nil, down) and not down:getAttribute("saw"))
@@ -75,7 +87,7 @@ function Room:unseen(event, position_in_row, up, down, left, right)
 end
 
 local doorBGcolor = {["door"] = "44", ["reddoor"] = "41", ["grave"] = "45", ["opengrave"] = "0"}
-function Room:printDoor(dir, doorType)
+function Room:__printDoor(dir, doorType)
 	if self:getAttribute(dir) then
 		console:printLore(" ")
 	elseif self:getAttribute("exitdir") == dir then
@@ -96,18 +108,19 @@ function Room:printDoor(dir, doorType)
 	console:printLore("\27[00m")
 end
 
+-- printRoom - prints the room in the console
 function Room:printRoom(objects, isActiveRoom)
 	console:printLore("\27[s")
 	if not self:getAttribute("saw") then
 		console:printLore("\27[C\27[s\27[B\27[01;30;47;07m?? \27[u\27[2B\27[01;30;47;07m?? \27[u\27[3B\27[01;30;47;07m   \27[u\27[2C\27[00m")
 	else
 		console:printLore("\27[01;30;41;07m \27[u\27[B")                   -- / Column one
-		self:printDoor("left", "door")                                     -- |
+		self:__printDoor("left", "door")                                   -- |
 		console:printLore("\27[u\27[2B")                                   -- |
-		self:printDoor("left", "reddoor")                                  -- |
+		self:__printDoor("left", "reddoor")                                -- |
 		console:printLore("\27[u\27[3B\27[01;30;41;07m \27[u\27[C\27[s")   -- -
-		self:printDoor("up", "door")                                       -- / Column two
-		self:printDoor("up", "reddoor")                                    -- + Column three
+		self:__printDoor("up", "door")                                     -- / Column two
+		self:__printDoor("up", "reddoor")                                  -- + Column three
 		console:printLore("\27[u\27[B")                                    -- |
 		if self:getAttribute("unreachable") then                           -- |
 			console:printLore("\27[01;30;41;07mUU\27[2D\27[BUU")           -- |
@@ -149,17 +162,18 @@ function Room:printRoom(objects, isActiveRoom)
 			end                                                            -- |
 		end                                                                -- |
 		console:printLore("\27[00m\27[2D\27[B")                            -- |
-		self:printDoor("down", "door")                                     -- |
-		self:printDoor("down", "reddoor")                                  -- -
+		self:__printDoor("down", "door")                                   -- |
+		self:__printDoor("down", "reddoor")                                -- -
 		console:printLore("\27[u\27[2C\27[s\27[01;30;41;07m \27[u\27[B")   -- / Column four
-		self:printDoor("right", "door")                                    -- |
+		self:__printDoor("right", "door")                                  -- |
 		console:printLore("\27[u\27[2B")                                   -- |
-		self:printDoor("right", "reddoor")                                 -- |
+		self:__printDoor("right", "reddoor")                               -- |
 		console:printLore("\27[u\27[3B\27[01;30;41;07m \27[u\27[00m")      -- -
 	end
 	return RoomPrintingDone()
 end
 
+-- refreshRoomNearEvents - set internal values used in the checkRoomEvents function to print lores (called in checkRoomEvents)
 function Room:refreshRoomNearEvents(position_in_row, up, down, left, right)
 	if self:unseen("key", position_in_row, up, down, left, right) then
 		self:setAttribute("near_key", true)
@@ -192,6 +206,7 @@ function Room:refreshRoomNearEvents(position_in_row, up, down, left, right)
 	end
 end
 
+-- checkRoomEvents - print lores about what happens and what's near
 function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down, left, right, moved_from_elsewhere, difficulty)
 	self:setAttribute("saw", true)
 	
@@ -778,6 +793,10 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 	return ret
 end
 
+--[[
+	getRoomDisplayWidth  - constant function, returns room's printing width
+	getRoomDisplayHeight - constant function, returns room's printing height
+]]
 function getRoomDisplayWidth()
 	return 4
 end

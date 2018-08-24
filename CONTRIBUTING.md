@@ -1,84 +1,25 @@
 # Contributing
 
 ## Adding support for an other lang
-If you want to add an other lang, here is how to do it.
-
-### 1. Adding the dictionary module
-In [dictionary.lua@line250](dictionary.lua#L250), there is a line like `langs = {{`...
-
-Before the last closing curly bracket, insert this:
-`, {id = "[id]", name = "[name]", fallback = "[fallback]"}`
-where:
-- `[id]` is the lang ID (usually two lowercase letters, then a `_`, then two uppercase letters). It will be reused internally and **must be unique**.
-- `[name]` is the display name of the lang. It will only be used to display on the screen.
-- `[fallback]` is the lang's fallback's ID. It defaults to `en_US` and is used when there is no available translation. If you don't need one, then remove `, fallback = "[fallback]"`. If yu don't want a fallback, replace `"[fallback]"` by `false`.
-
-### 2. Setting the lang to be the default
-**This should only be used on the tests**, undo this before creating a pull request
-
-Two lines ahead, there is `self.__active_lang = langs[1].id`. Replace what is after the equals by the ID you put a few lines up, like so: `"en_US"` (if your lang has the ID `en_US`).
-
-### 3. Creating the lang file
-Finally, go in the `lang` directory and create a file named `[id].lgd` (where `[id]` is the ID). (`lgd` means LanG Dictionary.)
-
-You may create this file by using the Notepad (Windows), Nano (command-line *nix), Mousepad (*nix), Notepad++ (Windows and MacOS?) or any other **RAW TEXT** file editor. (That means, OpenOffice won't work.)
-Then save a new/empty file **and remove EVERYTHING from the save name, including the `.txt`** to replace it with the file name.
-
-**Beware: if the file name finishes by `.txt`, you created it wrong**. It won't work.
-
-**Beware: if it is written anywhere that this file is a text file, you very likely created it wrong**. It probably won't work.
-
-It is possible that you created it wrong even if it display `.lgd` at the end of the name: you simply hid the file extensions.
-
-*If you created it wrong, delete it and start again. It won't work.*
-
-### 4. Translating
-After that, in that file, write the translations.
-
-A few notes:
-- Each string before the final `.` is a state. If there is no translations found in the requested state, it will move one step up. If there is still no trnslation in the root state, it asks the fallback (if one).
-- The `:` is an alternative marker. Before is the group name, after is the alternative name. The first time it sees a `:`, it set the group alternative to this alternative and set the default to this alternative.
-- You can add some things (upper case means the letter may be upper case, in which case it will cpitalize the first letter):
-  1. `%%`: replaced by `%` at translation time.
-  2. `%b`: replaced by `on` or `off` at translation time. Upper case supported
-  3. `%c[]m`: replaced by a color at reading time. The color is what replaces `[]` (see ASCII escape code `ESC[`). No check.
-  4. `%I[]s`: (where s is a space or a tab) replaced by the translation of what replaces `[]` at translation time. Setting the alternative is forbidden (omit the `:`... part), but states (separated by `.`) are allowed. **The final space (the replacemet of the `s`) is removed.**
-  5. `%j`: replaced by a ^J (= one character back, it does not remove the character, space does) at reading time.
-  6. `%l`: replaced by a new line at reading time.
-  7. `%n`: replaced by a number or `?` at translation time.
-  8. `%r`: replaced by the modifiers reset (color, bold... = `%c00m`) at reading time.
-  9. `%s`: replaced by a string at translation time.
-  10. `%y`: replaced by `yes` or `no` at translation time. UUpper case supported.
-- Inside the `lang` folder is a file named `lgd.nanorc`. It is a file coloration only supported by nano.
-  - To enable it in *nix, edit the file `~/.nanorc` (the file `.nanorc` in your home folder) and append `include [maze_loc]/lang/lgd.nanorc` where `[maze_loc]` is where you put this maze = where is this file.
-  - It will write the state + name(s) in yellow, the `=` sign in red, and the translation in green.
-  - It will tell you where are the valid (bold green)/invalid (bold red or red if at end of line) `%.`, but also if the `%c` is valid: there must be no `%cm`, `%c0m`, `%c00m`, any invalid 3+ digit numbers, anything else than numbers or `;`, a finishing `m` letter. Eventually it will color in magenta the text between the %c and the %r.
-  - It will tell you if and how many extra spaces before and after there is
-  - It will tell you which state+names are registered in brightyellow
-  - It will tell you if the %I are in a valid state and tell you that the space after is removed
+See [lang/README.md#How can I contribute?](lang/README.md#how-can-i-contribute)
 
 ## Creating levels
-If you want to submit a level, please put the code in `add_contrib_nontest_levels` in [contribution.lua@line1]( contribution.lua#L1) for a real level or in `add_contrib_nontest_levels` in [contribution.lua@line13]( contribution.lua#L13) for a test level
+If you want to submit a level, please put the code in `add_contrib_nontest_levels` in [contribution.lua@line1](contribution.lua#L1) for a real level or in `add_contrib_nontest_levels` in [contribution.lua@line13](contribution.lua#L13) for a test level
 
 If you want to create a level, here's what to do:
 ### Creating the actual level
-A level is an instance of the Level class. To create a new instance, simply call `Level(args)`.
-`args` are the arguments of the level constructor.
+*It is planned to do a level editor, but there are none for now, sorry.*
 
-There is two ways of creating a level.
+The current way to add a level is by using a level name and a big table and passing it to the `level_manager:addLevel` function.
 
-The old \(obsolete) way of doing it is to call `Level(init_room, col_cnt, room_datas)`.
-This way will be removed later.
-
-The new way is by using a big array and passing it to the constructor.
-
-To create a level, you need ~~three~~ five informations:
+To create a level, you need eight informations:
+- The level table version. Currently, there are two. The last one is described here.
 - The level configuration. \(You might not want to create a game configuration and use the `currentConfig:getLevelConfig()` level configuration.) Goes into ID `level_conf` *\(optional)*.
 - The starting room. This is where you start. Goes into ID `starting_room`.
 - The column count. It determines how many rooms per line there is. Goes into ID `column_count`.
-- The level datas. Goes into ID `rooms_datas`. It is an array made of:
-  - A first line from `-[column count - 1]` to `0` made of empty arrays. These are internally rooms, but are (normally) never displayed nor accessible.
-  - A multiple of column count arrays, which constitute the level itself. Each array can be empty, or contains the following:
+- The level datas. Goes into ID `rooms_datas`. It is a table made of:
+  - A first line from `-[column count - 1]` to `0` made of empty tables. These are internally rooms, but are (normally) never displayed nor accessible.
+  - A multiple of column count tables, which constitute the level itself. Each table can be empty, or contains the following:
     - the exit:
       - `exit`: boolean (in that case true)
       - `dir_exit`: string (`up`, `down`, `left`, `right`)
@@ -103,11 +44,13 @@ To create a level, you need ~~three~~ five informations:
       - `deadlygrave`: boolean (is the grave a trap?)
         - \(Optional) `keyneeded`: if `deadlygrave`is set, this string gives the needed key (`key` or `redkey`) to exit the grave
       - \(Optional) `exitdir`: if `deadlygrave`is set, this string gives the direction of the grave's exit
-  - Then finally an empty line (of size of the number of columns) of empty arrays.
-- Lores, texts that are at the beginning and the end of the level. It is an array of size 2, the first string is displayed at the beginning of the level, the second is an other array with 1=false and 2=true, and where that boolean is wether you died or not (false=you survived). You can set it to a string so it defaults to false and a default string for when you died.
+  - Then finally an empty line (of size of the number of columns) of empty tables.
+- The map availability when you've finished the level. It is a function that takes in whether you're dead and what objects do you have and must return a boolean value (true means you unlocked the full map). Goes into ID `map_reveal`.
+- The level winning when you finish the level alive. It is a function that takes in what objects do you have and must return a boolean value (note that if you're dead, you cannot win) (true means you win). Goes into ID `win_level`.
+- Lores, texts that are at the beginning and the end of the level. It is a function that inputs whether you're dead and what objects you have and outputs a table with the `state` ID is the key and the `alt` ID is the alternative of the ending lore. Goes into ID `alternative_lore`.
 
 ### Testing the level
-To test the level, you can either run it from the interactive mode (see [INTERACTING.md#misc](INTERACTING.md#misc)) or run it by putting the level as the last instruction of the `add_contrib_levels` in [contribution.lua](contribution.lua) using the level writing template wrote in the very beginning of that function.
+To test the level, you can either run it from the interactive mode \(see [INTERACTING.md#misc](INTERACTING.md#misc)) or run it by putting the level as the last instruction of the `add_contrib_levels` in [contribution.lua](contribution.lua) using the level writing template wrote in the very beginning of that function.
 
 ## Implementing new things
 This will be soon implemented.

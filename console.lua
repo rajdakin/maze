@@ -17,6 +17,10 @@ function OutputModeClass:isValid() return self.__is_auto_valid end
 function OutputModeClass:isCharPerChar() return self.__is_CPC end
 function OutputModeClass:isErrorMode() return not self.__out end
 
+--[[ OutputMode - the output mode enum
+	The output mode is a speed (character-per-character display) or immediate, an output "descriptor"
+	(output or error) and whether it is automatically outputed regardless of configurations.
+]]
 local OutputMode = enum(function(self, name, args)
 	OutputModeClass.__init(self, args[1], args[2], args[3])
 end, OutputModeClass,
@@ -47,6 +51,10 @@ function LogLevelClass:isValid(...)
 	     and self.__config_check(currentConfig:getConsoleConfig()))
 end
 
+--[[ LogLevel - the log levels enum
+	The log level contains a text description, a log level, a configuration check (used to check
+	if the configuration is ccorrect) and an output mode function
+]]
 LogLevel = enum(function(self, name, args)
 	LogLevelClass.__init(self, args[1], args[2], args[3], args[4])
 end, LogLevelClass,
@@ -58,8 +66,16 @@ end, LogLevelClass,
  LOG         = {"Log",               4, function(config) return true                     end, function(args)                             return OutputMode.FNOU                                end}}
 )
 
+--[[ Log - the log class
+	Holds its own configuration: the log (that is always called), the output/error printing functions,
+	two waits function (for slow output mode).
+	
+	config - the log configuration
+]]
 local Log = class(function(self, config)
 	local log, out, err, pwait, gwait = config.log, config.out, config.err, config.pwait, config.gwait
+	
+	self.__log = log
 	self.__out, self.__out_inv, self.__out_flush = out.print, out.print_inv, out.flush
 	self.__err, self.__err_inv, self.__err_flush = err.print, err.print_inv, err.flush
 	
@@ -98,6 +114,12 @@ function Log:printLore(printable)
 	self.__err_flush()
 end
 
+--[[ Console - the console class [singleton]
+	Holds a Log objet and an input function.
+	
+	consoleConfig - the console configuration
+	logConfig - the log configuration
+]]
 local Console = class(function(self, consoleConfig, logConfig)
 	if not logConfig then consoleConfig, logConfig = consoleConfig.consoleConfig, consoleConfig.logConfig end
 	local input = consoleConfig.input
@@ -120,14 +142,23 @@ function Console:read(...)
 	end
 end
 
+--[[
+	Prints the printable with the corresponding level and module.
+	Available printable types: string
+]]
 function Console:print(printable, level, module, valid_args, output_args)
 	self.__log:print(printable, level, module, valid_args, output_args)
 end
 
+--[[
+	Simply prints the printable.
+	Available printable types: string
+]]
 function Console:printLore(printable)
 	self.__log:printLore(printable)
 end
 
+-- console - the console singleton
 console = Console({
 	["consoleConfig"] = {
 		["input"] = function(...) return io.read(...) end

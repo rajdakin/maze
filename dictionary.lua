@@ -212,14 +212,14 @@ function Lang:translate(state, str, origin, ...)
 	
 	while newstr:find("%%I") do  -- Insert another translation
 		local text = newstr:sub(newstr:find("%%I") + 2)
-		text = text:gsub("[ %t].*", "")
+		text = text:gsub("[	 ].*", "")
 		
 		if text == "" then
 			console:print("Insertion value needed with %I", LogLevel.WARNING, "dictionary.lua/Lang:translate:(%I parsing)")
-			newstr = newstr:gsub("%%I[ %t]", "I", 1)
+			newstr = newstr:gsub("%%I[ 	]", "I", 1)
 		elseif text:find(":") then
 			console:print("Bad insertion value '" .. text .. "': alternatives are unsupported", LogLevel.WARNING, "dictionary.lua/Lang:translate:(%I parsing)")
-			newstr = newstr:gsub("%%I(.-)[ %t]", "%1", 1)
+			newstr = newstr:gsub("%%I(.-)[ 	]", "%1", 1)
 		else
 			local spos, epos = newstr:find("%%I"), newstr:find("%%I") + text:len() + 2
 			
@@ -232,17 +232,17 @@ function Lang:translate(state, str, origin, ...)
 			local success, ret = pcall(origin.translate, origin, states, text, origin)
 			
 			if success then
-				newstr = newstr:gsub("%%I[^ %t]+.", ret, 1)
+				newstr = newstr:gsub("%%I[^	 ]+.", ret, 1)
 			else
 				local strtmp = "" for k, v in pairs(state) do strtmp = strtmp .. v .. "." end
 				console:print("Error while translating '" .. newstr:sub(spos + 2, epos - 1) .. "' for string '" .. strtmp .. str .. "' (probably a stack overflow: infinite translation loop)\n", LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)")
 				console:print(ret, LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)") console:printLore("\n")
-				newstr = newstr:gsub("%%I[^ %t]+.", "Ie", 1)
+				newstr = newstr:gsub("%%I[^	 ]+.", "Ie", 1)
 			end
 		end
 	end
 	
-	newstr = newstr:gsub("%%%%[ %t]?", "%%")
+	newstr = newstr:gsub("%%%%[	 ]?", "%%")
 	return newstr
 end
 

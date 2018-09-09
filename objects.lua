@@ -49,7 +49,7 @@ function Objects:getObject(object)
 	elseif objTyp == "nil" then return nil -- Shouldn't happen
 	elseif objTyp == "string" then return tostring(objRaw)
 	elseif objTyp == "number" then if tonumber(objRaw) then return tonumber(objRaw) else return 0 end
-	elseif objTyp == "held" then if tonumber(objRaw) then return tonumber(objRaw) else return false end
+	elseif objTyp == "held" then if tonumber(objRaw) and (tonumber(objRaw) ~= 0) then return tonumber(objRaw) else return false end
 	else return objRaw end
 end
 function Objects:setObject(object, value, ...)
@@ -64,7 +64,7 @@ function Objects:setObject(object, value, ...)
 	elseif objTyp == "number" then if tonumber(value) then value = tonumber(value) else value = 0 end
 	elseif objTyp == "held" then
 		local active
-		if tonumber(value) then
+		if tonumber(value) and (tonumber(value) ~= 0) then
 			value = tonumber(value)
 			active = true
 		elseif value then

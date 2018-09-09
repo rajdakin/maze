@@ -1,11 +1,24 @@
 # What is this?
-This is the lang dictionaries \(LGDs).
+This is the documentation of the lang dictionaries \(LGDs) inside the `lang` folder.
 
-## What does it contains?
+# Quick summary
+1. [What does that folder contains?](#what-does-that-folder-contains)
+2. [How can I contribute?](#how-can-i-contribute)
+   1. [How can I upgrade a translation?](#how-can-i-upgrade-a-translation)
+   2. [There is not my lang, how can I start?](#there-is-not-my-lang-how-can-i-start)
+   3. [Adding the translations](#adding-the-translations)
+   4. [Escaped characters](#escaped-characters)
+3. [What about that nanorc file?](#what-about-that-nanorc-file)
+   1. [How can I use it?](#how-can-i-use-it)
+   2. [What will it do?](#what-will-it-do)
+
+# What does that folder contains?
 It contains some `.lgd` files \(for lang dictionary).
 Each of these files contains translations to integrate a language.
 
-It also contains a `lgd.nanorc` file, which is used with Nano \(see [What about that nanorc file?](README.md#what-about-that-nanorc-file)).
+The only exception is the `blank.lgd` file that is only an empty file translation, containing all registered translations: if you integrate it and use it, every text will be replaced by nothing.
+
+It also contains a `lgd.nanorc` file, which is used with Nano \(see [What about that nanorc file?](#what-about-that-nanorc-file)).
 
 # How can I contribute?
 You can contribute by adding or upgrading an other langage's integration.
@@ -13,26 +26,30 @@ You can contribute by adding or upgrading an other langage's integration.
 ## How can I upgrade a translation?
 You can upgrade a translation by adding not-yet-supported strings, then creating a pull request so I can see it.
 
-To see how to add translations, see [Adding the translations](README.md#adding-the-translations).
+To see how to add translations, see [Adding the translations](#adding-the-translations).
 
 ## There is not my lang, how can I start?
 ### Thinking about the lang name, UID and fallback
 Each lang has a lang name \(*soon* displayed in the options menu), a lang UID \(a Unique IDentity, used internally only) and an optional lang fallback.
 
 A lang UID \(internally lang ID) is a unique way to refer to this lang.
-It is recommanded to follow the following: `ll_SS`, where `ll` is the two-lowercase-letters "general" lang ID (like `en` for american/british english) and `SS` is the two-uppercase-letters language's country (like `US` for american english or `GB` for Great Britain's english).
+It is recommanded to follow the following: `ll_CC`, where `ll` is the two-lowercase-letters "general" lang ID (like `en` for american/british english) and `CC` is the two-uppercase-letters language's country (like `US` for american english or `GB` for Great Britain's english).
 
 A lang fallback is used when the lang doesn't have a translation.
 For instance, if the lang `a` has `ig.map.sword` and the lang `b` has `a` as fallback, but doesn't have a translation for `ig.map.sword`, it will use `a`'s one.
 
-By default, the fallback is the american english `en_US` lang. If you don't want any fallback, the fallback will be `false` without any `"` (like for the american english).
+By default, the fallback is the american english `en_US` lang. If you don't want any fallback, the fallback will be `false` without any `"` (like for the american english lang).
 Beware, if you remove the fallback, any unknown translaton will be replaced by the translation string (with dots and all, like `ig.map.sword` or `opt.difficulty.value:3`).
 
 ### Creating the file and integrating it in the program
 From now on, the lang name, ID and fallback are replaced respectively by `[name]`, `[ID]` and `[fallback]` in the code parts.
 
 Inside this `lang/` folder, you must create a file named `[ID].lgd`.
-####Creating the file
+#### Creating the file
+##### The easy/new way
+Simply copy and paste the `blank.lgd` file, then rename it.
+
+##### The hard/old way
 You may create this file by using the Notepad (Windows), Nano (command-line \*nix), Mousepad (\*nix), Notepad++ (Windows and MacOS?) or any other **RAW TEXT** file editor. (That means, OpenOffice won't work.)
 Then save a new/empty file **and remove EVERYTHING from the save name, including the `.txt`** to replace it with the file name.
 
@@ -45,7 +62,7 @@ It is possible that you created it wrong even if it display `.lgd` at the end of
 *If you created it wrong, delete it and start again. It won't work.*
 
 #### Register it
-Next, inside the [dictionary.lua file at line 341](dictionary.lua#L341), there is a line that start with `langs = {`.
+Next, [inside the dictionary.lua file, at line 341](dictionary.lua#L341), there is a line that start with `langs = {`.
 If that is not the case, search the file to find this line.
 
 Once you see that line, it is time to add the lang.
@@ -59,8 +76,8 @@ For now, as there is no language selection list, to enable you language, six lin
 If all this is done, good job! You successfully added your language to the list of registered langs!
 
 #### Testing
-To test if you successfully done everything until here, add `ig.prompt = Tested: working! ` to the file.
-The launch the game. If nothing changed, recreate the `.lgd` file.
+To test if you successfully done everything until here, add `ig.prompt = Tested: working! ` to the file you created.
+Then launch the game. If nothing changed, recreate the `.lgd` file.
 ## Adding the translations
 ### What is a tanslation?
 In my `.lgd` files, a translation is a "states-key to string" correspondance.
@@ -80,10 +97,13 @@ Alternatives may be used when you ~want to write less~ have different states and
 The alternative keyword is what precedes the `:` (and follow the final `.` ), and the alternative name is what follows the `:` (and precedes the `=` part).
 By default, the active alternative is the first alternative defined.
 
+### What about the lines starting with #?
+These are comments and are ignored by the langs.
+
 ### Creating the translation
-The translaton string is the states (separated with `.`), followed by the key/alternative group.
+The translation string is the states (separated with `.`), followed by the key/alternative group.
 Then you have the ` = ` part that separate the key from the translation.
-Then ou have the translation.
+Then you have the translation.
 
 All this **must** be in one line.
 #### I want to have a multi-line translation, how do I do?

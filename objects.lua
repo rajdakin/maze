@@ -123,5 +123,5 @@ function Objects:initialize(objKind)
 		self:addObject("key", false, "held", {"ig"}, "key", function(set) return tostring(set) end, {"ig", "keydoors", "group", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
 		self:addObject("redkey", false, "held", {"ig"}, "redkey", function(set) return tostring(set) end, {"ig", "keydoors", "redgroup", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
 		self:addObject("sword", false, "held", {"ig"}, "sword", function(set) return tostring(set) end, {"ig", "sword"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
-	end
+	end -- Line 126
 end

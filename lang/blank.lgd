@@ -1,0 +1,185 @@
+# Blank pattern.
+
+# General purpose strings
+ok = 
+cancel = 
+
+# Main Menu strings
+mm.reset = 
+mm.play = 
+mm.options = 
+mm.profiles = 
+# exit/quit/close debate...
+ mm.eqc:exit = 
+ mm.eqc:quit = 
+ mm.eqc:close = 
+ mm.eqc:term = 
+ mm.eqc:kill = 
+
+mm.eqcmenu.confirm = 
+mm.eqcmenu.yes = 
+mm.eqcmenu.no = 
+
+# Options strings
+opt.advanced = 
+opt.not_exit = 
+opt.enable_minimap = 
+opt.difficulty.option = 
+
+opt.difficulty.value:1 = 
+opt.difficulty.value:2 = 
+opt.difficulty.value:3 = 
+opt.difficulty.value:4 = 
+
+opt.adv.vlength = 
+opt.adv.dev = 
+opt.adv.loglv = 
+opt.adv.enable_map = 
+
+# In-game string
+ig.prompt = 
+
+ig.help:true  = 
+ig.help:false = 
+
+ig.move.fail = 
+ig.move.up = 
+ig.move.down = 
+ig.move.left = 
+ig.move.right = 
+
+ig.wait.lore = 
+
+ig.suicide.lore = 
+
+ig.nil = 
+ig.up = 
+ig.down = 
+ig.left = 
+ig.right = 
+ig.start = 
+
+ig.levels.lores.start.lore = 
+ig.levels.lores.end.death:default = 
+ig.levels.lores.end.victory:default = 
+
+ig.levels.lores.start.starter.lore = 
+ig.levels.lores.end.starter.death:default = 
+ig.levels.lores.end.starter.victory:default = 
+
+ig.key:false = 
+ig.key:true = 
+ig.redkey:false = 
+ig.redkey:true = 
+ig.sword:false = 
+ig.sword:true = 
+
+ig.map.legend = 
+ig.map.key = 
+ig.map.redkey = 
+ig.map.sword = 
+
+ig.confirm = 
+
+ig.monster.room_sword.lore = 
+
+ig.monster.room_sword.reach.lore = 
+ig.monster.room_sword.reach.grabbed = 
+ig.monster.room_sword.reach.timeout = 
+ig.monster.room_sword.reach.cancel = 
+
+ig.monster.room_sword.fail:fail = 
+ig.monster.room_sword.fail:rock = 
+ig.monster.room_sword.fail:side_stitch = 
+ig.monster.room_sword.fail:frozen = 
+ig.monster.room_sword.fail:too_slow = 
+
+ig.monster.no_sword = 
+ig.monster.sword = 
+
+ig.trap.fall = 
+ig.trap.kill = 
+
+ig.exit:open = 
+ig.exit:opened = 
+
+ig.keydoors.exit.locked = 
+
+ig.keydoors.exit.group.kd.dynamic.openable = 
+ig.keydoors.exit.group.kd.inventory.openable = 
+ig.keydoors.exit.group.open = 
+
+ig.keydoors.exit.redgroup.kd.dynamic.openable = 
+ig.keydoors.exit.redgroup.kd.inventory.openable = 
+ig.keydoors.exit.redgroup.open = 
+
+ig.keydoors.exit.keepclose = 
+
+ig.keydoors.keepclose = 
+
+ig.keydoors.group.kd.dynamic.openable = 
+ig.keydoors.group.kd.inventory.openable = 
+ig.keydoors.group.kd.open = 
+
+ig.keydoors.group.door.locked = 
+
+ig.keydoors.redgroup.kd.dynamic.openable = 
+ig.keydoors.redgroup.kd.inventory.openable = 
+ig.keydoors.redgroup.kd.open = 
+
+ig.keydoors.redgroup.door.locked = 
+
+ig.keydoors.group.key.lore = 
+ig.keydoors.group.key.take:true = 
+ig.keydoors.group.key.take:false = 
+ig.keydoors.group.key.take:norm = 
+ig.keydoors.group.key.take:easy = 
+ig.keydoors.group.key.leave = 
+
+ig.keydoors.redgroup.key.lore = 
+ig.keydoors.redgroup.key.take:true = 
+ig.keydoors.redgroup.key.take:false = 
+ig.keydoors.redgroup.key.take:norm = 
+ig.keydoors.redgroup.key.take:easy = 
+ig.keydoors.redgroup.key.leave = 
+
+ig.sword.lore = 
+ig.sword.take:true = 
+ig.sword.take:false = 
+ig.sword.take:norm = 
+ig.sword.take:easy = 
+ig.sword.leave = 
+
+ig.near.sword:true = 
+ig.near.sword:false = 
+
+ig.near.key:true = 
+ig.near.key:false = 
+
+ig.near.redkey:true = 
+ig.near.redkey:false = 
+
+ig.near.monster:true = 
+ig.near.monster:false = 
+
+ig.near.exit:visible = 
+ig.near.exit:hearable = 
+ig.near.exit:far = 
+ig.near.exit:near = 
+
+ig.graveyard.lore = 
+ig.graveyard.go = 
+ig.graveyard.cancel = 
+
+ig.moving.grave.normal = 
+ig.moving.grave.deadly.unknown = 
+ig.moving.grave.deadly.locked = 
+ig.moving.grave.deadly.dynamic = 
+ig.moving.grave.deadly.inventory = 
+
+ig.moving.grave.deadly.key.locked = 
+ig.moving.grave.deadly.key.dynamic = 
+ig.moving.grave.deadly.key.inventory = 
+ig.moving.grave.deadly.redkey.locked = 
+ig.moving.grave.deadly.redkey.dynamic = 
+ig.moving.grave.deadly.redkey.inventory = 

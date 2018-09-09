@@ -16,41 +16,13 @@ Controls:
 - r or right arrow: move right \(west)
 - w: take what's on your room and take attention to what's near
 - m: print the map
+- h: help
+- suicide: suicide (also reset the map)
 - q: quit :\(
 Follow every instruction by a hit to the enter key.
 
-# Settings
-*The line pointed by this documentation can be inexact.*
-
-It is planned to add a main menu (or even an in-game menu), but for now you'll need to edit the source code.
-
-Every option listed below is modifiable by editing the value (after the `=` if not specified).
-
-## Level manager configuration
-Inside the `levelManagerConfiguration` block.
-- `loadTestFile` (`false`): set to `true` if you want to use the test file. (Unrecommanded, you must also change [the `+` sign in the `main` loop](maze.lua#L182) by a `-`).
-
-## Level configuration
-Inside the `levelConfiguration` block.
-- `minimapDisplay` (`true`): set to `false` to remove the minimap.
-- `minimapViewingSize` (`{3, 3}`): change the `3`s by any positive odd number (result not guaranteed otherwise) to change the minimap's size.
-- `mapDisplayable` (`true`): set to `false` if you think there shouldn't be any full map (`m` command in game).
-- `mapYoffset` (`7`): see [README.md@line71](README.md#L71].
-- `difficulty` (`3`): ranging from very easy (`1`) to hard (`4`), can be any whole number between.
-  1. Very easy: no map reset, no object destroying
-  2. Easy: map reset, no object destroying
-  3. Normal: map reset, new object destroying
-  4. Hard: map reset, both objects (held and new) destroying
-
-## Console configuration
-In the `consoleConfiguration` block.
-- `logLevel` (`2`): logging level.
-  0. Fatal error
-  1. Error
-  2. Warning + developer warning (see also `developerMode`)
-  3. Info
-  4. Log
-- `developerMode` (`false`): set to `true` to have the developer warnings.
+# How can I contribute/change the configuration/see the documentations for the different classes/...
+See [the `docs` folder](/docs)
 
 # Notes
 *The line pointed by this documentation can be inexact.*
@@ -71,9 +43,9 @@ In the `consoleConfiguration` block.
 - If you want to change the starting level:
   1. To play a real level, write a whole number > 0 instead of 1 in [level.lua@line234](level.lua#L234)
   2. To play a test level, write a whole number < 0 instead of -1 in [level.lua@line232](level.lua#L232) **and** set `loadTestLevels` to `true` in [config.lua@line38](config.lua#L38)
-- If you want to change the size of the map, change the `{width, height}` values in [config.lua@line39](config.lua#L39)
-- If you have a taller or smaller screen than me, and that the instructions you give doesn't print on the following line of the last instruction, leaving one white space, change the `mapYoffset` value in [config.lua@line40](config.lua#L40)
+- If you want to change the size of the map, change the `{width, height}` values in [config.lua@line89](config.lua#L89)
+- If you have a taller or smaller screen than me, and that the instructions you give doesn't print on the following line of the last instruction, leaving one white space, change the `mapYoffset` value in [config.lua@line91](config.lua#L91)
 - If you want to interact with the game after ending it, see [INTERACTING.md](INTERACTING.md)
 - If you want to start elsewhere than the first level, change the number inside the equals sign in the `Level:initialize()` function to a pre-set level number in [level.lua@line341](level.lua#L341)
-- If you want to create a level, see [CONTRIBUTING.md#Creating levels](CONTRIBUTING.md#creating-levels)
-- If you want to contribute, see [CONTRIBUTING.md](CONTRIBUTING.md)
+- If you want to create a level, see [docs/level.md#Creating levels](docs/level.md#creating-levels)
+- If you want to contribute, see [docs/lang.md](docs/lang.md) and [docs/level.md](docs/level.md)

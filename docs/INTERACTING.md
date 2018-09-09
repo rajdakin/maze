@@ -127,7 +127,7 @@ If you want to create a level, write:
 level = [level]
 level:setAllRoomsSeenStatusAs(false)
 ```
-where `[level]` is your level (see [CONTRIBUTING.md#Creating levels](CONTRIBUTING.md#creating-levels)).
+where `[level]` is your level (see [docs/level.md#Creating levels](/docs/level.md#creating-levels)).
 
 Then write
 ```lua

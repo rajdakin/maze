@@ -117,6 +117,93 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 	end
 end)
 
+function Lang:addLevel(level_id)
+	if not io.open(import_prefix .. "lang/" .. level_id .. ".lld") then return false end
+	
+	for line in io.lines(import_prefix .. "lang/" .. level_id .. ".lld") do
+		linecount = linecount + 1
+		
+		nwsline = line:gsub("^%s+", ""):gsub("(%g[%w_%.%:]-)%s*= ?", "%1=", 1)
+		if nwsline and nwsline ~= "" and not nwsline:find("^" .. comment) then
+			if nwsline:find("=") then
+				local text_id, text = nwsline:gsub("=.*", "", 1), nwsline:gsub(".-=", "", 1)
+				
+				local text_lang
+				text_lang, text = nwsline:gsub("%..*", "", 1), nwsline:gsub(".-%.", "", 1)
+				if text_lang == self.__lang_id then
+					local err = false
+					
+					local dict = self.__dict
+					while text_id:find("%.") do
+						local dictdot = text_id:find("%.")
+						local dictkey = text_id:sub(1, dictdot - 1)
+						text_id = text_id:sub(dictdot + 1)
+						
+						if (not dictkey) or (dictkey == "") or (not text_id) or (text_id == "") then
+							console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] Missing key before/after dot\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+							err = true
+						else
+							if not dict[dictkey] then dict[dictkey] = {} end
+							dict = dict[dictkey]
+						end
+					end
+					
+					-- The %c[]m is replaced by \27[[]m
+					-- The %j    is replaced by \8
+					-- The %l    is replaced by \n
+					-- The %r    is replaced by \27[00m
+					text = text
+						:gsub("%%c([^m]+m)", "\27[%1" )
+						:gsub("%%j",         "\8"     )
+						:gsub("%%l",         "\n"     )
+						:gsub("%%r",         "\27[00m")
+					
+					if err then
+					elseif not text_id or text_id == "" then
+						console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] No translation key\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+					elseif dict[text_id] and (type(dict[text_id]) ~= "table") then
+						console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] Translation key defined twice\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+					elseif text_id:sub(1, 1) == " " then
+						console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] The text ID begins with a reserved character\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+					elseif text_id:find(":") then
+						local columnpos = text_id:find(":")
+						local group_name, text_id = text_id:sub(1, columnpos - 1), text_id:sub(columnpos + 1)
+						
+						if not group_name or group_name == "" then
+							console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] No group name\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+						elseif not text_id or text_id == "" then
+							console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] No group key for group " .. group_name .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+						else
+							if not dict[group_name] then dict[group_name] = {[" active"] = text, [" default"] = "key", [" defarg"] = text_id, [" actid"] = text_id} end
+							if not self.__alt_dicts[group_name] then self.__alt_dicts[group_name] = dict[group_name] end
+							dict = dict[group_name]
+							
+							if dict[text_id] then
+								console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] Translation key defined twice (group " .. group_name .. ")\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+							else
+								dict[text_id] = text
+							end
+						end
+					elseif dict[text_id] then
+						if dict[text_id][" default"] == "string" then
+							console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] Default translation already defined\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+						else
+							dict[text_id][" default"] = "string"
+							dict[text_id][" defarg"] = text
+						end
+					else
+						dict[text_id] = text
+					end
+				end
+			else
+				console:print("[Loading file " .. lang_id .. ".lld, line " .. linecount .. " for lang " .. lang_name .. "] Missing association with ID `" .. nwsline .. "'\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+			end
+		end
+	end
+	
+	return true
+end
+
 function Lang:getName() return self.__lang_name end
 function Lang:getID() return self.__lang_id end
 
@@ -379,6 +466,12 @@ function Dictionary:setAlternative(state, str, newUnlocalized)
 	end
 	
 	return ret
+end
+
+function Dictionary:addLevel(level_id)
+	for lang_id, lang in pairs(self.__langs) do
+		lang:addLevel(level_id)
+	end
 end
 
 -- dictionary - the dictionary singleton

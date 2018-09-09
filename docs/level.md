@@ -74,7 +74,7 @@ To create a level, you need eight informations:
   - Then finally an empty line \(of size of the number of columns) of empty tables.
 - The map availability when you've finished the level. It is a function that takes in whether you're dead and what objects do you have and must return a boolean value \(`true` means you unlocked the full map). Goes into ID `map_reveal`.
 - The level winning when you finish the level alive. It is a function that takes in what objects do you have and must return a boolean value \(note that if you're dead, you cannot win) \(`true` means you win). Goes into ID `win_level`.
-- Lores, texts that are at the beginning and the end of the level. It is a function that inputs whether you're dead and what objects you have and outputs a table with the `state` ID is the key and the `alt` ID is the alternative of the ending lore. Goes into ID `alternative_lore`.
+- Lores, texts that are at the beginning and the end of the level. It is a function that inputs whether you're dead and what objects you have and outputs a table with the `state` ID is the key and the `alt` ID is the alternative of the ending lore. Goes into ID `alternative_lore`. Lores are loaded from the level langs dictionaries `.lld`.
 
 ### Testing the level
 To test the level, you can either run it from the interactive mode \(see [INTERACTING.md#misc](/INTERACTING.md#misc)) or run it by putting the level as the last instruction of the `add_contrib_levels` in [contribution.lua](/contribution.lua) using the level registering template wrote in the very beginning of that function.

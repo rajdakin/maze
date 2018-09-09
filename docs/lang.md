@@ -13,10 +13,14 @@ This is the documentation of the lang dictionaries \(LGDs) inside the `lang` fol
    2. [What will it do?](#what-will-it-do)
 
 # What does that folder contains?
-It contains some `.lgd` files \(for lang dictionary).
+It contains some `.lgd` files \(for LanG Dictionary).
 Each of these files contains translations to integrate a language.
 
 The only exception is the `blank.lgd` file that is only an empty file translation, containing all registered translations: if you integrate it and use it, every text will be replaced by nothing.
+
+It contains some `.lld` files \(for Level Lang Dictionary).
+Each of there files contains lores for a specific level.
+The only difference between `lld` and `lgd` files is that in the `lld` files, the translation "state" starts with the lang ID.
 
 It also contains a `lgd.nanorc` file, which is used with Nano \(see [What about that nanorc file?](#what-about-that-nanorc-file)).
 

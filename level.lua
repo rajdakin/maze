@@ -139,6 +139,8 @@ function Level:resetRoomsDatas()
 end
 
 function Level:initialize()
+	if self.__array_version == 2 then dictionary.addLevel(self.__level_id) end
+	
 	local roomInit
 	
 	self.__old_room = self.__starting_room

@@ -8,6 +8,7 @@ This is the documentation of the lang dictionaries \(LGDs) inside the `lang` fol
    2. [There is not my lang, how can I start?](#there-is-not-my-lang-how-can-i-start)
    3. [Adding the translations](#adding-the-translations)
    4. [Escaped characters](#escaped-characters)
+   5. [What about the level lang dictionaries?](#what-about-the-level-lang-dictionaries)
 3. [What about that nanorc file?](#what-about-that-nanorc-file)
    1. [How can I use it?](#how-can-i-use-it)
    2. [What will it do?](#what-will-it-do)
@@ -20,7 +21,6 @@ The only exception is the `blank.lgd` file that is only an empty file translatio
 
 It contains some `.lld` files \(for Level Lang Dictionary).
 Each of there files contains lores for a specific level.
-The only difference between `lld` and `lgd` files is that in the `lld` files, the translation "state" starts with the lang ID.
 
 It also contains a `lgd.nanorc` file, which is used with Nano \(see [What about that nanorc file?](#what-about-that-nanorc-file)).
 
@@ -128,6 +128,19 @@ When upper-case is supported, the first letter is changed to an upper-case lette
 8. `%r`: reading time. Replaced by the color/bold/... reset (same as `%cm`, but better for syntax coloration).
 9. `%s`: translation time. Replaced by a string.
 10. `%y`: translation time, upper-case supported. Replaced by `yes` or `no`.
+
+## What about the level lang dictionaries?
+The difference between `lld` and `lgd` files is that in the `lld` files, the translation "state" starts with the lang ID.
+
+Also, there are some state that is automatically added:
+- Before all other states:
+  - ig
+  - levels
+  - lores
+- Before the translation key:
+  - [The level name]
+
+These are designed to be used only for levels.
 
 # What about that nanorc file?
 This file is a syntaxic coloration only supported by Nano.

@@ -59,13 +59,9 @@ ig.left = at your left
 ig.right = at your right
 ig.start = 
 
-ig.levels.lores.start.lore = 
+#ig.levels.lores.start.lore = 
 ig.levels.lores.end.death:default = You DIE. Maybe next time you'll survive?%l
 ig.levels.lores.end.victory:default = You WIN! Congratulations!%l
-
-ig.levels.lores.start.starter.lore = You arrived in a room. You don't know how you got here, or how to escape, neither where you are.%lYou can however move, and you feel you have a huge carrying capacity, like the one from video game's character.%lWhat do you do?%l
-ig.levels.lores.end.starter.death:default = You DIE. Maybe next time you'll survive?%l
-ig.levels.lores.end.starter.victory:default = After a long corridor, you found the map of the labyrinth you escaped. You continued to walk, but then you heard a %c03mclick!%r and you felt into the darkness...%l...Wait, not really...%l...Yeah, you just felt into an other maze.%l
 
 ig.key:false = You don't have any key.
 ig.key:true = You do have a %c45;01;32mkey%r.

@@ -67,6 +67,8 @@ local Level = class(function(self, level_datas, level_config, obs3)
 			local init = self:initialize()
 			self.initialize_status = {success = init.success, obsolete = false, old = true, opt = init}
 		elseif self.__array_version == 2 then
+			dictionary:addLevel(level_datas["__id"])
+			
 			self.__column_count = level_datas["column_count"]
 			self.__starting_room = level_datas["starting_room"]
 			self.__starting_rooms_datas = level_datas["rooms_datas"]
@@ -139,8 +141,6 @@ function Level:resetRoomsDatas()
 end
 
 function Level:initialize()
-	if self.__array_version == 2 then dictionary.addLevel(self.__level_id) end
-	
 	local roomInit
 	
 	self.__old_room = self.__starting_room

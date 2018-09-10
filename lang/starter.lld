@@ -1,0 +1,3 @@
+en_US.lores.start.lore = You arrived in a room. You don't know how you got here, or how to escape, neither where you are.%lYou can however move, and you feel you have a huge carrying capacity, like the one from video game's character.%lWhat do you do?%l
+en_US.lores.end.death:default = You DIE. Maybe next time you'll survive?%l
+en_US.lores.end.victory:default = After a long corridor, you found the map of the labyrinth you escaped. You continued to walk, but then you heard a %c03mclick!%r and you felt into the darkness...%l...Wait, not really...%l...Yeah, you just felt into an other maze.%l

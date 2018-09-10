@@ -19,7 +19,7 @@ local roommodule = require(import_prefix .. "room")
 	level_config - the default level configuration = the level config of the level manager config
 	obs3 - the 3rd level argument, used only for an obsolete way of instanciating the level.
 ]]
-local Level = class(function(self, level_datas, level_config, obs3)
+Level = class(function(self, level_datas, level_config, obs3)
 	if type(level_datas) == "number" then
 		self.__column_count = level_config
 		self.__starting_room = level_datas
@@ -360,22 +360,38 @@ function LevelManager:initialize()
 	end
 end
 
+function LevelManager:addTestLevelInstance(level_instance)
+	if not level_instance or not level_instance.isinstance or not Level:isinstance(level_instance) then
+		return {success = false, reasontype = "check", opt = "Not a valid instance"}
+	else
+		self.__levels[self.__test_level_count - 1] = level_instance
+		if not self.__levels[self.__level_count - 1].initialize_status.success then self.__levels[-self.__test_level_count] = nil return {success = false, opt = self.__levels[self.__level_count + 1].initialize_status.opt}
+		else self.__level_count = self.__level_count - 1 return {success = true, id = -self.__test_level_count} end
+	end
+end
+
+function LevelManager:addLevelInstance(level_instance)
+	if not level_instance or not level_instance.isinstance or not Level:isinstance(level_instance) then
+		return {success = false, reasontype = "check", opt = "Not a valid instance"}
+	else
+		self.__levels[self.__level_count + 1] = level_instance
+		if not self.__levels[self.__level_count + 1].initialize_status.success then self.__levels[self.__level_count] = nil return {success = false, opt = self.__levels[self.__level_count + 1].initialize_status.opt}
+		else self.__level_count = self.__level_count + 1 return {success = true, id = self.__level_count} end
+	end
+end
+
 function LevelManager:addTestLevel(level_id, level_datas)
 	if level_datas and level_datas["level_array_version"] == 2 then level_datas.__id = tostring(level_id)
 	elseif not level_datas then level_datas = level_id end
 	
-	self.__levels[-self.__test_level_count - 1] = Level(level_datas, self.__config:getLevelConfig())
-	if not self.__levels[-self.__test_level_count - 1].initialize_status.success then self.__levels[-self.__test_level_count - 1] = nil return {success = false}
-	else self.__test_level_count = self.__test_level_count + 1 return {success = true, -self.__test_level_count} end
+	return self:addTestLevelInstance(Level(level_datas, self.__config:getLevelConfig()))
 end
 
 function LevelManager:addLevel(level_id, level_datas)
 	if level_datas and level_datas["level_array_version"] == 2 then level_datas.__id = tostring(level_id)
 	elseif not level_datas then level_datas = level_id end
 	
-	self.__levels[self.__level_count + 1] = Level(level_datas, self.__config:getLevelConfig())
-	if not self.__levels[self.__level_count + 1].initialize_status.success then self.__levels[self.__level_count] = nil return {success = false}
-	else self.__level_count = self.__level_count + 1 return {success = true, id = self.__level_count} end
+	return self:addLevelInstance(Level(level_datas, self.__config:getLevelConfig()))
 end
 
 function LevelManager:initializeLevels()

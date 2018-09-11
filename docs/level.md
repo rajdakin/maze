@@ -31,7 +31,10 @@ Replace the `1` by the level number, then start the game.
 # How can I contribute?
 
 ## Creating levels
-If you want to submit a level, please put the code in `add_contrib_nontest_levels` in [contribution.lua@line1](/contribution.lua#L1) for a real level or in `add_contrib_nontest_levels` in [contribution.lua@line13](/contribution.lua#L13) for a test level
+If you want to submit a level, please put the code in `add_contrib_nontest_levels` in [contribution.lua@line1](/contribution.lua#L1) for a real level or in `add_contrib_test_levels` in [contribution.lua@line13](/contribution.lua#L13) for a test level.
+
+Please note that you can also call the `addTestLevelInstance` or `addLevelInstance`.
+It takes in a level instance. It is designed to allow to add instances of subclasses of the Level class \(created by [instanciating](class.md#instanciate-a-class) a [newly created subclass](class.md#creating-a-subclass))
 
 If you want to create a level, here's what to do:
 ### Creating the actual level

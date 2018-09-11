@@ -1,5 +1,5 @@
 local args = {...}
-import_prefix = args[1]
+local import_prefix = args[1]
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
 
 local contributionmodule = require(import_prefix .. "contribution")

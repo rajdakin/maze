@@ -28,7 +28,7 @@ Then you need a constructor. It is a function that is called at the [instanciati
 To create the class, you need to write, near the beginning \(if you want to make a push request):
 ```lua
 local args = {...}
-import_prefix = args[1]
+local import_prefix = args[1]
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
 ```
 ```lua
@@ -64,7 +64,7 @@ Then you need a constructor. It is a function that is called at the [instanciati
 To create the class, you need to write, near the beginning \(if you want to make a push request):
 ```lua
 local args = {...}
-import_prefix = args[1]
+local import_prefix = args[1]
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
 ```
 ```lua

@@ -239,7 +239,6 @@ function Lang:translate(state, str, origin, ...)
 		local pos
 		
 		for pos = max_pos, 1, -1 do
---if dicts[pos-1]and dicts[pos-1].start then debug.debug()end
 			if dicts[pos][str] then
 				local value = dicts[pos][str]
 				

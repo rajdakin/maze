@@ -361,7 +361,8 @@ function LevelManager:initialize()
 end
 
 function LevelManager:addTestLevelInstance(level_instance)
-	if not level_instance or not level_instance.isinstance or not Level:isinstance(level_instance) then
+	if not level_instance or not level_instance.isinstance or not level_instance:isinstance(Level) then
+		console:print("Bad level_instance class", LogLevel.ERROR, "level.lua/LevelManager:addTestLevelInstance")
 		return {success = false, reasontype = "check", opt = "Not a valid instance"}
 	else
 		self.__levels[self.__test_level_count - 1] = level_instance
@@ -371,7 +372,8 @@ function LevelManager:addTestLevelInstance(level_instance)
 end
 
 function LevelManager:addLevelInstance(level_instance)
-	if not level_instance or not level_instance.isinstance or not Level:isinstance(level_instance) then
+	if not level_instance or not level_instance.isinstance or not level_instance:isinstance(Level) then
+		console:print("Bad level_instance class", LogLevel.ERROR, "level.lua/LevelManager:addLevelInstance")
 		return {success = false, reasontype = "check", opt = "Not a valid instance"}
 	else
 		self.__levels[self.__level_count + 1] = level_instance

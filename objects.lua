@@ -100,7 +100,7 @@ end
 	The first option is the state. The second is the name. The third is a function that takes in whether there is an object, and output the new alternative.
 ]]
 function Objects:addObject(object, startValue, typ, ...)
-	if self.__objects[object] then console:print("Trying to re-add object " .. tostring(object) .. "\n", LogLevel.WARNING, "objects.lua/Objects:addObject") return end
+	if self:getObjectRaw(object) then console:print("Trying to re-add object " .. tostring(object) .. "\n", LogLevel.WARNING, "objects.lua/Objects:addObject") return end
 	
 	if not typ then typ = type(startValue) end
 	
@@ -119,7 +119,8 @@ function Objects:initialize(objKind)
 	self.__objects = {}
 	self.__added_objects = {}
 	
-	if objKind == 1 then
+	if objKind == 0 then -- Empty object
+	elseif objKind == 1 then
 		self:addObject("key", false, "held", {"ig"}, "key", function(set) return tostring(set) end, {"ig", "keydoors", "group", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
 		self:addObject("redkey", false, "held", {"ig"}, "redkey", function(set) return tostring(set) end, {"ig", "keydoors", "redgroup", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
 		self:addObject("sword", false, "held", {"ig"}, "sword", function(set) return tostring(set) end, {"ig", "sword"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)

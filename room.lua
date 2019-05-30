@@ -259,7 +259,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						elseif self:getAttribute("exitdir") == "right" then
 							right:setAttribute("left", true)
 						else
-							console:print("Unknown grave's exit directon (opening the other size): " .. self:getAttribute("exitdir"), LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents")
+							console:print("Unknown grave's exit directon (opening the other side): " .. self:getAttribute("exitdir") .. "\n", LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents")
 						end
 						
 						objects:setObject(key, false)
@@ -490,7 +490,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						right:setAttribute(prefix .. "door", false)
 						right:setAttribute(prefix .. "door_dir", "left")
 					else
-						console:print("Unknown door dir (opening the other size): " .. self:getAttribute(prefix .. "door_dir"), LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents:checkKeyDoor")
+						console:print("Unknown door dir (opening the other size): " .. self:getAttribute(prefix .. "door_dir") .. "\n", LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents:checkKeyDoor")
 					end
 					
 					if self:getAttribute(prefix .. "key") then

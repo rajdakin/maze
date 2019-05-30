@@ -35,7 +35,7 @@ The object group may be:
 
 ## What is an object held by an Objects instance?
 An object here is a thing with a type that can be:
-- any Lua type:
+- any Lua type in:
   - string \(a string)
   - number \(a number)
   - boolean \(`true` or `false`)
@@ -49,9 +49,9 @@ It depends on whether you want add an object group or an object type.
 ## Add an object group
 To add an object group, you need to find a name/number: the group's ID (later replaced by `[ID]`).
 
-, you need to edit the file [objects.lua@line126](/objects.lua#L126).
+To find it, you need to edit the file [objects.lua@line126](/objects.lua#L126).
 
-Here there sould be around something like:
+Here there should be around something like:
 ```lua
 if objKind == 1 then
 	self:addObject(...)
@@ -67,11 +67,11 @@ the add the objects to the group.
 ## Add an object to a group
 First, find the corresponding `elseif` line.
 
-Then, append this line after, where its name is `[name]`, the starting value is `[starting_val]` and the type is `[type]`:
+Then, append this line after, where the object's name is `[name]`, its starting value is `[starting_val]` and its type is `[type]`:
 ```lua
 self:addObject([name], [starting_val], [type])
 ```
-If you want to be able to dynamically change [alternatives](lang.md#what-are-alternatives), the type must be `"held"`, then append, before the `)`, a list of triples:
+If you want to be able to dynamically change [alternatives](lang.md#what-are-alternatives), the type must be `"held"`, then append, before the `)`, a comma then a list of triples:
 - the first thing is the [state table](lang.md#what-is-a-translation)
 - the second is the [key name](lang.md#what-is-a-translation)
 - the third is a function that takes in whether there is at least one object an optional extra arguments, and output the [alternative name](lang.md#what-is-a-translation)

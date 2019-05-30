@@ -42,5 +42,5 @@ Inside the `consoleConfiguration` block.
 
 # Why can't I modify the configuration in-game?
 There are two reasons to this:
-1. There are currently no other states than the in-game.
+1. There are currently no other states than the in-game state.
 2. There is no file interface, so the game cannot save nor load any configuration.

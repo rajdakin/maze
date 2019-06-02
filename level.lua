@@ -95,8 +95,8 @@ Level = class(function(self, level_datas, level_config, obs3)
 	end
 	
 	local status = self.initialize_status
-	if status.obsolete then console:print("Warning: obsolete level instanciation used. Please use the new version.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
-	elseif status.old then console:print("Old level instanciation used. A new version is available.", LogLevel.LOG, "level.lua/Level:(init)")
+	if status.obsolete then console:print("Warning: obsolete level instanciation used. Please use the newer version.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
+	elseif status.old then console:print("Old level instanciation used. A newer version is available.\n", LogLevel.LOG, "level.lua/Level:(init)")
 	end
 end)
 
@@ -173,7 +173,7 @@ function Level:__setupLevelLoresState(loreState)
 	stateManager:pushState(self.__level_id)
 end
 
-function Level:printBeginingLore()
+function Level:printBeginningLore()
 	self:__setupLevelLoresState("start")
 	if self.__array_version == 2 then
 		console:printLore(
@@ -281,6 +281,7 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 			local ret = self:getRoomFromCoordinates(roomX + xOffset, roomY + yOffset):printRoom(objets, (i == self:getRoomNumber()) and not is_ended)
 			
 			if ret:iskind(RoomPrintingError) then
+				stateManager:popMainState()
 				return LevelPrintingErrored(ret)
 			end
 		end

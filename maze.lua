@@ -40,7 +40,7 @@ function main()
 		
 		objects:initialize(1)
 		
-		levelManager:getActiveLevel():printBeginingLore()
+		levelManager:getActiveLevel():printBeginningLore()
 		while not game_ended do	-- here starts interactive
 			levelManager:getActiveLevel():setActiveRoomAttribute("saw", true)
 			console:printLore("\n")
@@ -193,7 +193,7 @@ if (levelManager:getLevel(lvnum - 1) and not levelManager:getLevel(lvnum - 1):ge
 end
 console:printLore("To see the map (if enabled), write:\n")
 console:printLore("levelManager:getLevel(levelManager:getLevelNumber() - 1):printLevelMap(true, Objects(1), true)\n")
-console:printLore("(Note: if you exitd the level using the exit command or equivalent, remove the ' - 1' part.)\n\n")
+console:printLore("(Note: if you exitted the level using the exit command or equivalent, remove the ' - 1' part.)\n\n")
 if dead then
 	console:printLore("You died, so you haven't got the entire map.\n")
 else

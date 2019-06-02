@@ -177,7 +177,7 @@ function GameState:runIteration()
 	end
 	
 	local ret = levelManager:getActiveLevel():checkLevelEvents(self.__game_ended, self.__player.objects)
-	self.__game_ended = ret.game_ended
+	self.__game_ended = ret.ended
 	self.__player.objects = ret.objects
 	if ret:iskind(EventParsingResultEnded) then
 		self.__player.dead = true

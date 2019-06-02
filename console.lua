@@ -53,7 +53,7 @@ end
 
 --[[ LogLevel - the log levels enum
 	The log level contains a text description, a log level, a configuration check (used to check
-	if the configuration is ccorrect) and an output mode function
+	if the configuration is correct) and an output mode function
 ]]
 LogLevel = enum(function(self, name, args)
 	LogLevelClass.__init(self, args[1], args[2], args[3], args[4])

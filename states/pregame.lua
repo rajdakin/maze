@@ -46,6 +46,7 @@ function PreGameState:runIteration()
 				return true
 			else
 				sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Yes it is!")
+				sleep(1)
 			end
 		--end
 	end

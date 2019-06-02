@@ -16,7 +16,7 @@ Just win the current level.
 
 If you can't because you've destroyed a key/red key/sword that you needed, then do a `suicide` \(there is for now no live count nor an other way to win in these condition).
 
-If you can't win the current level because it is too hard, see [How to play a particular level?](#how-to-play-a-particular-level) and restart the game.
+If you can't win the current level because it is too hard, see [How to play a particular level?](#how-to-play-a-particular-level) to play the next one and restart the game.
 
 ## How to play a particular level?
 To do that, you'll need the level number. It is simply the number of level there is before plus one \(meaning the first level is the level `1`). *Warning: this is **NOT** the level ID.*
@@ -48,7 +48,7 @@ To create a level, you need eight informations:
 - The starting room. This is where you start. Goes into ID `starting_room`.
 - The column count. It determines how many rooms per line there is. Goes into ID `column_count`.
 - The level datas. Goes into ID `rooms_datas`. It is a table made of:
-  - A first line from `-[column count - 1]` to `0` made of empty tables. These are internally rooms, but are \(normally) never displayed nor accessible.
+  - A first line from `-[column count - 1]` to `0` made of empty tables. These are internal rooms, but are \(usually) never displayed nor accessible \(as it otherwise crash the game).
   - A multiple of column count tables, which constitute the level itself. Each table can be empty, or contains the following:
     - the exit:
       - `exit`: boolean \(in that case `true`)

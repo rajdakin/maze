@@ -99,10 +99,7 @@ level:setRoom(room) -- sets the new room
 --[[ arguments are: is_ended, objects
 	 - is_ended is if the game is ended (in that case yes, but you might want to say no)
 	 - objects is the object map (in that case, you can't have anything)
-	   objects is an array that contains arguments:
-	   - sword: boolean; true if you "have" a sword
-	   - key: boolean; true if you "have" a key
-	   - redkey: boolean; true if you "have" a "red key...?"
+	   objects is an Objects instance (prefab 1)
 	 returns an EventParsingReturn
   ]]
 level:checkLevelEvents([is_ended], [objects])
@@ -122,12 +119,14 @@ resetMaze()
 ```
 
 ## Misc
+***Obsolete!***
+
 If you want to create a level, write:
 ```lua
 level = [level]
 level:setAllRoomsSeenStatusAs(false)
 ```
-where `[level]` is your level (see [docs/level.md#Creating levels](/docs/level.md#creating-levels)).
+where `[level]` is your level \(see [docs/level.md#Creating levels](/docs/level.md#creating-levels)).
 
 Then write
 ```lua

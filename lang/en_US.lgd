@@ -39,10 +39,12 @@ opt.adv.enable_map = Enable the full map? %Y.
 # In-game string
 ig.prompt = Command: 
 
-ig.help:true  = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%Imm.eqc : "exit"%lThis help: "help"%lPrint the full map: "map"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
-ig.help:false = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%Imm.eqc : "exit"%lThis help: "help"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
+ig.unknown_dir = Unknown command: %s%l
 
-ig.move.fail = BOOMM!!%l
+ig.help:true  = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%Imm.eqc : "exit" or "quit"%lThis help: "help"%lPrint the full map: "map"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
+ig.help:false = Move:%l- up: "%s"%l- down: "%s"%l- left: "%s"%l- right: "%s"%l or use the arrows (be sure to validate after each arrow).%lWait: "wait"%l%Imm.eqc : "exit" or "quit"%lThis help: "help"%lSuicide (also resets the map): "suicide" (no quicker way)%l%lYou can always write the first letter only, except for the suicide.%l
+
+ig.move.fail = Something is blocking you. Like, a wall, and maybe some other stuff.%l
 ig.move.up = Moving up%l
 ig.move.down = Moving down%l
 ig.move.left = Moving left%l

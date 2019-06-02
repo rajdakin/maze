@@ -1,10 +1,16 @@
 local args = {...}
 local import_prefix = args[1]
-if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
+if import_prefix then import_prefix = import_prefix:match("(.-)[^%.]+$") end
+if not import_prefix then import_prefix = "" end
 
 local utilmodule = require(import_prefix .. "util")
 
+local consolemodule = require(import_prefix .. "console")
 local classmodule = require(import_prefix .. "class")
+
+local basestatemodule = require(import_prefix .. "states.base")
+local pregamestatemodule = require(import_prefix .. "states.pregame")
+local gamestatemodule = require(import_prefix .. "states.game")
 
 --[[ StateManager - the state manager class [singleton]
 	Holds a state stack
@@ -16,6 +22,8 @@ local StateManager = class(function(self, main_state)
 	
 	self.__main_states, self.__main_count = {main_state}, 1
 	self.__states, self.__count = {main_state}, 1
+	
+	self.__states_dict = {}
 end)
 
 function StateManager:mustExit() return self.__exit end
@@ -26,19 +34,26 @@ function StateManager:getMainStatesStack() return self.__main_states end
 function StateManager:getStatesCount()     return self.__count      end
 function StateManager:getMainStatesCount() return self.__main_count end
 
--- getState - alias for getStatesStack - [later returns a state class]
+-- getState - returns the current state (as a class), or the main state if there is none registered
 function StateManager:getState()
-	return self:getStatesStack()
+	local state = self:getMainStatesStack()[self:getMainStatesCount()]
+	if self.__states_dict[state] then return self.__states_dict[state]
+	--else return state end
+	else return nil end
 end
 
 -- pushMainState - store the old main state and reset the stack to put the new main_state on top
 function StateManager:pushMainState(main_state)
 	if main_state == nil then return end
 	
-	self.__main_states[self.__main_count + 1] = {main_state}
+	self.__main_states[self.__main_count + 1] = main_state
 	self.__main_count = self.__main_count + 1
 	
-	self.__states = self.__main_states[self.__main_count]
+	self.__states = {self.__main_states[self.__main_count]}
+	
+	local state = self:getState()
+	if state then state:onPush()
+	else console:print("Pushed an unknown state: " .. main_state .. "\n", LogLevel.WARNING, "state.lua/StateManager:pushMainState") end
 end
 
 -- popMainState - restore the last stored main state
@@ -50,10 +65,17 @@ function StateManager:popMainState()
 	
 	local main_state = self.__main_states[self.__main_count]
 	
+	local state = self:getState()
+	if state then state:onPop()
+	else console:print("Popped an unknown state: " .. main_state .. "\n", LogLevel.WARNING, "state.lua/StateManager:pushMainState") end
+	
 	self.__main_states[self.__main_count] = nil
 	self.__main_count = self.__main_count - 1
 	
-	self.__states = self.__main_states[self.__main_count]
+	self.__states = {self.__main_states[self.__main_count]}
+	
+	local topState = self:getState()
+	if topState then topState:onPoppedUpper(main_state, state) end
 	
 	return main_state
 end
@@ -76,5 +98,62 @@ function StateManager:popState()
 	return state
 end
 
+-- registerState - register a state as stateName
+function StateManager:registerState(state, stateName)
+	if state and self.__states_dict[stateName] then console:print("Trying to re-register a state: " .. stateName .. "\n", LogLevel.WARNING_DEV, "state.lua/StateManager:registerState")
+	elseif not state and not self.__states_dict[stateName] then console:print("Trying to remove inexistent state: " .. stateName .. "\n", LogLevel.WARNING_DEV, "state.lua/StateManager:registerState")
+	elseif not state.isinstance or not state:isinstance(BaseState) then console:print("Trying to register a non-state object as state " .. stateName .. "\n", LogLevel.WARNING_DEV, "state.lua/StateManager:registerState")
+	else
+		self.__states_dict[stateName] = state
+	end
+end
+
+--[[ registerPseudostate
+	Register a pseudostate as name.
+	Pseudostates are states that cannot be executed (they are not real states).
+]]
+function StateManager:registerPseudostate(name)
+	pseudostate = class(function(self) end, BaseState)
+	pseudostate.pseudostate = true
+	pseudostate:__implementAbstract("runIteration", abst_method("pseudostate " .. name .. " cannot be run"))
+	self:registerState(pseudostate(), name)
+end
+
+--[[ runIteration
+	Run a game/menu/... iteration.
+]]
+function StateManager:runIteration()
+	local state = self:getState()
+	if not state then return false end
+	
+	if state.pseudostate then return false end
+	
+	return state:runIteration()
+end
+
+function StateManager:crash()
+	while self.__main_states[1] do
+		self:popMainState()
+	end
+	error("Crash requested")
+end
+function StateManager:fastcrash()
+	self.__states_dict = {}
+	self.__main_states = {}
+	self.__main_count = 0
+	self.__states = {}
+	self.__count = 0
+	self.__exit = true
+	error("Fast crash requested")
+	return false
+end
+
 -- stateManager - the state manager singleton
-stateManager = StateManager("mm")
+-- stateManager = StateManager("mm") - when the main menu is implemented, uncomment this
+stateManager = StateManager("gameWrapper")
+
+stateManager:registerState(preGameState, "gameWrapper")
+stateManager:registerState(gameState, "game")
+
+-- Register the in-game pseudostate
+stateManager:registerPseudostate("ig")

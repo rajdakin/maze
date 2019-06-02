@@ -39,6 +39,8 @@ opt.adv.enable_map =
 # In-game string
 ig.prompt = 
 
+ig.unknown_dir = 
+
 ig.help:true  = 
 ig.help:false = 
 

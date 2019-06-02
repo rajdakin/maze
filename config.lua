@@ -49,13 +49,33 @@ function LevelManagerConfig:getLevelConfig() return self.__levelConfig end
 
 function LevelManagerConfig:doLoadTestLevels() return self.__loadTestLevels end
 
+local KeyboardConfig = class(function(self, keyboardConfiguration)
+	self.__directions = keyboardConfiguration["directions"]
+end)
+
+function KeyboardConfig:getDirectionsKey() return self.__directions end
+
+function KeyboardConfig:getDirectionKey(dir)
+	if type(dir) == "number" then
+		if dir == 1 then dir = "up"
+		elseif dir == 2 then dir = "right"
+		elseif dir == 3 then dir = "down"
+		elseif dir == 4 then dir = "left"
+		end
+	end
+	
+	ret = self.__directions[dir]
+	if ret then return ret
+	else return "#ERROR" end
+end
+
 --[[ ConsoleConfig - the console configuration class.
 	Holds the log level (an integer between 0 and 4) and whether if it is in developer mode.
 	
 	levelConfiguration - the level configuration table
 ]]
 local ConsoleConfig = class(function(self, consoleConfiguration)
-	self.__logLevel = math.min(math.max(math.floor(consoleConfiguration["logLevel"]), 0), 4)
+	self.__logLevel = math.min(math.max(math.floor(tonumber(consoleConfiguration["logLevel"])), 0), 4)
 	self.__developerMode = consoleConfiguration["developerMode"]
 end)
 
@@ -70,10 +90,12 @@ function ConsoleConfig:isDeveloperMode()         return self.__developerMode    
 ]]
 local Config = class(function(self, configuration)
 	self.__levelManagerConfig = LevelManagerConfig(configuration["levelManagerConfiguration"], configuration["levelConfiguration"])
+	self.__keyboardConfig = KeyboardConfig(configuration["keyboardConfiguration"])
 	self.__consoleConfig = ConsoleConfig(configuration["consoleConfiguration"])
 end)
 
 function Config:getLevelManagerConfig() return self.__levelManagerConfig end
+function Config:getKeyboardConfig() return self.__keyboardConfig end
 function Config:getConsoleConfig() return self.__consoleConfig end
 
 -- currentConfig - the configuration singleton
@@ -84,6 +106,10 @@ currentConfig = Config({
                               ["mapDisplayable"] = true,
                               ["mapYoffset"] = 7,
                               ["difficulty"] = 3},
+    ["keyboardConfiguration"] = {["directions"] = {["up"] = "u",
+                                                   ["down"] = "d",
+                                                   ["left"] = "l",
+                                                   ["right"] = "r"}},
     ["consoleConfiguration"] = {["logLevel"] = 2,
                                 ["developerMode"] = false}
 })

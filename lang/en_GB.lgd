@@ -10,6 +10,8 @@ mm.eqcmenu.no = No
 # In-Game strings
 ig.suicide.lore = You kill yourself.%l
 
+ig.move.fail = You can't.%l
+
 ig.redkey:false = You do not have a red key.
 ig.redkey:true = You do have a %c46;01;31mred key%r.
 

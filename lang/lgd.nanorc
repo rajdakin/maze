@@ -50,7 +50,7 @@ color brightyellow "^[ 	]*(opt\.)?(advanced|not_exit|enable_minimap)"
 color brightyellow "^[ 	]*(opt\.(difficulty\.)?)?(option|value:(1|2|3|4))"
 color brightyellow "^[ 	]*(opt\.(adv\.)?)?(vlength|dev|loglv|enable_map)"
 
-color brightyellow "^[ 	]*(ig\.)?(prompt|help:(true|false)|nil|up|down|left|right|start|((red)?key|sword):(true|false)|confirm|exit:(open|opened))"
+color brightyellow "^[ 	]*(ig\.)?(prompt|unknown_dir|help:(true|false)|nil|up|down|left|right|start|((red)?key|sword):(true|false)|confirm|exit:(open|opened))"
 color brightyellow "^[ 	]*(ig\.(move\.)?)?(fail|up|down|left|right)"
 color brightyellow "^[ 	]*(ig\.((wait|suicide)\.)?)?(lore)"
 color brightyellow "^[ 	]*(ig\.(levels\.(lores\.(start\.([^	 \.:]+\.)?)?)?)?)?(lore)"

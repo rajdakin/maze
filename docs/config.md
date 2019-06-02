@@ -30,6 +30,10 @@ Inside the `levelConfiguration` block.
   3. Normal: map reset, new object destroying
   4. Hard: map reset, both objects \(held and new) destroying
 
+## Keyboard configuration
+Inside the `keyboardConfiguration` block
+- `directions`: the directions quickkeys (up, down, left, right are respectively u, d, l, r by default, this can be changed here). Changing this configuration may break other keys as movement has predecence on about everything else.
+
 ## Console configuration
 Inside the `consoleConfiguration` block.
 - `logLevel` \(`2`): the logging level. Ranges from 0 to 4.

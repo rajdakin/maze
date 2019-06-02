@@ -37,7 +37,8 @@ function PreGameState:runIteration()
 		
 		if doNextLevel then
 			levelManager:setLevelNumber(levelManager:getLevelNumber() + 1)
-			
+			end
+			-- TODO: here is another place to add a live count
 			if levelManager:getActiveLevel() then
 				sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Not yet!  ")
 				sleep(1)
@@ -46,7 +47,7 @@ function PreGameState:runIteration()
 			else
 				sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Yes it is!")
 			end
-		end
+		--end
 	end
 	
 	return false

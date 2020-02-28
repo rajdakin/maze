@@ -103,12 +103,12 @@ ig.exit:opened =
 
 ig.keydoors.exit.locked = You see the exit %s. It is locked. You can't open it.%l
 
-ig.keydoors.exit.group.kd.dynamic.openable = You see the exit, a standard door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?%Iig.keydoors.exit.group.kd.dynamic.confirm 
-ig.keydoors.exit.group.kd.inventory.openable = You see the exit, a standard door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?%Iig.keydoors.exit.group.kd.inventory.confirm 
+ig.keydoors.exit.group.kd.dynamic.openable = You see the exit, a standard door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose the key?%Iig.keydoors.exit.group.kd.dynamic.confirm 
+ig.keydoors.exit.group.kd.inventory.openable = You see the exit, a standard door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose your key?%Iig.keydoors.exit.group.kd.inventory.confirm 
 ig.keydoors.exit.group.open = The exit is a closed door that you open with your key.%l
 
-ig.keydoors.exit.redgroup.kd.dynamic.openable = You see the exit, a weird door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?%Iig.keydoors.exit.redgroup.kd.dynamic.confirm 
-ig.keydoors.exit.redgroup.kd.inventory.openable = You see the exit, a repulsive door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose it?%Iig.keydoors.exit.redgroup.kd.inventory.confirm 
+ig.keydoors.exit.redgroup.kd.dynamic.openable = You see the exit, a weird door, %s. You can probably open it with the key on the floor. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose the key?%Iig.keydoors.exit.redgroup.kd.dynamic.confirm 
+ig.keydoors.exit.redgroup.kd.inventory.openable = You see the exit, a repulsive door %s. You can probably open it with your key. How did you guess it was the exit? Well, maybe that "EXIT" sign on top of it helped... Do you want to lose your key?%Iig.keydoors.exit.redgroup.kd.inventory.confirm 
 ig.keydoors.exit.redgroup.open = The exit is a closed door that you open with your key.%l
 
 ig.keydoors.exit.keepclose = You decide to keep that only and unique exit closed.%l

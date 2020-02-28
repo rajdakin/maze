@@ -29,14 +29,14 @@ console:printLore("\n")
 console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")
 console:printLore("main()\n\n")
 local lvnum = levelManager:getLevelNumber()
-if (levelManager:getLevel(lvnum - 1) and not levelManager:getLevel(lvnum - 1):getLevelConfiguration():doesDisplayFullMap())
- or (levelManager:getLevel(lvnum   ) and not levelManager:getLevel(lvnum    ):getLevelConfiguration():doesDisplayFullMap()) then
+if not levelManager:getLevel(lvnum) then lvnum = lvnum - 1 end
+lvnum = tostring(lvnum)
+if levelManager:getLevel(lvnum) and not levelManager:getLevel(lvnum):getLevelConfiguration():doesDisplayFullMap() then
 	console:printLore("\nThe map is disabled.\nTo enable it, write:\n")
-	console:printLore("levelManager:getLevel(levelManager:getLevelNumber() - 1):getLevelConfiguration().__displayMap = true\n")
+	console:printLore("levelManager:getLevel(" .. lvnum .. "):getLevelConfiguration().__displayMap = true\n")
 end
 console:printLore("To see the map (if enabled), write:\n")
-console:printLore("levelManager:getLevel(levelManager:getLevelNumber() - 1):printLevelMap(true, Objects(1), true)\n")
-console:printLore("(Note: if you exitted the level using the exit command or equivalent, remove the ' - 1' part.)\n\n")
+console:printLore("levelManager:getLevel(" .. lvnum .. "):printLevelMap(true, Objects(1), true)\n")
 if dead then
 	console:printLore("You died, so you haven't got the entire map.\n")
 else

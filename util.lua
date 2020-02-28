@@ -1,10 +1,15 @@
+local args = {...}
+local import_prefix = args[1]
+if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") end
+if not import_prefix then import_prefix = "" end
+
 cardinals = {}
 cardinals["up"] = "north"
 cardinals["down"] = "south"
 cardinals["left"] = "east"
 cardinals["right"] = "west"
 
-local classmodule = require("class")
+local classmodule = require(import_prefix .. "class")
 
 --[[
 	sleep - wait for s seconds. Inefficient for s > 2.

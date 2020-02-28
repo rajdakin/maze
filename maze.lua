@@ -1,6 +1,7 @@
 local args = {...}
 local import_prefix = args[1]
-if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
+if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") end
+if not import_prefix then import_prefix = "" end
 
 local statemodule = require(import_prefix .. "state")
 

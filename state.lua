@@ -21,15 +21,15 @@ local StateManager = class(function(self, main_state)
 	self.__exit = false
 	
 	self.__main_states, self.__main_count = {main_state}, 1
-	self.__states, self.__count = {main_state}, 1
+	self.__states, self.__count = {{main_state}}, 1
 	
 	self.__states_dict = {}
 end)
 
 function StateManager:mustExit() return self.__exit end
 
-function StateManager:getStatesStack()     return self.__states      end
-function StateManager:getMainStatesStack() return self.__main_states end
+function StateManager:getStatesStack()     return self.__states[self.__main_count] end
+function StateManager:getMainStatesStack() return self.__main_states               end
 
 function StateManager:getStatesCount()     return self.__count      end
 function StateManager:getMainStatesCount() return self.__main_count end
@@ -49,7 +49,7 @@ function StateManager:pushMainState(main_state)
 	self.__main_states[self.__main_count + 1] = main_state
 	self.__main_count = self.__main_count + 1
 	
-	self.__states = {self.__main_states[self.__main_count]}
+	table.insert(self.__states, {self.__main_states[self.__main_count]})
 	
 	local state = self:getState()
 	if state then state:onPush()
@@ -61,7 +61,7 @@ function StateManager:popMainState()
 	if self.__main_count == 1 then self.__exit = true
 	elseif self.__main_count == 0 then return nil end
 	
-	while self.__states[2] do self:popState() end
+	while self:getStatesStack()[2] do self:popState() end
 	
 	local main_state = self.__main_states[self.__main_count]
 	
@@ -72,7 +72,7 @@ function StateManager:popMainState()
 	self.__main_states[self.__main_count] = nil
 	self.__main_count = self.__main_count - 1
 	
-	self.__states = {self.__main_states[self.__main_count]}
+	table.remove(self.__states)
 	
 	local topState = self:getState()
 	if topState then topState:onPoppedUpper(main_state, state) end
@@ -83,16 +83,16 @@ end
 function StateManager:pushState(state)
 	if state == nil then return end
 	
-	self.__states[self.__count + 1] = state
+	self:getStatesStack()[self.__count + 1] = state
 	self.__count = self.__count + 1
 end
 
 function StateManager:popState()
 	if self.__count <= 1 then return nil end
 	
-	local state = self.__states[self.__count]
+	local state = self:getStatesStack()[self.__count]
 	
-	self.__states[self.__count] = nil
+	self:getStatesStack()[self.__count] = nil
 	self.__count = self.__count - 1
 	
 	return state
@@ -100,6 +100,8 @@ end
 
 -- registerState - register a state as stateName
 function StateManager:registerState(state, stateName)
+	if state and self.__states_dict[stateName] and self.__states_dict[stateName].pseudostate then self.__states_dict[stateName] = nil end
+	
 	if state and self.__states_dict[stateName] then console:print("Trying to re-register a state: " .. stateName .. "\n", LogLevel.WARNING_DEV, "state.lua/StateManager:registerState")
 	elseif not state and not self.__states_dict[stateName] then console:print("Trying to remove inexistent state: " .. stateName .. "\n", LogLevel.WARNING_DEV, "state.lua/StateManager:registerState")
 	elseif not state.isinstance or not state:isinstance(BaseState) then console:print("Trying to register a non-state object as state " .. stateName .. "\n", LogLevel.WARNING_DEV, "state.lua/StateManager:registerState")
@@ -113,7 +115,7 @@ end
 	Pseudostates are states that cannot be executed (they are not real states).
 ]]
 function StateManager:registerPseudostate(name)
-	pseudostate = class(function(self) end, BaseState)
+	local pseudostate = class(function(self) end, BaseState)
 	pseudostate.pseudostate = true
 	pseudostate:__implementAbstract("runIteration", abst_method("pseudostate " .. name .. " cannot be run"))
 	self:registerState(pseudostate(), name)

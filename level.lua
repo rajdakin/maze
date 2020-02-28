@@ -341,7 +341,7 @@ end, Manager)
 
 function LevelManager:getLevels() return self.__levels end
 function LevelManager:getLevel(level) return self:getLevels()[level] end
-function LevelManager:getActiveLevel() return self:getLevel(self.__level_number) end
+function LevelManager:getActiveLevel() return self:getLevel(self:getLevelNumber()) end
 
 function LevelManager:getLevelNumber() return self.__level_number         end
 function LevelManager:setLevelNumber(value)   self.__level_number = value end
@@ -388,14 +388,14 @@ function LevelManager:addTestLevel(level_id, level_datas)
 	if level_datas and level_datas["level_array_version"] == 2 then level_datas.__id = tostring(level_id)
 	elseif not level_datas then level_datas = level_id end
 	
-	return self:addTestLevelInstance(Level(level_datas, self.__config:getLevelConfig()))
+	return self:addTestLevelInstance(Level(level_datas, self:getConfig():getLevelConfig()))
 end
 
 function LevelManager:addLevel(level_id, level_datas)
 	if level_datas and level_datas["level_array_version"] == 2 then level_datas.__id = tostring(level_id)
 	elseif not level_datas then level_datas = level_id end
 	
-	return self:addLevelInstance(Level(level_datas, self.__config:getLevelConfig()))
+	return self:addLevelInstance(Level(level_datas, self:getConfig():getLevelConfig()))
 end
 
 function LevelManager:initializeLevels()

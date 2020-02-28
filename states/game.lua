@@ -83,10 +83,10 @@ function GameState:runIteration()
 		return false
 	end
 	
-	levelManager:getActiveLevel():reverseMap(objects)
+	levelManager:getActiveLevel():reverseMap(self.__player.objects)
 	console:printLore("\n")
 	
-	local dirFunc = function(...) currentConfig:getKeyboardConfig():getDirectionKey(...) end
+	local dirFunc = function(...) return currentConfig:getKeyboardConfig():getDirectionKey(...) end
 	
 	local moveFunc = function(dir)
 		stateManager:pushState("move")
@@ -171,7 +171,7 @@ function GameState:runIteration()
 		self:onLevelInitialize()
 		return true
 	else
-		console:print(dictionary:translate(stateManager:getStatesStack(), "unknown_dir"))
+		console:printLore(dictionary:translate(stateManager:getStatesStack(), "unknown_dir", movement))
 		stateManager:popMainState()
 		return not self.__game_ended
 	end

@@ -26,6 +26,7 @@ function PreGameState:runIteration()
 		console:print("No first iteration code for the pre-game state", LogLevel.WARNING_DEV, "states\\pregame.lua/PreGameState:runIteration")
 		return false
 	else
+		dead = self.__status.player.dead
 		if self.__status.requested then return false end
 		
 		local doNextLevel = levelManager:getActiveLevel():printEndingLore(self.__status.player.dead, self.__status.player.objects)

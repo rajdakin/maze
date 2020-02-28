@@ -119,7 +119,7 @@ function Level:getActiveRoom()  return self:getRooms()[self:getRoomNumber()] end
 function Level:getRoom(room_no) return self:getRooms()[room_no]              end
 
 function Level:getRoomCoordinates(room_no) local x, y = room_no % self:getColumnCount(), floor(room_no / self:getColumnCount()) if room_no % self:getColumnCount() == 0 then x = self:getColumnCount() y = y - 1 end return x, y end
-function Level:getRoomFromCoordinates(x, y) return self:getRoom(x + y * self:getColumnCount()) end
+function Level:getRoomFromCoordinates(x, y) return self:getRoom(x + (y - 1) * self:getColumnCount()) end
 
 function Level:getColumnCount() return self.__column_count end
 
@@ -260,14 +260,14 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 		local camHeight = self:getLevelConfiguration():getCamHeight()
 		local roomX, roomY = self:getRoomCoordinates(self:getRoomNumber())
 		xOffset = max(1, min(self:getColumnCount() - camWidth + 1, roomX - floor((camWidth - 1) / 2)))
-		yOffset = max(0, min(floor(self:getMapSize() / self:getColumnCount()) - camHeight, roomY - floor((camHeight - 1) / 2)))
-		maxXcoord = min(camWidth ,                           self:getColumnCount())  * (getRoomDisplayWidth() - 1) + 1
-		maxYcoord = min(camHeight, floor(self:getMapSize() / self:getColumnCount())) * (getRoomDisplayWidth() - 1) + 1
+		yOffset = max(0, min(floor(self:getMapSize() / self:getColumnCount()) - camHeight, roomY - floor((camHeight - 1) / 2))) + 1
+		maxXcoord = min(camWidth ,                           self:getColumnCount())  * (getRoomDisplayWidth()  - 1) + 1
+		maxYcoord = min(camHeight, floor(self:getMapSize() / self:getColumnCount())) * (getRoomDisplayHeight() - 1) + 1
 	else
 		xOffset = 1
-		yOffset = 0
-		maxXcoord =                           self:getColumnCount()  * (getRoomDisplayWidth() - 1) + 1
-		maxYcoord = floor(self:getMapSize() / self:getColumnCount()) * (getRoomDisplayWidth() - 1) + 1
+		yOffset = 1
+		maxXcoord =                           self:getColumnCount()  * (getRoomDisplayWidth()  - 1) + 1
+		maxYcoord = floor(self:getMapSize() / self:getColumnCount()) * (getRoomDisplayHeight() - 1) + 1
 	end
 	
 	for curXcoord = 1, maxXcoord do console:printLore("\27[01;30;47;07m \27[00m") end console:printLore("\27[00m\27[0G")
@@ -276,7 +276,7 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 	for curYcoord = 1, maxYcoord - 1, getRoomDisplayHeight() - 1 do
 		for curXcoord = 1, maxXcoord - 1, getRoomDisplayWidth() - 1 do
 			local roomX, roomY = (curXcoord - 1) / (getRoomDisplayWidth() - 1), (curYcoord - 1) / (getRoomDisplayHeight() - 1)
-			local i = roomX + xOffset + (roomY + yOffset) * self:getColumnCount()
+			local i = roomX + xOffset + (roomY + yOffset - 1) * self:getColumnCount()
 			
 			local ret = self:getRoomFromCoordinates(roomX + xOffset, roomY + yOffset):printRoom(objets, (i == self:getRoomNumber()) and not is_ended)
 			

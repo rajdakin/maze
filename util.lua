@@ -19,7 +19,7 @@ function longsleep(s)
 	while os.time() - t0 <= s do end
 end
 
--- getArrayLength - equivalent to #tbl but efficient in all case (in case you are not entirely sure about #tbl)
+-- getArrayLength - equivalent to #tbl but correct in all case (in case you are not entirely sure about #tbl)
 function getArrayLength(tbl)
 	local count = 0
 	for _ in pairs(tbl) do
@@ -32,6 +32,8 @@ function min(a, b) if a < b then return a else return b end end
 function max(a, b) if a < b then return b else return a end end
 
 local mathmodule = require("math")
+inf = math.huge
+function abs  (a) return math.abs  (a) end
 function floor(a) return math.floor(a) end
 
 --[[

@@ -1,6 +1,7 @@
 local args = {...}
 local import_prefix = args[1]
-if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") else import_prefix = "" end
+if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") end
+if not import_prefix then import_prefix = "" end
 
 local contributionmodule = require(import_prefix .. "contribution")
 local utilmodule = require(import_prefix .. "util")
@@ -124,5 +125,5 @@ function Objects:initialize(objKind)
 		self:addObject("key", false, "held", {"ig"}, "key", function(set) return tostring(set) end, {"ig", "keydoors", "group", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
 		self:addObject("redkey", false, "held", {"ig"}, "redkey", function(set) return tostring(set) end, {"ig", "keydoors", "redgroup", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
 		self:addObject("sword", false, "held", {"ig"}, "sword", function(set) return tostring(set) end, {"ig", "sword"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
-	end -- Line 126
+	end -- Line 128
 end

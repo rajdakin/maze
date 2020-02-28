@@ -54,7 +54,7 @@ function Room:canHear(event, position_in_row, up, down, left, right)
 	 or ((position_in_row ~= 0) and right and right:getAttribute(event))
 end
 
--- unheared - return whether event is an attribute of one of the rooms up, down, left and right and at least one hasn't been seen
+-- unheared - return whether event is an attribute of one of the rooms up, down, left and right and at least one hasn't been heared
 function Room:unheared(event, position_in_row, up, down, left, right)
 	return (up and up:getAttribute(event) and not up:getAttribute("saw")) or (down and down:getAttribute(event) and not down:getAttribute("saw"))
 	 or ((position_in_row ~= 1) and left and left:getAttribute(event) and not left:getAttribute("saw"))
@@ -259,7 +259,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						elseif self:getAttribute("exitdir") == "right" then
 							right:setAttribute("left", true)
 						else
-							console:print("Unknown grave's exit directon (opening the other side): " .. self:getAttribute("exitdir") .. "\n", LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents")
+							console:print("Unknown grave's exit direction (opening the other side): " .. self:getAttribute("exitdir") .. "\n", LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents")
 						end
 						
 						objects:setObject(key, false)
@@ -327,7 +327,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					left:setAttribute("__nsword", false)
 					right:setAttribute("__nsword", false)
 					
-					local canReachSword = falseCoin(85)
+					local canReachSword = falseCoin(90)
 					
 					if canReachSword then
 						stateManager:pushState("reach")

@@ -66,15 +66,15 @@ It is possible that you created it wrong even if it display `.lgd` at the end of
 *If you created it wrong, delete it and start again. It won't work.*
 
 #### Register it
-Next, [inside the dictionary.lua file, at line 341](dictionary.lua#L341), there is a line that start with `langs = {`.
-If that is not the case, search the file to find this line.
+Next, [inside the dictionary.lua file, at line 440](dictionary.lua#L440), there is a line that start with `langs = {`.
+(If that is not the case, search the file to find this line.)
 
 Once you see that line, it is time to add the lang.
 Before the finishing closing brackets, you must add `, {id = "[ID]", name = "[name]", fallback = "[fallback]"}`.
 
-(Soon) ~If you don't see you lang in the languages list, there is something wrong.~ Be sure not to put this text after the finishing closing curly brackets (it must end by `}}`).
+(Soon) ~If you don't see you lang in the languages list, there is something wrong.~ Be sure not to put this text after the finishing closing curly brackets (the line must end by `}}`).
 
-For now, as there is no language selection list, to enable you language, six lines below, there is something like `self.__active_id = langs[1].id`. Replace this by `self.__active_id = "[ID]"`.
+*For now, as there is no language selection list, to enable you language, six lines below, there is something like `self.__active_id = langs[1].id`. Replace this by `self.__active_id = "[ID]"`.*
 **This must be undo before creating any pull request**
 
 If all this is done, good job! You successfully added your language to the list of registered langs!
@@ -83,7 +83,7 @@ If all this is done, good job! You successfully added your language to the list 
 To test if you successfully done everything until here, add `ig.prompt = Tested: working! ` to the file you created.
 Then launch the game. If nothing changed, recreate the `.lgd` file.
 ## Adding the translations
-### What is a tanslation?
+### What is a translation?
 In my `.lgd` files, a translation is a "states-key to string" correspondance.
 
 A states-key is a string.
@@ -91,12 +91,12 @@ States are keywords separated by `.`.
 A key is a keyword, optionally followed by `:` and a keyword.
 Keywords are anything that doesn't contains any of `.:= ` and tab space. It is generally lowercase and spaces are replaced by `_`.
 
-When the game tries to translate a string (for instance `ig.sword.sword`), it first try to get the translation for these states and the key, but if it can't find that translation, it removes the last state (for instance the first `sword.`) and try again (with `ig.sword` with the example).
+When the game tries to translate a string (for instance `ig.sword.sword`), it first try to get the translation for these states and the key, but if it can't find that translation, it removes the last state (for instance the first `sword.`) and try again (with `ig.sword` then `sword` with the example).
 
 ### What are alternatives?
 When the key contains a `:`, it defines an alternative and not a string anymore.
 
-Alternatives may be used when you ~want to write less~ have different states and the states make the translation differs.
+Alternatives may be used when you ~want to write less code~ have different states and the states make the translation differs.
 
 The alternative keyword is what precedes the `:` (and follow the final `.` ), and the alternative name is what follows the `:` (and precedes the `=` part).
 By default, the active alternative is the first alternative defined.
@@ -120,7 +120,7 @@ When upper-case is supported, the first letter is changed to an upper-case lette
 
 1. `%% `: translation time. Note the finishing space. It is replaced by `%`.
 2. `%b`: translation time, upper-case supported. Replaced by `on` or `off`.
-3. `%c[]m`: reading time. Replaced by the color replacing `[]` using the escape codes (`ESC[`...`m`, see ASCII escape codes.). **There is no check for whether this is valid, be careful with this otherwise it will display weird things.**
+3. `%c[]m`: reading time. Replaced by the color replacing `[]` using the escape codes (`ESC[`...`m`, see ASCII escape codes). **There is no check for whether this is valid, be careful with this otherwise it will display weird things.**
 4. `%I[] `: translation time, no argument. The final ` ` may be replaced by a tab. It is replaced by the translation of what replaces `[]` *in the active lang, not the current one if translating using a fallback*.
 5. `%j`: reading time. Replaced by a `^J` (moves one character back, but does not removes it).
 6. `%l`: reading time. Replaced by a new line.
@@ -132,15 +132,20 @@ When upper-case is supported, the first letter is changed to an upper-case lette
 ## What about the level lang dictionaries?
 The difference between `lld` and `lgd` files is that in the `lld` files, the translation "state" starts with the lang ID.
 
-Also, there are some state that is automatically added:
-- Before all other states:
-  - ig
-  - levels
-  - lores
-- Before the translation key:
-  - [The level name]
+Also, there are some state that are automatically added:
+- Before all other states: ig.levels
+- Before the translation key: the level name
 
 These are designed to be used only for levels.
+
+Meaning the line:
+```
+en_US.lores.end.death:default = You DIE. Maybe next time you'll survive?%l
+```
+in `starter.lld` will be equivalent to adding for the `en_US` language:
+```
+ig.levels.lores.end.starter.death:default = You DIE. Maybe next time you'll survive?%l
+```
 
 # What about that nanorc file?
 This file is a syntaxic coloration only supported by Nano.
@@ -150,15 +155,15 @@ It is a terminal-based text editor, available on \*nix.
 
 ## How can I use it?
 To enable it, first locate it. It will be replaced by `[pwd]` below.
-- In \*nix, in a terminal, go into where it is located and type `pwd`<Enter>. The answer is the location.
-- In \*nix, in a file navigator, right-click and click on `Open a terminal here` then type `pwd`<Enter>. The answer is the location.
+- In \*nix, in a terminal, go into where it is located and type `pwd`\<Enter\>. The answer is the location.
+- In \*nix, in a file navigator, right-click and click on `Open a terminal here` then type `pwd`\<Enter\>. The answer is the location.
 
-Then, in the terminal, type `nano ~/.nanorc`<Enter> and append (in a blank line) `include [pwd]/lgd.nanorc`. Then exit Nano.
+Then, in the terminal, type `nano ~/.nanorc`\<Enter\> and append (in a blank line) `include [pwd]/lgd.nanorc`. Then exit Nano.
 
 ## What will it do?
-- It will write in brightred everything that is wrong.
+- It will write in bright red everything that is wrong.
 - It will write states and key/alternatives in yellow, the equals sign in red and the rest in green.
-- It will write every states and key/alternatives registered in brightyellow.
-- It will fill extra spaces extra spaces before and after the translation there is in green.
+- It will write every states and key/alternatives registered in bright yellow.
+- It will fill extra spaces before and after the translation (that are actually in the translated text) in green.
 - It will tell you where are the valid (bold green)/invalid (bold red or red if at end of line) `%.`, but also if the `%c` is valid: there must be no `%cm`, `%c0m`, `%c00m`, any invalid 3+ digit numbers, anything else than numbers or `;`, a finishing `m` letter. Eventually it will color in magenta the text between the `%c` and the `%r`.
 - It will tell you if the `%I` are in a valid state and tell you that the space after is deleted.

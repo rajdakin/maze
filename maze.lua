@@ -6,7 +6,7 @@ local statemodule = require(import_prefix .. "state")
 
 local levelmodule = require(import_prefix .. "level")
 
--- main - run all levels from the active level up to the final one, processing all the logic in the same time
+-- main - run all levels from the active level up to the final one, processing all the logic at the same time
 function main_()
 	while not stateManager:mustExit() do
 		if not stateManager:runIteration() then

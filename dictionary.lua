@@ -11,10 +11,10 @@ local comment = "#"
 
 local id2lang = {}
 
---[[ Lang - the lang class
-	Holds any translation for the corresponding lang
+--[[ Lang - the language class
+	Holds any translation for the corresponding language
 	
-	See also - lang/README.md
+	See also - docs/lang.md
 	
 	lang_name - the displayable string of the lang name
 	lang_id - the lang UID, used internally and while loading

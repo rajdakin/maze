@@ -490,7 +490,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						right:setAttribute(prefix .. "door", false)
 						right:setAttribute(prefix .. "door_dir", "left")
 					else
-						console:print("Unknown door dir (opening the other size): " .. self:getAttribute(prefix .. "door_dir") .. "\n", LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents:checkKeyDoor")
+						console:print("Unknown door direction (opening the other side): " .. self:getAttribute(prefix .. "door_dir") .. "\n", LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents:checkKeyDoor")
 					end
 					
 					if self:getAttribute(prefix .. "key") then

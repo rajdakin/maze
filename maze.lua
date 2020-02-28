@@ -7,24 +7,16 @@ local statemodule = require(import_prefix .. "state")
 local levelmodule = require(import_prefix .. "level")
 
 -- main - run all levels from the active level up to the final one, processing all the logic at the same time
-function main_()
-	while not stateManager:mustExit() do
-		if not stateManager:runIteration() then
-			stateManager:popMainState()
-		end
-	end
-end
-
 function main()
 	stateManager.__exit = false
 	stateManager:pushMainState("gameWrapper")
-	main_()
+	stateManager:runLoop()
 end
 
 -- This is the pre- and post-messages
 console:printLore("Write 'h'<Enter> to get the help at any time.\n")
 stateManager:getState():onPush()
-main_()
+stateManager:runLoop()
 console:printLore("\n")
 console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")
 console:printLore("main()\n\n")

@@ -133,6 +133,17 @@ function StateManager:runIteration()
 	return state:runIteration()
 end
 
+--[[ runLoop
+	Run the iterations loop
+]]
+function StateManager:runLoop()
+	while not self:mustExit() do
+		if not self:runIteration() then
+			self:popMainState()
+		end
+	end
+end
+
 function StateManager:crash()
 	while self.__main_states[1] do
 		self:popMainState()

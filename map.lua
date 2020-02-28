@@ -151,5 +151,3 @@ function Map:Astar(xbeg, ybeg, xend, yend)
 	
 	return nil
 end
-
-map = Map(levelManager:getLevel(1)); path = map:Astar(7, 4, 1, 1); for k, v in pairs(path) do print(k, "(" .. tostring(v.x) .. ";" .. tostring(v.y) .. ")") end

@@ -72,10 +72,10 @@ ig.sword.take:norm = While trying to grab your second sword, you loose one of th
 ig.sword.take:easy = On second thought, you let the sword where it is.%l
 ig.sword.leave = You decide to leave the sword.%l
 
-ig.near.key:true = A reflect questions you, but you can't tell where does it comes from.%l
+ig.near.key:true = A reflection questions you, but you can't tell where does it comes from.%l
 ig.near.key:false = 
 
-ig.near.redkey:true = A red reflect questions you, but you can't tell where does it comes from.%l
+ig.near.redkey:true = A red reflection questions you, but you can't tell where does it comes from.%l
 ig.near.redkey:false = 
 
 ig.near.exit:visible = You see a green light of the same color as the exit signs. You even hear a far thunderstorm! The exit is near...

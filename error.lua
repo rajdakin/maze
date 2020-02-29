@@ -5,6 +5,7 @@ if not import_prefix then import_prefix = "" end
 
 local classmodule = require(import_prefix .. "class")
 
+any_error = {}
 local function tccall(self)
 	local success, tret = pcall(self.__value.try)
 	
@@ -13,7 +14,8 @@ local function tccall(self)
 		local i, v
 		for i, v in ipairs(self.__value.catch) do
 			if (type(tret) == type(v.typ)) and ((type(tret) == "string" and tret:find(v.typ)) or (type(tret) == "table"
-			 and type(tret.isinstance) == "function" and tret:isinstance(v.typ))) then
+			  and type(tret.isinstance) == "function" and tret:isinstance(v.typ)))
+			 or (v.typ == any_error) then
 				caught = true
 				tret = v.fcn(tret)
 				break

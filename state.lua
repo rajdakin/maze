@@ -139,18 +139,23 @@ end
 	Run the iterations loop
 ]]
 function StateManager:runLoop()
+	local catch = function(e)
+		self.__exit = true
+		self:crash("An iteration of the game loop crashed (" .. tostring(e) .. ")")
+		return true
+	end
 	while not self:mustExit() do
-		if not self:runIteration() then
+		if not ({try(delay(self.runIteration, self)):catch(any_error, catch)()})[1][2] then
 			self:popMainState()
 		end
 	end
 end
 
-function StateManager:crash()
+function StateManager:crash(msg)
 	while self.__main_states[1] do
 		self:popMainState()
 	end
-	error("Crash requested")
+	error(msg or "Crash requested")
 end
 function StateManager:fastcrash()
 	self.__states_dict = {}

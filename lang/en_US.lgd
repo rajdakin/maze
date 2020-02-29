@@ -32,7 +32,7 @@ opt.difficulty.value:3 = Normal
 opt.difficulty.value:4 = Hard
 
 opt.adv.vlength = How many lines vertically? (%n)
-opt.adv.dev = Developer mode: %y
+opt.adv.dev = Developper mode: %y
 opt.adv.loglv = Logging level: %n
 opt.adv.enable_map = Enable the full map? (%Y)
 
@@ -89,16 +89,16 @@ ig.monster.room_sword.reach.cancel = Well... Due to... you being... a true pacif
 ig.monster.room_sword.fail:fail = You failed to reach the sword.%l
 ig.monster.room_sword.fail:rock = You rush to the sword... and... you trip.%l
 ig.monster.room_sword.fail:side_stitch = You rush, and you learn that you're not a sportman because you gain a side stitch.%l
-ig.monster.room_sword.fail:frozen = You rush, and - wait, actually you can't, it terrifies you too much.%l
-ig.monster.room_sword.fail:too_slow = You rush, and you learn you're not Ulsain Bolt because you're WAAAY too slow.%lLike, you're running at .001 mph.%l
+ig.monster.room_sword.fail:frozen = You rush, and - wait, actually you can't, it terrifies you too much so you're frozen in place.%l
+ig.monster.room_sword.fail:too_slow = You rush, and you learn you're not Ulsain Bolt because you're WAAAY too slow.%lLike, you're running at .0001 mph. Walking is faster than running.%l
 
-ig.monster.no_sword = Before you realize what happen, a huge mass comes toward you and jumps on you.%lYou can confirm, it is heavy.%lToo heavy.%l
-ig.monster.sword = Before you realize what happen, a huge mass comes toward you and jumps on you. And on your sword that was fortunately pointing toward the sky.%lThey both disintegrates, letting you wondering what happened and where is your sword.%l
+ig.monster.no_sword = Before you realized what happen, a huge mass comes toward you and jumps on you.%lYou can confirm, it is heavy.%lToo heavy.%l
+ig.monster.sword = Before you realized what happen, a huge mass comes toward you and jumps on you. And on your sword that was fortunately pointing toward the sky.%lThey both disintegrates, letting you wondering what happened and where is your sword.%l
 
-ig.trap.fall = You fell into a trap. Literally. You are now elsewhere.%l
-ig.trap.kill = You fell into a trap. A spiky one. You can confirm: spike hurts.%l
+ig.trap.fall = You fall into a trap. Literally. You are now somewhere else.%l
+ig.trap.kill = You fall into a trap. A spiky one. You can confirm: spike hurts.%l
 
-ig.exit:open = The exit is a simple opened door with "EXIT" written on top of it. You feel so disappointed that you almost turned back.%l
+ig.exit:open = The exit is a simple opened door with "EXIT" written on top of it. You feel so disappointed that you almost turn back.%l
 ig.exit:opened = 
 
 ig.keydoors.exit.locked = You see the exit %s. It is locked. You can't open it.%l
@@ -127,24 +127,24 @@ ig.keydoors.redgroup.kd.open = You decide to get rid of that bloody key. By appr
 
 ig.keydoors.redgroup.door.locked = You see a terrific door %s. And not a beautiful one.%l
 
-ig.keydoors.group.key.lore = You see a key lying on the floor. Except that you must read %c09mthis text%r a book, so no. It says: you must not have any other normal key (what does that even means?) (%Iig.keydoors.group.key.key ), and it is single-use (why is that?). Do you want to take it?%Iig.keydoors.group.key.confirm 
-ig.keydoors.group.key.take:true = You took the key. Nothing happens.%l
-ig.keydoors.group.key.take:false = You took the key. Both key explodes.%l
-ig.keydoors.group.key.take:norm = You took the key. It explodes.%l
+ig.keydoors.group.key.lore = You see a key lying on the floor. Except that you must read %c09mthis block of text%r a book, so no. It says: you must not have any other normal key (why is this?) (%Iig.keydoors.group.key.key ), and it is single-use (why is that?). Do you want to take it?%Iig.keydoors.group.key.confirm 
+ig.keydoors.group.key.take:true = You take the key. Nothing happens.%l
+ig.keydoors.group.key.take:false = You take the key. Both key explode.%l
+ig.keydoors.group.key.take:norm = You take the key. It explodes.%l
 ig.keydoors.group.key.take:easy = After thinking a little, you realize it's not a good idea.%l
 ig.keydoors.group.key.leave = You leave the key. Nothing happens.%l
 
-ig.keydoors.redgroup.key.lore = You see a repulsively red key lying on the floor. Except that you must read %c09mthis text%r a book, so no. It says: you must not have any other hell's key (what does that even means?) (%Iig.keydoors.redgroup.key.redkey ), and: it is single-use (why is that?). Do you want to take it?%Iig.keydoors.redgroup.key.confirm 
-ig.keydoors.redgroup.key.take:true = You took the hell's key. Nothing happens.%l
-ig.keydoors.redgroup.key.take:false = You took the red key. Both key explodes.%l
-ig.keydoors.redgroup.key.take:norm = You took the red key. It explodes.%l
+ig.keydoors.redgroup.key.lore = You see a repulsively red key lying on the floor. Except that you must read %c09mthis massive paragraph%r a book, so no. It says: you must not have any other hell's key (what does that even means?) (%Iig.keydoors.redgroup.key.redkey ), and: it is single-use (why is that?). Do you want to take it?%Iig.keydoors.redgroup.key.confirm 
+ig.keydoors.redgroup.key.take:true = You take the hell's key. Nothing happens.%l
+ig.keydoors.redgroup.key.take:false = You take the red key. Both key explode.%l
+ig.keydoors.redgroup.key.take:norm = You take the red key. It explodes.%l
 ig.keydoors.redgroup.key.take:easy = After thinking a little, you realize it's not a good idea.%l
 ig.keydoors.redgroup.key.leave = You leave the bloody key. Nothing happen.%l
 
-ig.sword.lore = You see a sword lying on the floor. Except that you must read %c09mthis text%r a book, so no. It says: you must not have any other sword (what does that even means?) (%Iig.sword.sword ), and it is single-use (why is that?). Do you want to take it?%Iig.sword.confirm 
+ig.sword.lore = You see a sword lying on the floor. Except that you must read %c09mthis massive text%r a book, so no. It says: you must not have any other sword (why is this?) (%Iig.sword.sword ), and it is single-use (why is that?). Do you want to take it?%Iig.sword.confirm 
 ig.sword.take:true = You take the sword. Nothing happens.%l
-ig.sword.take:false = You take the sword. Both swords explodes.%l
-ig.sword.take:norm = You took the red key. It explodes.%l
+ig.sword.take:false = You take the sword. Both swords explode.%l
+ig.sword.take:norm = You take the red key. It explodes.%l
 ig.sword.take:easy = After thinking a little, you realize it's not a good idea.%l
 ig.sword.leave = You leave the sword. Nothing happens.%l
 
@@ -154,7 +154,7 @@ ig.near.sword:false =
 ig.near.key:true = You briefly see a shining, but you can't tell from where it comes.%l
 ig.near.key:false = 
 
-ig.near.redkey:true = A death promess made of light questions you, but you couldn't tell where does it comes from.%l
+ig.near.redkey:true = A death promise made of light questions you, but you couldn't tell where does it comes from.%l
 ig.near.redkey:false = 
 
 ig.near.monster:true = A terrifying scream chills you to death, but it was too loud to be localizable.%l
@@ -166,8 +166,8 @@ ig.near.exit:far = You feel like there's something missing here...%l
 ig.near.exit:near = 
 
 ig.graveyard.lore = You arrive in a room. A special one. With dirt. And graves. One is open. Do you want to go in it?%Iig.graveyard.confirm 
-ig.graveyard.go = You decided to run in the stairs in that grave.%l
-ig.graveyard.cancel = You decided to turn back and ignore the call of that opening.%l
+ig.graveyard.go = You decide to run in the stairs in that grave.%l
+ig.graveyard.cancel = You decide to turn back and ignore the call of that opening.%l
 
 ig.moving.grave.normal = You arrive in a grave, that you can exit. That's what you're doing.
 ig.moving.grave.deadly.unknown = You arrive in a grave, and there is nothing... but... an open exit door... (You were apparently supposed to have a "%s" to exit, but that's not yet implemented.)%l
@@ -177,7 +177,7 @@ ig.moving.grave.deadly.inventory = You arrive in a grave, that has a locked door
 
 ig.moving.grave.deadly.key.locked = You arrive in a grave, that has a locked normal door.%lYou can open it with the key that you saw a few rooms ago...%lNo?%l
 ig.moving.grave.deadly.key.dynamic = You arrive in a grave, that has a locked normal door.%lYou can open it with the key lying on the floor. At the prize of destroying a..%lboneful... sculpture?%l
-ig.moving.grave.deadly.key.inventory = You arrive in a grave, that has a locked normal door.%lYou can open it with your key. At the prize of loosing it forever.%l
+ig.moving.grave.deadly.key.inventory = You arrive in a grave, that has a locked normal door.%lYou can open it with your key. At the prize of losing it forever.%l
 ig.moving.grave.deadly.redkey.locked = You arrive in a grave, that has a locked satanistic door.%lBeing satanistic, it will keep you trapped forever and beyond.%l
 ig.moving.grave.deadly.redkey.dynamic = You arrive in a grave, that has a locked horrible door.%lYou can open it with the key lying on the floor. At the prize of destroying a..%lsoulful... sculpture?
-ig.moving.grave.deadly.redkey.inventory = You arrive in a grave, that has a locked (and almost fascinating because it is unbelievably creepy) door.%lYou can open it with your key.%lAt the prize of loosing it forever. (Which is good.)%l
+ig.moving.grave.deadly.redkey.inventory = You arrive in a grave, that has a locked (and almost fascinating because it is unbelievably creepy) door.%lYou can open it with your key.%lAt the prize of losing it forever. (Which is good.)%l

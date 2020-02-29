@@ -3,9 +3,11 @@ local import_prefix = args[1]
 if import_prefix then import_prefix = import_prefix:match("(.-)[^%.]+$") end
 if not import_prefix then import_prefix = "" end
 
-local utilmodule = require(import_prefix .. "util")
+local errormodule = require(import_prefix .. "error")
 
-local classmodule = require(import_prefix .. "class")
+local utilmodule = load_module(import_prefix .. "util", true)
+
+local classmodule = load_module(import_prefix .. "class", true)
 
 --[[ LevelConfig - the level configuration class.
 	Holds whether the minimap should display, whether the map should be displayable,
@@ -76,7 +78,7 @@ end
 	levelConfiguration - the level configuration table
 ]]
 local ConsoleConfig = class(function(self, consoleConfiguration)
-	self.__logLevel = math.min(math.max(math.floor(tonumber(consoleConfiguration["logLevel"])), 0), 4)
+	self.__logLevel = min(max(floor(tonumber(consoleConfiguration["logLevel"])), 0), 4)
 	self.__developerMode = consoleConfiguration["developerMode"]
 end)
 
@@ -99,13 +101,20 @@ function Config:getLevelManagerConfig() return self.__levelManagerConfig end
 function Config:getKeyboardConfig() return self.__keyboardConfig end
 function Config:getConsoleConfig() return self.__consoleConfig end
 
+-- When done, add things in INTERACTING.md
+function Config:readConfig()
+end
+
+function Config:writeConfig()
+end
+
 -- currentConfig - the configuration singleton
 currentConfig = Config({
     ["levelManagerConfiguration"] = {["loadTestLevels"] = false},
     ["levelConfiguration"] = {["minimapDisplay"] = true,
                               ["minimapViewingSize"] = {3, 3},
                               ["mapDisplayable"] = true,
-                              ["mapYoffset"] = 7,
+                              ["mapYoffset"] = 8,
                               ["difficulty"] = 3},
     ["keyboardConfiguration"] = {["directions"] = {["up"] = "u",
                                                    ["down"] = "d",

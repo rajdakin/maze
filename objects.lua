@@ -3,12 +3,14 @@ local import_prefix = args[1]
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") end
 if not import_prefix then import_prefix = "" end
 
-local contributionmodule = require(import_prefix .. "contribution")
-local utilmodule = require(import_prefix .. "util")
+local errormodule = require(import_prefix .. "error")
 
-local dictionarymodule = require(import_prefix .. "dictionary")
-local consolemodule = require(import_prefix .. "console")
-local classmodule = require(import_prefix .. "class")
+local contributionmodule = load_module(import_prefix .. "contribution", true)
+local utilmodule = load_module(import_prefix .. "util", true)
+
+local dictionarymodule = load_module(import_prefix .. "dictionary", true)
+local consolemodule = load_module(import_prefix .. "console", true)
+local classmodule = load_module(import_prefix .. "class", true)
 
 --[[ Objects - the object manager class
 	Holds values.

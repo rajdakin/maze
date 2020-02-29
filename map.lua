@@ -3,9 +3,11 @@ local import_prefix = args[1]
 if import_prefix then import_prefix = import_prefix:match("(.-)[^%.]+$") end
 if not import_prefix then local_prefix = args[1] end
 
-local utilmodule = require(import_prefix .. "util")
+local errormodule = require(import_prefix .. "error")
 
-local classmodule = require(import_prefix .. "class")
+local utilmodule = load_module(import_prefix .. "util", true)
+
+local classmodule = load_module(import_prefix .. "class", true)
 
 Map = class(function(self, level)
 	self.__grid = {}

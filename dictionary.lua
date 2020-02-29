@@ -3,10 +3,12 @@ local import_prefix = args[1]
 if import_prefix then import_prefix = import_prefix:match("(.-)[^%.]+$") end
 if not import_prefix then import_prefix = "" end
 
-local utilmodule = require(import_prefix .. "util")
+local errormodule = require(import_prefix .. "error")
 
-local consolemodule = require(import_prefix .. "console")
-local classmodule = require(import_prefix .. "class")
+local utilmodule = load_module(import_prefix .. "util", true)
+
+local consolemodule = load_module(import_prefix .. "console", true)
+local classmodule = load_module(import_prefix .. "class", true)
 
 local comment = "#"
 

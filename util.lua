@@ -9,7 +9,9 @@ cardinals["down"] = "south"
 cardinals["left"] = "east"
 cardinals["right"] = "west"
 
-local classmodule = require(import_prefix .. "class")
+local errormodule = require(import_prefix .. "error")
+
+local classmodule = load_module(import_prefix .. "class", true)
 
 --[[
 	sleep - wait for s seconds. Inefficient for s > 2.
@@ -36,7 +38,7 @@ end
 function min(a, b) if a < b then return a else return b end end
 function max(a, b) if a < b then return b else return a end end
 
-local mathmodule = require("math")
+local mathmodule = load_module("math")
 inf = math.huge
 function abs  (a) return math.abs  (a) end
 function floor(a) return math.floor(a) end

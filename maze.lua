@@ -3,9 +3,11 @@ local import_prefix = args[1]
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") end
 if not import_prefix then import_prefix = "" end
 
-local statemodule = require(import_prefix .. "state")
+local errormodule = require(import_prefix .. "error")
 
-local levelmodule = require(import_prefix .. "level")
+local statemodule = load_module(import_prefix .. "state", true)
+
+local levelmodule = load_module(import_prefix .. "level", true)
 
 -- main - run all levels from the active level up to the final one, processing all the logic at the same time
 function main()

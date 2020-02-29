@@ -3,13 +3,15 @@ local import_prefix = args[1]
 if import_prefix then import_prefix = (import_prefix):match("(.-)[^%.]+$") end
 if not import_prefix then import_prefix = "" end
 
-local utilmodule = require(import_prefix .. "util")
+local errormodule = require(import_prefix .. "error")
 
-local dictionarymodule = require(import_prefix .. "dictionary")
-local consolemodule = require(import_prefix .. "console")
-local eventsmodule = require(import_prefix .. "events")
-local classmodule = require(import_prefix .. "class")
-local statemodule = require(import_prefix .. "state")
+local utilmodule = load_module(import_prefix .. "util", true)
+
+local dictionarymodule = load_module(import_prefix .. "dictionary", true)
+local consolemodule = load_module(import_prefix .. "console", true)
+local eventsmodule = load_module(import_prefix .. "events", true)
+local classmodule = load_module(import_prefix .. "class", true)
+local statemodule = load_module(import_prefix .. "state", true)
 
 --[[ Room - the Room class
 	Holds the data and the logic of a single room.

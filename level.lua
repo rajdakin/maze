@@ -3,15 +3,17 @@ local import_prefix = args[1]
 if import_prefix then import_prefix = import_prefix:match("(.-)[^%.]+$") end
 if not import_prefix then import_prefix = "" end
 
-local contributionmodule = require(import_prefix .. "contribution")
-local utilmodule = require(import_prefix .. "util")
+local errormodule = require(import_prefix .. "error")
 
-local dictionarymodule = require(import_prefix .. "dictionary")
-local consolemodule = require(import_prefix .. "console")
-local configmodule = require(import_prefix .. "config")
-local eventsmodule = require(import_prefix .. "events")
-local classmodule = require(import_prefix .. "class")
-local roommodule = require(import_prefix .. "room")
+local contributionmodule = load_module(import_prefix .. "contribution", true)
+local utilmodule = load_module(import_prefix .. "util", true)
+
+local dictionarymodule = load_module(import_prefix .. "dictionary", true)
+local consolemodule = load_module(import_prefix .. "console", true)
+local configmodule = load_module(import_prefix .. "config", true)
+local eventsmodule = load_module(import_prefix .. "events", true)
+local classmodule = load_module(import_prefix .. "class", true)
+local roommodule = load_module(import_prefix .. "room", true)
 
 --[[ Level - the level class
 	Holds the level's room and logic functions

@@ -101,20 +101,13 @@ function Config:getLevelManagerConfig() return self.__levelManagerConfig end
 function Config:getKeyboardConfig() return self.__keyboardConfig end
 function Config:getConsoleConfig() return self.__consoleConfig end
 
--- When done, add things in INTERACTING.md
-function Config:readConfig()
-end
-
-function Config:writeConfig()
-end
-
 -- currentConfig - the configuration singleton
 currentConfig = Config({
     ["levelManagerConfiguration"] = {["loadTestLevels"] = false},
     ["levelConfiguration"] = {["minimapDisplay"] = true,
                               ["minimapViewingSize"] = {3, 3},
                               ["mapDisplayable"] = true,
-                              ["mapYoffset"] = 8,
+                              ["mapYoffset"] = 7,
                               ["difficulty"] = 3},
     ["keyboardConfiguration"] = {["directions"] = {["up"] = "u",
                                                    ["down"] = "d",

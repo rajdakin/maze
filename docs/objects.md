@@ -49,7 +49,7 @@ It depends on whether you want add an object group or an object type.
 ## Add an object group
 To add an object group, you need to find a name/number: the group's ID (later replaced by `[ID]`).
 
-To find it, you need to edit the file [objects.lua@line128](/objects.lua#L128).
+To find it, you need to edit the file [objects.lua@line130](/objects.lua#L130).
 
 Here there should be around something like:
 ```lua
@@ -57,7 +57,7 @@ if objKind == 0 then -- Empty object
 elseif objKind == 1 then
 	self:addObject(...)
 	...
-end -- Line 128
+end -- Line 130
 ```
 Before the `end`, you must insert:
 ```lua

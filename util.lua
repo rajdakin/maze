@@ -70,12 +70,12 @@ function Watch:stop()
 	return self.stop - self.start
 end
 
---[[ delayCall - delay a function call
+--[[ differ - differ a function call
 	returns a function
-			which call is the call to the first delayCall call parameter
-			with at most 8 parameters given as the at most 8 next other delayCall parameters.
+		which call is the call to the first `differ` call parameter
+		with at most 8 parameters given as the at most 8 next other `differ` parameters.
 ]]
-function delay(fun, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
+function differ(fun, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 	return function() return fun(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) end
 end
 

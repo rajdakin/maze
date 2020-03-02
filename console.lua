@@ -106,7 +106,8 @@ function Log:print(printable, level, module, valid_args, output_args)
 				local str = ""
 				for k, v in pairs(obj) do
 					if str ~= "" then str = str .. "\n" .. prep end
-					str = str .. k .. ":\t" .. objtostr(v, prep .. "\t")
+					if v == obj then str = str .. k .. ": self"
+					else str = str .. k .. ":\t" .. objtostr(v, prep .. "\t") end
 				end
 				return str
 			else
@@ -130,7 +131,8 @@ function Log:printLore(printable)
 				local str = ""
 				for k, v in pairs(obj) do
 					if str ~= "" then str = str .. "\n" .. prep end
-					str = str .. k .. ":\t" .. objtostr(v, prep .. "\t")
+					if v == obj then str = str .. k .. ": self"
+					else str = str .. k .. ":\t" .. objtostr(v, prep .. "\t") end
 				end
 				return str
 			else

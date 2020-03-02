@@ -637,7 +637,7 @@ function DataStream:write(filename)
 	local lines = {}
 	local innerblock = "  "
 	
-	table.insert(lines, "Version 0.0.0.01a")
+	table.insert(lines, "Version 1.0.0.01b")
 	table.insert(lines, "")
 	
 	local objectConverter

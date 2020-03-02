@@ -103,18 +103,20 @@ function Log:print(printable, level, module, valid_args, output_args)
 	elseif type(printable) == "table" then
 		local function objtostr(obj, prep)
 			if type(obj) == "table" then
+				if DataStream and obj.isinstance and obj:isinstance(DataStream) then
+					obj = obj:get("")
+				end
 				local str = ""
 				for k, v in pairs(obj) do
-					if str ~= "" then str = str .. "\n" .. prep end
-					if v == obj then str = str .. k .. ": self"
-					else str = str .. k .. ":\t" .. objtostr(v, prep .. "\t") end
+					if v == obj then str = str .. "\n" .. prep .. k .. ": self"
+					else str = str .. "\n" .. prep .. k .. ":" .. objtostr(v, prep .. "  ") end
 				end
 				return str
 			else
-				return tostring(obj)
+				return " " .. tostring(obj)
 			end
 		end
-		self:printString("[" .. level:getLogText() .. " in " .. module .. "] " .. objtostr(printable, "") .. "\n", output_mode, level:isValid(valid_args))
+		self:printString("[" .. level:getLogText() .. " in " .. module .. "] " .. objtostr(printable, ""):gmatch("\n(.*)")() .. "\n", output_mode, level:isValid(valid_args))
 	else
 		self:print("Error with printable type in the print module\n", LogLevel.ERROR, "util.lua/Log:print")
 	end
@@ -128,18 +130,20 @@ function Log:printLore(printable)
 	elseif type(printable) == "table" then
 		local function objtostr(obj, prep)
 			if type(obj) == "table" then
+				if DataStream and obj.isinstance and obj:isinstance(DataStream) then
+					obj = obj:get("")
+				end
 				local str = ""
 				for k, v in pairs(obj) do
-					if str ~= "" then str = str .. "\n" .. prep end
-					if v == obj then str = str .. k .. ": self"
-					else str = str .. k .. ":\t" .. objtostr(v, prep .. "\t") end
+					if v == obj then str = str .. "\n" .. prep .. k .. ": self"
+					else str = str .. "\n" .. prep .. k .. ":" .. objtostr(v, prep .. "  ") end
 				end
 				return str
 			else
-				return tostring(obj)
+				return " " .. tostring(obj)
 			end
 		end
-		self:printString(objtostr(printable, "") .. "\n", true, true)
+		self:printString(objtostr(printable, ""):gmatch("\n(.*)")() .. "\n", true, true)
 	else
 		self:print("Error with printable type in the print (lore) module\n", LogLevel.ERROR, "util.lua/Log:printLore")
 	end

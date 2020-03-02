@@ -7,7 +7,6 @@ local errormodule = require(import_prefix .. "error")
 
 local utilmodule = load_module(import_prefix .. "util", true)
 
-local consolemodule = load_module(import_prefix .. "console", false)
 local classmodule = load_module(import_prefix .. "class", true)
 
 local FileState = enum(function(self, name, args)
@@ -53,10 +52,14 @@ function File:open(mode)
 				
 				return true
 			else
+				if not package.loaded[import_prefix .. "console"] then load_module(import_prefix .. "console") end
+				
 				console:print("Error while opening file " .. self.__filename .. " in " .. mod .. " mode\n", LogLevel.ERROR, "file.lua/File:open:(string)")
 				return false
 			end
 		else
+			if not package.loaded[import_prefix .. "console"] then load_module(import_prefix .. "console") end
+			
 			console:print("Unknown opening mode " .. mode .. "\n", LogLevel.WARNING_DEV, "file.lua/File:open:(string)")
 			return false
 		end
@@ -75,6 +78,8 @@ function File:open(mode)
 			return 0
 		end
 	else
+		if not package.loaded[import_prefix .. "console"] then load_module(import_prefix .. "console") end
+		
 		console:print("Unknown opening type " .. type(mode) .. "\n", LogLevel.ERROR, "file.lua/File:open")
 	end
 end
@@ -287,7 +292,7 @@ local function transform_value_back(val)
 		end
 		return va
 	else
-		console:print("Unknown datatype " .. tostring(datatype) .. "\n", LogLevel.WARNING_DEV, "file.lua/transform_value_back(DataStream:get)")
+		error(InvalidArgument("val", "unknown datatype " .. tostring(datatype), "file.lua/transform_value_back(DataStream:get)"))
 		return val.val
 	end
 end
@@ -371,7 +376,12 @@ function DataStream:setSubDataStream(key, subds)
 	if ctainer then
 		subds = subds.__data.val._container
 		if (subds.type == "switchfunction") or (subds.type == "array") then
-			data.val[key] = transform_value(transform_value_back(subds), subds.type, "DataStream:setSubDataStream")
+			try(function()
+				data.val[key] = transform_value(transform_value_back(subds), subds.type, "DataStream:setSubDataStream")
+			end):catch(InvalidArgument, function(e) error(BundledError(
+				InvalidArgument("subds", "invalid sub datastream", "DataStream:setSubDataStream"),
+				e
+			)) end)()
 		else
 			data.val[key] = subds
 		end
@@ -523,14 +533,15 @@ function DataStream:getAsDataStream(key, errorOnFailure)
 	return ret
 end
 function DataStream:get(key, errorOnFailure)
-	return transform_value_back(self:getAsDataStream(key, errorOnFailure).__data)
+	if errorOnFailure then
+		return transform_value_back(self:getAsDataStream(key, errorOnFailure).__data)
+	else
+		return ({try(differ(transform_value_back, self:getAsDataStream(key, errorOnFailure).__data))
+			:catch(any_error, function(e) return nil end)()})[1][2]
+	end
 end
 
 function DataStream:read(filename)
-	local function printWarn(string)
-		console:print("[Parsing file " .. filename .. "] " .. string .. "\n", LogLevel.WARNING, "file.lua/DataStream:read")
-	end
-	
 	local olddatas = self.__data
 	self.__data = {}
 	

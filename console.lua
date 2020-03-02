@@ -9,6 +9,7 @@ local utilmodule = load_module(import_prefix .. "util", true)
 
 local configmodule = load_module(import_prefix .. "config", true)
 local classmodule = load_module(import_prefix .. "class", true)
+local filemodule = load_module(import_prefix .. "file", false)
 
 local OutputModeClass = class(function(self, is_auto_valid, is_out, is_CPC)
 	self.__is_auto_valid = is_auto_valid

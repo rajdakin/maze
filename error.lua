@@ -5,17 +5,90 @@ if not import_prefix then import_prefix = "" end
 
 local classmodule = require(import_prefix .. "class")
 
-any_error = {}
-local function tccall(self)
-	local success, tret = pcall(self.__value.try)
+--[[
+	Some "standard" errors:
+	- ErrorBase - a generic error class
+	- StringError - a string error (thrown mainly by Lua)
+	- UncaughtError - an uncaught error
+	- BundledError - two errors budled together
+	- InvalidArgument - an argument was given, but its type or value is incorrect
+	+ UnimplementedCase - the state of the program leads to a yet-to-be-implemented case
+	 - UnimplementedFunction - the function is not yet implemented
+]]
+
+ErrorBase = class(function(self, reasonstr, thrower)
+	self.str = tostring(reasonstr)
+	self.thrower = tostring(thrower)
+end)
+function ErrorBase:tostring(prepend)
+	if type(prepend) ~= "string" then prepend = "" end
+	return prepend .. "[In " .. self.thrower .. "] " .. self.str
+end
+
+StringError = class(function(self, str)
+	ErrorBase.__init(self, str, "Lua")
+end, ErrorBase)
+function StringError:tostring(prepend)
+	if type(prepend) ~= "string" then prepend = "" end
+	return prepend .. self.str
+end
+
+UncaughtError = class(function(self, old_error, new_thrower)
+	ErrorBase.__init(self, "Uncaught error", new_thrower)
+	if type(old_error) == "string" then old_error = StringError(old_error) end
+	self.old_error = old_error
+end, ErrorBase)
+function UncaughtError:tostring(prepend)
+	if type(prepend) ~= "string" then prepend = "" end
+	return ErrorBase.tostring(self, prepend) .. "\n" .. self.old_error:tostring(prepend .. "  ")
+end
+
+BundledError = class(function(self, error1, error2)
+	if (type(error1) ~= "table") or not error1.isinstance or not error1:isinstance(ErrorBase) then
+		error1 = InvalidArgument("error1", "cannot bundle two non-errors", "BundledError.__init") end
+	if (type(error2) ~= "table") or not error2.isinstance or not error2:isinstance(ErrorBase) then
+		error2 = InvalidArgument("error2", "cannot bundle two non-errors", "BundledError.__init") end
+	ErrorBase.__init(self, error1.str, error1.thrower)
 	
+	self.nberr = 0
+	if error1:isinstance(BundledError) then self.errors = deepcopy(error1.errors) self.nberr = error1.nberr
+	else self.errors = {error1} self.nberr = 1 end
+	if error2:isinstance(BundledError) then
+		for i, v in ipairs(self.errors) do self.errors[i + self.nberr] = deepcopy(v) end
+		self.nberr = self.nberr + error2.nberr
+	else table.insert(self.errors, deepcopy(error1)) self.nberr = self.nberr + 1 end
+end, ErrorBase)
+function BundledError:tostring(prepend)
+	local ret = ""
+	for i, v in ipairs(self.errors) do
+		if ret ~= "" then ret = ret .. "\n" end ret = ret .. v:tostring(prepend)
+	end
+	return ret
+end
+
+InvalidArgument = class(function(self, argname, reason, thrower)
+	ErrorBase.__init(self, "Invalid argument " .. tostring(argname) .. ": " .. reason, thrower)
+end, ErrorBase)
+
+UnimplementedCase = class(function(self, casename, thrower)
+	ErrorBase.__init(self, tostring(casename) .. " has yet to be implemented", thrower)
+end, ErrorBase)
+
+UnimplementedFunction = class(function(self, funname)
+	UnimplementedCase.__init(self, "The function " .. tostring(funname), tostring(funname))
+end, UnimplementedCase)
+
+-- any_error - object to pass to catch to catch every possible error
+any_error = {}
+any_error_of = {table = {}, string = {}, number = {}}
+local function tccall(self, origin)
+	local success, tret = pcall(self.__value.try)
 	local caught = success
 	if not success then
-		local i, v
 		for i, v in ipairs(self.__value.catch) do
-			if (type(tret) == type(v.typ)) and ((type(tret) == "string" and tret:find(v.typ)) or (type(tret) == "table"
-			  and type(tret.isinstance) == "function" and tret:isinstance(v.typ)))
-			 or (v.typ == any_error) then
+			if (type(tret) == type(v.typ)) and ((type(tret) == "string" and tret:find(v.typ)) or ((type(tret) == "table")
+			  and (type(tret.isinstance) == "function") and tret:isinstance(v.typ)))
+			 or (v.typ == any_error) or (v.typ == any_error_of[type(tret)]) then
 				caught = true
 				tret = v.fcn(tret)
 				break
@@ -25,7 +98,7 @@ local function tccall(self)
 	
 	local fret = self.__value.finally()
 	
-	if not caught then error(tret) end
+	if not caught then error(UncaughtError(tret, origin or "try-catch block")) end
 	return {success, tret}, {fret}
 end
 
@@ -94,6 +167,20 @@ end
 	  When it is a table, it checks whether `type(err.isinstance) == "function" and err:isinstance(error_type)` is true
 ]]
 
+-- printAnyError - print every error thrown by a call to the function in a "beautiful" way
+function printAnyError(fun)
+	local function printTable(t, p)
+		if type(t) ~= "table" then return p .. tostring(t) end
+		local ret = ""
+		for k, v in pairs(t) do
+			if ret ~= "" then ret = ret .. "\n" end ret = ret .. printTable(v, p .. "\t")
+		end
+		if p == "" then print(ret) else return ret end
+	end
+	
+	return ({try(fun):catch(ErrorBase, function(e) print(e:tostring()) end):catch(any_error_of.table, function(e) printTable(e, "") end):catch(any_error, function(e) print(tostring(e)) end)()})[1]
+end
+
 --[[ load_module - Load a module with error checking
 	modname - module name
 	onfail - function called when the module fails to load
@@ -102,7 +189,7 @@ end
 function load_module(modname, onfail)
 	if type(onfail) == "boolean" then local fail = onfail onfail = function(e)
 		io.write("Failed loading module " .. modname .. "\n")
-		if fail then error(e) else print(e) end
+		if fail then error(UncaughtError(e)) else print(e) end
 	end end
 	
 	local module_, _ = try(

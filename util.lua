@@ -78,3 +78,24 @@ end
 function delay(fun, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 	return function() return fun(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) end
 end
+
+--[[
+	copy - shallow copy of a table
+	deepcopy - deep copy of a table
+]]
+function copy(o)
+	if type(o) ~= "table" then return o end
+	local ret = {}
+	for k, v in pairs(o) do
+		ret[k] = v
+	end
+	return ret
+end
+function deepcopy(o)
+	if type(o) ~= "table" then return o end
+	local ret = {}
+	for k, v in pairs(o) do
+		ret[k] = deepcopy(v)
+	end
+	return ret
+end

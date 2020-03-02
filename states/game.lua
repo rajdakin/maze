@@ -132,7 +132,7 @@ function GameState:runIteration()
 	elseif (movement == dirFunc(4)) or (movement == '\27[D') then
 		-- go left!
 		moveFunc("left")
-	elseif (movement == "w?") or (movement == "w ") or (movement == "map") then
+	elseif (movement == "m") or (movement == "w?") or (movement == "w ") or (movement == "map") then
 		-- print the map
 		ret = levelManager:getActiveLevel():printLevelMap(self.__game_ended, self.__player.objects, true)
 		if ret:iskind(LevelPrintingErrored) then

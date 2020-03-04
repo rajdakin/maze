@@ -136,8 +136,8 @@ function Log:printLore(printable)
 				end
 				local str = ""
 				for k, v in pairs(obj) do
-					if v == obj then str = str .. "\n" .. prep .. k .. ": self"
-					else str = str .. "\n" .. prep .. k .. ":" .. objtostr(v, prep .. "  ") end
+					if v == obj then str = str .. "\n" .. prep .. tostring(k) .. ": self"
+					else str = str .. "\n" .. prep .. tostring(k) .. ":" .. objtostr(v, prep .. "  ") end
 				end
 				return str
 			else

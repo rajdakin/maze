@@ -24,14 +24,15 @@ console:printLore("\n")
 console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")
 console:printLore("main()\n\n")
 local lvnum = levelManager:getLevelNumber()
-if not levelManager:getLevel(lvnum) then lvnum = lvnum - 1 end
-lvnum = tostring(lvnum)
+if not levelManager:getLevel(lvnum) then if levelManager:doLoadTestLevels() then lvnum = lvnum - 1
+                                         else lvnum = lvnum + 1 end end
+lvNum = tostring(lvnum)
 if levelManager:getLevel(lvnum) and not levelManager:getLevel(lvnum):getLevelConfiguration():doesDisplayFullMap() then
 	console:printLore("\nThe map is disabled.\nTo enable it, write:\n")
-	console:printLore("levelManager:getLevel(" .. lvnum .. "):getLevelConfiguration().__displayMap = true\n")
+	console:printLore("levelManager:getLevel(" .. lvNum .. "):getLevelConfiguration().__displayMap = true\n")
 end
 console:printLore("To see the map (if enabled), write:\n")
-console:printLore("levelManager:getLevel(" .. lvnum .. "):printLevelMap(true, Objects(1), true)\n")
+console:printLore("levelManager:getLevel(" .. lvNum .. "):printLevelMap(true, Objects(1), true)\n")
 if dead then
 	console:printLore("You died, so you haven't got the entire map.\n")
 else

@@ -39,7 +39,9 @@ function PreGameState:runIteration()
 		sleep(2) console:printLore("\8\8\8?  ")
 		
 		if doNextLevel then
-			levelManager:setLevelNumber(levelManager:getLevelNumber() + 1)
+			if levelManager:getConfig():doLoadTestLevels() then
+				levelManager:setLevelNumber(levelManager:getLevelNumber() - 1)
+			else levelManager:setLevelNumber(levelManager:getLevelNumber() + 1) end
 			end
 			-- TODO: here is another place to add a live count
 			if levelManager:getActiveLevel() then

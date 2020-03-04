@@ -179,9 +179,10 @@ end
 function Level:printBeginningLore()
 	self:__setupLevelLoresState("start")
 	if self.__array_version == 2 then
-		console:printLore(
-			dictionary:translate(stateManager:getStatesStack(), "lore")
-		)
+		local lore = dictionary:translate(stateManager:getStatesStack(), "lore")
+		local default = ""
+		for k, v in ipairs(stateManager:getStatesStack()) do default = default .. k .. "." end
+		if lore ~= default .. "lore" then console:printLore(lore) end
 	else
 		if self.__lore_begin and self.__lore_begin ~= "" then console:printLore(self.__lore_begin) console:printLore("\n") end
 	end
@@ -197,9 +198,10 @@ function Level:printEndingLore(death, objects)
 		
 		dictionary:setAlternative(stateManager:getStatesStack(), state, alt)
 		
-		console:printLore(
-			dictionary:translate(stateManager:getStatesStack(), state)
-		)
+		local lore = dictionary:translate(stateManager:getStatesStack(), state)
+		local default = ""
+		for k, v in ipairs(stateManager:getStatesStack()) do default = default .. k .. "." end
+		if lore ~= default .. state then console:printLore(lore) end
 	else
 		if self.__lore_end[death] and self.__lore_end[death] ~= "" then console:printLore(self.__lore_end[death]) console:printLore("\n") end
 	end
@@ -369,9 +371,9 @@ function LevelManager:addTestLevelInstance(level_instance)
 		console:print("Bad level_instance class", LogLevel.ERROR, "level.lua/LevelManager:addTestLevelInstance")
 		return {success = false, reasontype = "check", opt = "Not a valid instance"}
 	else
-		self.__levels[self.__test_level_count - 1] = level_instance
-		if not self.__levels[self.__level_count - 1].initialize_status.success then self.__levels[-self.__test_level_count] = nil return {success = false, opt = self.__levels[self.__level_count + 1].initialize_status.opt}
-		else self.__level_count = self.__level_count - 1 return {success = true, id = -self.__test_level_count} end
+		self.__levels[-self.__test_level_count - 1] = level_instance
+		if not self.__levels[-self.__test_level_count - 1].initialize_status.success then self.__levels[-self.__test_level_count - 1] = nil return {success = false, opt = self.__levels[self.__test_level_count - 1].initialize_status.opt}
+		else self.__test_level_count = self.__test_level_count + 1 return {success = true, id = -self.__test_level_count} end
 	end
 end
 

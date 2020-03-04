@@ -403,9 +403,7 @@ function LevelManager:addLevel(level_id, level_datas)
 end
 
 function LevelManager:initializeLevels()
-	self:addLevel("starter", {["level_array_version"] = 2,
-	    ["starting_room"] = 28,
-	    ["column_count"] = 7,
+	self:addLevel("starter", {["level_array_version"] = 2, ["starting_room"] = 28, ["column_count"] = 7,
 	    ["rooms_datas"] = {[-6] = {},                                                                                                              [-5] = {},                                           [-4] = {},                                                        [-3] = {},                                           [-2] = {},                                                        [-1] = {},                                                         [0] = {},
 	                       {exit = true, exit_dir = "left",            down = true,                               door = true, door_dir = "left"}, {                                     right = true}, {           down = true, left = true, right = true},              {                        left = true, right = true}, {                        left = true, right = true},              {                        left = true, right = true, sword = true}, {           down = true, left = true},
 	                       {                                up = true,              right = true, monster = true},                                 {           down = true, left = true, right = true}, {up = true,              left = true, right = true},              {                        left = true},               {           down = true},                                         {           down = true,              right = true},               {up = true,              left = true},
@@ -416,44 +414,45 @@ function LevelManager:initializeLevels()
 		["win_level"]  = function(      objects) return true      end,
 		["alternative_lore"] = function(dead, objects) if dead then return {state = "death", alt = "default"} else return {state = "victory", alt = "default"} end end
 	})
-	self:addLevel("ending", {["level_array_version"] = 1,
-		["starting_room"] = 23,
-		["column_count"] = 7,
-		["rooms_datas"] = {[-6] = {},                                                                  [-5] = {},                                           [-4] = {},                                                          [-3] = {},                                                                                                                   [-2] = {},                                                                                             [-1] = {},                                                           [0] = {},
+	self:addLevel("a_new_danger", {["level_array_version"] = 2, ["starting_room"] = 23, ["column_count"] = 7,
+	    ["rooms_datas"] = {[-6] = {},                                                                  [-5] = {},                                           [-4] = {},                                                          [-3] = {},                                                                                                                   [-2] = {},                                                                                             [-1] = {},                                                           [0] = {},
 	                       {right = true,                             door = true, door_dir = "down"}, {           down = true, left = true},               {           down = true,              right = true},                {exit = true, exit_dir = "up",                         left = true,                           door = true, door_dir = "up"}, {},                                                                                                    {           down = true,                            monster = true}, {},
 	                       {right = true,                 key = true, door = true, door_dir = "up"},   {up = true, down = true, left = true, right = true}, {up = true,              left = true},                              {                                                                   right = true},                                           {           down = true, left = true, right = true, sword = true},                                     {up = true, down = true, left = true, right = true},                 {left = true, trap = true},
 	                       {},                                                                         {up = true, down = true,              right = true}, {                        left = true, right = true},                {                                         down = true, left = true, right = true, key = true},                               {up = true,              left = true, right = true},                                                   {up = true, down = true, left = true},                               {},
 	                       {},                                                                         {up = true, down = true,              right = true}, {                        left = true},                              {                              up = true,                           right = true},                                           {                        left = true, right = true},                                                   {up = true, down = true, left = true},                               {},
 	                       {right = true, monster = true},                                             {up = true,              left = true, right = true}, {                        left = true, right = true, redkey = true}, {                                                      left = true, right = true},                                           {                        left = true,               sword = true, reddoor = true, reddoor_dir = "up"}, {up = true,                           right = true},                 {left = true, trap = true},
-						   {},                                                                         {},                                                  {},                                                                 {},                                                                                                                          {},                                                                         {},                                                                                             {}},
-	    ["lores"] = {
-			"", -- Usually, you don't want anything for when you spawn in the maze.
-			{"You walked along... an.. other corridor?   When you found yet another map. You continued along the corridor...\n...and you emerged to the surface! You are\n\nFREE!", "You died, even if this would've been the end anyways..."}
+	                       {},                                                                         {},                                                  {},                                                                 {},                                                                                                                          {},                                                                         {},                                                                                             {},
 		}
 	})
 	
 	add_contrib_nontest_levels(self)
 	
 	if self:getConfig():doLoadTestLevels() then
-		self:addTestLevel("diff_test", {["level_array_version"] = 1, ["starting_room"] = 1, ["column_count"] = 3,
+		self:addTestLevel("test_doubletake", {["level_array_version"] = 2, ["starting_room"] = 1, ["column_count"] = 3,
 		    ["rooms_datas"] = {[-2] = {},                                               [-1] = {},                                               [0] = {},
 		                       {right = true, key = true, redkey = true, sword = true}, {right = true, key = true, redkey = true, sword = true}, {exit = true, exit_dir = "right"},
 		                       {},                                                      {},                                                      {}}
 		})
-		self:addTestLevel(-1, {["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                                                                  [0] = {},
-		                                                                                                                 {exit = true, exit_dir = "left",                reddoor = true, reddoor_dir = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveyard = true},
-		                                                                                                                 {                                redkey = true},                                                                                                                            {up = true,              key = true},
-		                                                                                                                 {},                                                                                                                                                                         {}}, ["lores"] = {"", ""} -- tests levels, no lores
+		self:addTestLevel("test_basicgrave", {["level_array_version"] = 2, ["starting_room"] = 4, ["column_count"] = 2,
+		    ["rooms_datas"] = {[-1] = {},                                                                                                                                                                  [0] = {},
+		                       {exit = true, exit_dir = "left",                reddoor = true, reddoor_dir = "left", right = true, grave = true, deadlygrave = true, keyneeded = "key", exitdir = "down"}, {           down = true,             graveyard = true},
+		                       {                                redkey = true},                                                                                                                            {up = true,              key = true},
+		                       {},                                                                                                                                                                         {}
+		    }
 		})
-		self:addTestLevel(-2, {["level_array_version"] = 1, ["starting_room"] = 4, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                              [0] = {},
-		                                                                                                                 {exit = true, exit_dir = "left", reddoor = true, reddoor_dir = "left", door = true, door_dir = "left"}, {graveyard = true, down = true},
-		                                                                                                                 {},                                                                                                     {up = true, key = true, redkey = true},
-		                                                                                                                 {},                                                                                                     {}}, ["lores"] = {"", ""} -- tests levels, no lores
+		self:addTestLevel("test_doubleexitbasicgraveyard", {["level_array_version"] = 2, ["starting_room"] = 4, ["column_count"] = 2,
+		    ["rooms_datas"] = {[-1] = {},                                                                                              [0] = {},
+		                       {exit = true, exit_dir = "left", reddoor = true, reddoor_dir = "left", door = true, door_dir = "left"}, {graveyard = true, down = true},
+		                       {},                                                                                                     {up = true, key = true, redkey = true},
+		                       {},                                                                                                     {}
+		    }
 		})
-		self:addTestLevel(-3, {["level_array_version"] = 1, ["starting_room"] = 1, ["column_count"] = 2, ["rooms_datas"] = {[-1] = {},                                                                                                                     [0] = {},
-		                                                                                                                 {           down = true, right = true, redkey = true},                                                                         {exit = true, exit_dir = "up", left = true, reddoor = true, reddoor_dir = "up"},
-		                                                                                                                 {up = true,                                           door = true, door_dir = "right", reddoor = true, reddoor_dir = "right"}, {},
-		                                                                                                                 {},                                                                                                                            {}}, ["lores"] = {"", ""} -- tests levels, no lores
+		self:addTestLevel("test_redout", {["level_array_version"] = 2, ["starting_room"] = 1, ["column_count"] = 2,
+		    ["rooms_datas"] = {[-1] = {},                                                                                                                     [0] = {},
+		                       {           down = true, right = true, redkey = true},                                                                         {exit = true, exit_dir = "up", left = true, reddoor = true, reddoor_dir = "up"},
+		                       {up = true,                                           door = true, door_dir = "right", reddoor = true, reddoor_dir = "right"}, {},
+		                       {},                                                                                                                            {}
+		    }
 		})
 		
 		add_contrib_test_levels(self)

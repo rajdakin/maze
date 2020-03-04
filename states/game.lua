@@ -173,6 +173,7 @@ function GameState:runIteration()
 		self:onLevelInitialize()
 		return true
 	else
+		movement = movement:gsub("\27", "\27[07m^[\27[00m")
 		console:printLore(dictionary:translate(stateManager:getStatesStack(), "unknown_dir", movement))
 		stateManager:popMainState()
 		return not self.__game_ended

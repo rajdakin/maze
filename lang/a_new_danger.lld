@@ -1,0 +1,3 @@
+en_US.lores.start.lore = 
+en_US.lores.end.death:default = You die, even if this would've been the end anyways...%l
+en_US.lores.end.victory:default = You walked along... an.. other corridor?   When you found yet another map. You continued along the corridor...%l...and you emerged to the surface! You are%l%lFREE!%l

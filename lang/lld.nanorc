@@ -1,0 +1,80 @@
+## Lang Level Dictionary NanoRC file
+## by rajdakin
+
+## Auto-set for every '.lld' files
+syntax "langlvdict" "\.lld$"
+
+## By default everything is wrong
+color brightred "."
+
+## The translation
+color green "^[ 	]*[^ 	=\.:][^=\.:]*(\.[^ 	=\.:][^=\.:]*)*(:[^ 	=\.:][^=\.:]*)?[ 	]*=.*"
+color ,green "[ 	]+$"
+color ,green "^[ 	]*[^ 	=\.:][^=\.:]*(\.[^ 	=\.:][^=\.:]*)*(:[^ 	=\.:][^=\.:]*)?[ 	]*=[ 	]+"
+color green "^[ 	]*[^ 	=\.:][^=\.:]*(\.[^ 	=\.:][^=\.:]*)*(:[^ 	=\.:][^=\.:]*)?[ 	]*= "
+
+## Formatted strings
+color magenta "%c([^%]|%[^r])*%r"
+
+## %%
+color ,red "%%[	 ]"
+
+## Every standard %, by default every of them is wrong
+color red "%"
+color brightred "%."
+color brightgreen "%(%|b|B|c|I|j|l|n|r|s|y|Y)"
+
+## Formatting coloration
+color brightred "%c[^m]*m?"
+color brightgreen "%c(0[1-9]|[1-9][0-9]?)(;(0[1-9]|[1-9][0-9]?))*m"
+
+## Equals sign
+color red "^[ 	]*[^ 	=\.:][^=\.:]*(\.[^ 	=\.:][^=\.:]*)*(:[^ 	=\.:][^=\.:]*)?[ 	]*="
+
+## Translation ID
+color yellow "^[ 	]*[^ 	=\.:][^=\.:]*(\.[^ 	=\.:][^=\.:]*)*(:[^ 	=\.:][^=\.:]*)?"
+
+## Formatting insertion
+color brightred "%I[^	 ]*[	 ]?"
+color ,red "%I[^	 \.:]+(\.[^	 \.:]+)*[ 	]"
+color magenta "%I[^	 \.:]+(\.[^	 \.:]+)*"
+
+color brightyellow "%I(ok|cancel)"
+
+color brightyellow "%Imm\.(reset|play|options|profiles|eqc)"
+color brightyellow "%Imm\.eqcmenu\.(confirm|yes|no)"
+
+color brightyellow "%Iopt\.(advanced|not_exit|enable_minimap)"
+color brightyellow "%Iopt\.difficulty\.(option|value)"
+color brightyellow "%Iopt\.adv\.(vlength|dev|loglv|enable_map)"
+
+color brightyellow "%Iig\.(prompt|unknown_dir|help|nil|up|down|left|right|start|(red)?key|sword|confirm|exit)"
+color brightyellow "%Iig\.move\.(fail|up|down|left|right)"
+color brightyellow "%Iig\.(wait|suicide)\.(lore)"
+color brightyellow "%Iig\.levels\.lores\.start\.[^	 \.:]+\.(lore)"
+color brightyellow "%Iig\.levels\.lores\.end\.[^	 \.:]+\.([^ 	\.:=]+)"
+color brightyellow "%Iig\.map\.(legend|(red)?key|sword)"
+color brightyellow "%Iig\.monster\.room_sword\.(lore|fail)"
+color brightyellow "%Iig\.monster\.room_sword\.reach\.(lore|grabbed|timeout|cancel)"
+color brightyellow "%Iig\.monster\.(no_sword|sword)"
+color brightyellow "%Iig\.trap\.(fall|kill)"
+color brightyellow "%Iig\.keydoors\.(exit\.)?(red)?group\.kd\.(dynamic|inventory)\.(openable|open|keepclose)"
+color brightyellow "%Iig\.keydoors\.(exit\.)?(red)?group\.door\.(locked)"
+color brightyellow "%Iig\.keydoors\.(exit\.)?(red)?group\.key\.(lore|take|leave)"
+color brightyellow "%Iig\.sword\.(lore|take|leave)"
+color brightyellow "%Iig\.near\.(sword|(red)?key|monster|exit)"
+color brightyellow "%Iig\.graveyard\.(lore|go|cancel)"
+color brightyellow "%Iig\.moving\.grave\.(normal)"
+color brightyellow "%Iig\.moving\.grave\.deadly\.(unknown|locked|dynamic|inventory)"
+color brightyellow "%Iig\.moving\.grave\.deadly\.(red)?key\.(locked|dynamic|inventory)"
+
+color brightgreen "%I"
+
+## Registered languages
+color brightyellow "(en_US|en_GB)\.lores\.[a-zA-Z0-9\. 	]+(:[a-zA-Z0-9 	]+)?"
+
+## Every line without any `=' is invalid
+color brightred "^[^=]+$"
+
+## Comments
+color blue "^#.*"

@@ -22,7 +22,7 @@ The only exception is the `blank.lgd` file that is only an empty file translatio
 It contains some `.lld` files \(for Level Lang Dictionary).
 Each of there files contains lores for a specific level.
 
-It also contains a `lgd.nanorc` file, which is used with Nano \(see [What about that nanorc file?](#what-about-that-nanorc-file)).
+It also contains a `lgd.nanorc` and `lld.nanorc` file, which is used with Nano \(see [What about that nanorc file?](#what-about-that-nanorc-file)).
 
 # How can I contribute?
 You can contribute by adding or upgrading an other langage's integration.
@@ -59,7 +59,7 @@ Then save a new/empty file **and remove EVERYTHING from the save name, including
 
 **Beware: if the file name finishes by `.txt`, you created it wrong**. It won't work.
 
-**Beware: if it is written anywhere that this file is a text file, you very likely created it wrong**. It probably won't work.
+**Beware: if it is written anywhere that this file is a text file, you very likely created it wrong**. It probably won't work \(though since the file *is* a text file it may be OK).
 
 It is possible that you created it wrong even if it display `.lgd` at the end of the name: you simply hid the file extensions.
 
@@ -158,12 +158,17 @@ To enable it, first locate it. It will be replaced by `[pwd]` below.
 - In \*nix, in a terminal, go into where it is located and type `pwd`\<Enter\>. The answer is the location.
 - In \*nix, in a file navigator, right-click and click on `Open a terminal here` then type `pwd`\<Enter\>. The answer is the location.
 
-Then, in the terminal, type `nano ~/.nanorc`\<Enter\> and append (in a blank line) `include [pwd]/lgd.nanorc`. Then exit Nano.
+Then, in the terminal, type `nano ~/.nanorc`\<Enter\> and append
+```
+include [pwd]/lgd.nanorc
+include [pwd]/lld.nanorc
+```
+. Then exit Nano.
 
 ## What will it do?
 - It will write in bright red everything that is wrong.
 - It will write states and key/alternatives in yellow, the equals sign in red and the rest in green.
 - It will write every states and key/alternatives registered in bright yellow.
-- It will fill extra spaces before and after the translation (that are actually in the translated text) in green.
-- It will tell you where are the valid (bold green)/invalid (bold red or red if at end of line) `%.`, but also if the `%c` is valid: there must be no `%cm`, `%c0m`, `%c00m`, any invalid 3+ digit numbers, anything else than numbers or `;`, a finishing `m` letter. Eventually it will color in magenta the text between the `%c` and the `%r`.
-- It will tell you if the `%I` are in a valid state and tell you that the space after is deleted.
+- It will fill extra spaces before and after the translation \(that are actually in the translated text) in green.
+- It will tell you where are the valid \(bold green)/invalid \(bold red or red if at end of line) `%.`, but also if the `%c` is valid: there must be no `%cm`, `%c0m`, `%c00m`, any invalid 3+ digit numbers, anything else than numbers or `;`, a finishing `m` letter. Eventually it will color in magenta the text between the `%c` and the `%r`.
+- It will tell you if the `%I` are in a valid state and tell you that the space after is deleted. The insertion text \(after the `%I`) is bolded if it is recognized.

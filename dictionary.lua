@@ -45,6 +45,7 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 	for line in io.lines(import_prefix .. "lang/" .. lang_id .. ".lgd") do
 		linecount = linecount + 1
 		
+		if not line:find("^[ 	]*" .. comment) then
 		local nwsline = line:gsub("^%s+", ""):gsub("(%w[%w_%.%:]-)%s*= ?", "%1=", 1)
 		if nwsline and nwsline ~= "" and not nwsline:find("^" .. comment) then
 			if nwsline:find("=") then
@@ -117,7 +118,7 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 			else
 				console:print("[Loading file " .. lang_id .. ".lgd, line " .. linecount .. " for lang " .. lang_name .. "] Missing association with ID `" .. nwsline .. "'\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
 			end
-		end
+		end end
 	end
 end)
 

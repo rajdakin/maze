@@ -24,7 +24,7 @@ console:printLore("\n")
 console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")
 console:printLore("main()\n\n")
 local lvnum = levelManager:getLevelNumber()
-if not levelManager:getLevel(lvnum) then if levelManager:doLoadTestLevels() then lvnum = lvnum - 1
+if not levelManager:getLevel(lvnum) then if levelManager:getConfig():doLoadTestLevels() then lvnum = lvnum - 1
                                          else lvnum = lvnum + 1 end end
 lvNum = tostring(lvnum)
 if levelManager:getLevel(lvnum) and not levelManager:getLevel(lvnum):getLevelConfiguration():doesDisplayFullMap() then

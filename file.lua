@@ -551,7 +551,7 @@ function DataStream:read(filename)
 	
 	local line = file:readLine()
 	local version = line:gmatch("Version v?([0-9]+%.[0-9]+%.[0-9]+[%.-][0-9][0-9]+[abr])")()
-	             or line:gmatch("Version v?([0-9]+%.[0-9]+%.[0-9]+[%.-][0-9][0-9]+%-pre[0-9]+%-[0-9]+)")()
+	             or line:gmatch("Version v?([0-9]+%.[0-9]+%.[0-9]+[%.-][0-9][0-9]+%-pre[0-9]+)")()
 	if not version then
 		file:close()
 		return {success = false, reas = "missingver", reason = "Missing version information"}

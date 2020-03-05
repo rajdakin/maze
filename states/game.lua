@@ -151,6 +151,7 @@ function GameState:runIteration()
 	elseif (movement == "e") or (movement == "end") or (movement == "exit") or (movement == "q") or (movement == "quit") then
 		self.__game_ended = true
 		self.__player.dead = true
+		self.__request = true
 		
 		stateManager:popMainState()
 		return false

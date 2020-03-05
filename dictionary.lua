@@ -389,6 +389,8 @@ function Lang:resetAlternative(alt)
 		resetAlt(self.__alt_dicts[alt])
 	elseif alt == " nil" then
 		resetNils(self.__dict)
+	elseif alt and self.__dict[alt] then
+		resetAlt(self.__dict[alt])
 	else
 		resetAlt(self.__dict)
 	end
@@ -466,9 +468,9 @@ function Dictionary:getActiveLang() return self.__active_lang end
 function Dictionary:translate(state, str, ...) return self.__langs[self:getActiveLang()]:translate(state, str, nil, ...) end
 
 -- resetAlternatives - reset every alternatives in every langs
-function Dictionary:resetAlternatives()
+function Dictionary:resetAlternatives(alt)
 	for k, lang in pairs(self.__langs) do
-		lang:resetAlternative()
+		lang:resetAlternative(alt)
 	end
 end
 

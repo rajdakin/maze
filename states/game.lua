@@ -33,7 +33,7 @@ function GameState:onLevelInitialize()
 	
 	self.__game_ended = false
 	
-	dictionary:resetAlternatives()
+	dictionary:resetAlternatives("ig")
 	dictionary:setAlternative({"ig"}, "help", tostring(levelManager:getActiveLevel():getLevelConfiguration():doesDisplayFullMap()))
 	
 	self.__player.dead = false

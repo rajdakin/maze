@@ -70,7 +70,16 @@ Level = class(function(self, level_datas, level_config, obs3)
 			local init = self:initialize()
 			self.initialize_status = {success = init.success, obsolete = false, old = true, opt = init}
 		elseif self.__array_version == 2 then
-			dictionary:addLevel(level_datas["__id"])
+			if not dictionary:addLevel(level_datas["__id"]) then
+				level_datas["__alternative_lore"] = level_datas["__alternative_lore"]
+					and (console:print(
+						"Warning: couldn't load any translation for the level\n",
+						LogLevel.WARNING_DEV,
+						"level.lua/Level:(init)"
+					  ) and false)
+					or function(dead, objects) return {remove = true} end
+				self.__disable_lore = true
+			end
 			
 			self.__column_count = level_datas["column_count"]
 			self.__starting_room = level_datas["starting_room"]
@@ -179,10 +188,11 @@ end
 function Level:printBeginningLore()
 	self:__setupLevelLoresState("start")
 	if self.__array_version == 2 then
-		local lore = dictionary:translate(stateManager:getStatesStack(), "lore")
-		local default = ""
-		for k, v in ipairs(stateManager:getStatesStack()) do default = default .. k .. "." end
-		if lore ~= default .. "lore" then console:printLore(lore) end
+		if not self.__disable_lore then
+			console:printLore(
+				dictionary:translate(stateManager:getStatesStack(), "lore")
+			)
+		end
 	else
 		if self.__lore_begin and self.__lore_begin ~= "" then console:printLore(self.__lore_begin) console:printLore("\n") end
 	end
@@ -198,10 +208,11 @@ function Level:printEndingLore(death, objects)
 		
 		dictionary:setAlternative(stateManager:getStatesStack(), state, alt)
 		
-		local lore = dictionary:translate(stateManager:getStatesStack(), state)
-		local default = ""
-		for k, v in ipairs(stateManager:getStatesStack()) do default = default .. k .. "." end
-		if lore ~= default .. state then console:printLore(lore) end
+		if not self.__disable_lore then
+			console:printLore(
+				dictionary:translate(stateManager:getStatesStack(), state)
+			)
+		end
 	else
 		if self.__lore_end[death] and self.__lore_end[death] ~= "" then console:printLore(self.__lore_end[death]) console:printLore("\n") end
 	end

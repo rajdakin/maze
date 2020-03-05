@@ -50,7 +50,7 @@ function PreGameState:runIteration()
 				stateManager:pushMainState("game")
 				return true
 			else
-				sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Yes it is!")
+				sleep(2) console:printLore("\8\8\8\8\8\8\8\8\8\8Yes it is!\n\n")
 				sleep(1)
 			end
 		--end

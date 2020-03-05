@@ -144,7 +144,7 @@ function Log:printLore(printable)
 				return " " .. tostring(obj)
 			end
 		end
-		self:printString(objtostr(printable, ""):gmatch("\n(.*)")() .. "\n", true, true)
+		self:printString((objtostr(printable, ""):gmatch("\n(.*)")() or "") .. "\n", true, true)
 	else
 		self:print("Error with printable type in the print (lore) module\n", LogLevel.ERROR, "util.lua/Log:printLore")
 	end

@@ -5,6 +5,8 @@ ok = OK
 cancel = Cancel
 
 # Main Menu strings
+mm.display = 1. %Imm.play %l2. %Imm.eqc %l%lSelect your choice: 
+mm.not_valid = I said enter a number between %n and %n! 
 mm.reset = Reset
 mm.play = Play
 mm.options = Options
@@ -16,9 +18,11 @@ mm.profiles = Profiles
  mm.eqc:term = Terminate
  mm.eqc:kill = Kill
 
-mm.eqcmenu.confirm = Do you really want to quit? :(
+mm.eqcmenu.confirm = %Imm.eqcmenu.question %l%l1. %Imm.eqcmenu.yes %l2. %Imm.eqcmenu.no %l%lYour choice: 
+mm.eqcmenu.question = Do you really want to quit? :(
 mm.eqcmenu.yes = Yeah, gemme outa here!
 mm.eqcmenu.no = Nah, it's OK...
+mm.eqcmenu.not_valid = I said 1 or 2 damnit! 
 
 # Options strings
 opt.advanced = Advanced options

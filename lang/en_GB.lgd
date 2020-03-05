@@ -3,9 +3,12 @@
 # Main Menu strings
 ok = Accept
 
-mm.eqcmenu.confirm = Do you really want to quit?
+mm.not_valid = Please enter a number between %n and %n: 
+
+mm.eqcmenu.question = Do you really want to quit?
 mm.eqcmenu.yes = Yes
 mm.eqcmenu.no = No
+mm.eqcmenu.not_valid = Please enter either 1 or 2: 
 
 # In-Game strings
 ig.suicide.lore = You kill yourself.%l

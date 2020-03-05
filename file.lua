@@ -371,7 +371,7 @@ function DataStream:setSubDataStream(key, subds)
 	
 	local ctainer = true
 	for k, v in pairs(subds.__data.val) do
-		if (k ~= "_container") or (v.type ~= "array") then ctainer = false end
+		if (k ~= "_container") then ctainer = false end
 	end
 	if ctainer then
 		subds = subds.__data.val._container
@@ -381,7 +381,7 @@ function DataStream:setSubDataStream(key, subds)
 			end):catch(InvalidArgument, function(e) error(BundledError(
 				InvalidArgument("subds", "invalid sub datastream", "DataStream:setSubDataStream"),
 				e
-			)) end)()
+			)) end)("DataStream:setSubDataStream>subds=_container")
 		else
 			data.val[key] = subds
 		end

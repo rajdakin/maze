@@ -149,7 +149,7 @@ end
 		...
 	end):...:finally(function()
 		...
-	end)()
+	end)(optional_location_string)
 	
 	The function in the `try` block will be executed first,
 	then if it threw an error it checks whether it has a corresponding catch* (and executes it if necessary)

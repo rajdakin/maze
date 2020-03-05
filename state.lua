@@ -11,6 +11,7 @@ local consolemodule = load_module(import_prefix .. "console", true)
 local classmodule = load_module(import_prefix .. "class", true)
 
 local basestatemodule = load_module(import_prefix .. "states.base", true)
+local mainmenustatemodule = load_module(import_prefix .. "states.mainMenu", true)
 local pregamestatemodule = load_module(import_prefix .. "states.pregame", true)
 local gamestatemodule = load_module(import_prefix .. "states.game", true)
 
@@ -169,9 +170,9 @@ function StateManager:fastcrash()
 end
 
 -- stateManager - the state manager singleton
--- stateManager = StateManager("mm") - when the main menu is implemented, uncomment this
-stateManager = StateManager("gameWrapper")
+stateManager = StateManager("mm")
 
+stateManager:registerState(mainMenuState, "mm")
 stateManager:registerState(preGameState, "gameWrapper")
 stateManager:registerState(gameState, "game")
 

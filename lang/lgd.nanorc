@@ -43,10 +43,10 @@ color yellow "^[ 	]*[^ 	=\.:][^=\.:]*(\.[^ 	=\.:][^=\.:]*)*(:[^ 	=\.:][^=\.:]*)?
 color brightyellow "^[ 	]*(ok|cancel)"
 color brightmagenta "%I(ok|cancel)"
 
-color brightyellow "^[ 	]*(mm\.)?(reset|play|options|profiles|eqc:(exit|quit|close|term|kill))"
-color brightmagenta "%Imm\.([a-zA-Z0-9]+\.)*(reset|play|options|profiles|eqc)"
-color brightyellow "^[ 	]*(mm\.(eqcmenu\.)?)?(confirm|yes|no)"
-color brightmagenta "%Imm\.eqcmenu\.([a-zA-Z0-9]+\.)*(confirm|yes|no)"
+color brightyellow "^[ 	]*(mm\.)?(display|not_valid|reset|play|options|profiles|eqc:(exit|quit|close|term|kill))"
+color brightmagenta "%Imm\.([a-zA-Z0-9]+\.)*(display|not_valid|reset|play|options|profiles|eqc)"
+color brightyellow "^[ 	]*(mm\.(eqcmenu\.)?)?(confirm|question|yes|no|not_valid)"
+color brightmagenta "%Imm\.eqcmenu\.([a-zA-Z0-9]+\.)*(confirm|question|yes|no|not_valid)"
 
 color brightyellow "^[ 	]*(opt\.)?(advanced|not_exit|enable_minimap)"
 color brightmagenta "%Iopt\.([a-zA-Z0-9]+\.)*(advanced|not_exit|enable_minimap)"

@@ -71,14 +71,17 @@ InvalidArgument = class(function(self, argname, reason, thrower)
 end, ErrorBase)
 
 UnimplementedCase = class(function(self, casename, thrower)
-	ErrorBase.__init(self, tostring(casename) .. " has yet to be implemented", thrower)
+	ErrorBase.__init(self, tostring(casename) .. " is yet to be implemented", thrower)
 end, ErrorBase)
 
 UnimplementedFunction = class(function(self, funname)
 	UnimplementedCase.__init(self, "The function " .. tostring(funname), tostring(funname))
 end, UnimplementedCase)
 
--- any_error - object to pass to catch to catch every possible error
+--[[
+	any_error - object to pass to the catch function to catch every possible error
+	any_error_of - object of objects to pass to the catch function to catch every possible error of a given type
+]]
 any_error = {}
 any_error_of = {table = {}, string = {}, number = {}}
 local function tccall(self, origin)
@@ -86,7 +89,7 @@ local function tccall(self, origin)
 	local caught = success
 	if not success then
 		for i, v in ipairs(self.__value.catch) do
-			if (type(tret) == type(v.typ)) and ((type(tret) == "string" and tret:find(v.typ)) or ((type(tret) == "table")
+			if (type(tret) == type(v.typ)) and (((type(tret) == "string") and tret:find(v.typ)) or ((type(tret) == "table")
 			  and (type(tret.isinstance) == "function") and tret:isinstance(v.typ)))
 			 or (v.typ == any_error) or (v.typ == any_error_of[type(tret)]) then
 				caught = true
@@ -168,17 +171,33 @@ end
 ]]
 
 -- printAnyError - print every error thrown by a call to the function in a "beautiful" way
-function printAnyError(fun)
-	local function printTable(t, p)
-		if type(t) ~= "table" then return p .. tostring(t) end
+function printAnyError(fun, printFun)
+	if (type(printFun) ~= "function") -- Not a function
+		and ((type(printFun) ~= "table") -- Not a table, or
+			or (type(getmetatable(printFun)) ~= "table") -- Unavailable/undefined metatable, or
+			or (type(getmetatable(printFun).__call) ~= "function")) then -- Uncallable table
+		printFun = print
+	end
+	local function printTable(t, p, tbls)
+		if type(t) ~= "table" then return tostring(t) end
+		for i, v in pairs(tbls) do if v == t then return "backref #" .. tostring(i) end
 		local ret = ""
 		for k, v in pairs(t) do
-			if ret ~= "" then ret = ret .. "\n" end ret = ret .. printTable(v, p .. "\t")
+			if ret ~= "" then ret = ret .. "\n" .. p end ret = ret .. tostring(k) .. ":\t" .. printTable(v, p .. "\t")
 		end
-		if p == "" then print(ret) else return ret end
+		return ret
 	end
 	
-	return ({try(fun):catch(ErrorBase, function(e) print(e:tostring()) end):catch(any_error_of.table, function(e) printTable(e, "") end):catch(any_error, function(e) print(tostring(e)) end)()})[1]
+	return ({
+		try(fun):
+		catch(ErrorBase, function(e)
+			printFun(e:tostring())
+		end):catch(any_error_of.table, function(e)
+			printFun(printTable(e, "", {}))
+		end):catch(any_error, function(e)
+			printFun(tostring(e))
+		end)()
+	})[1]
 end
 
 --[[ load_module - Load a module with error checking

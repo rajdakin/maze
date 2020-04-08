@@ -25,15 +25,13 @@ function class(init, base)
 			init(obj, ...)
 		elseif class_tbl.__init then
 			class_tbl.__init(obj, ...)
-		elseif base and base.__init then
-			base.init(obj, ...)
 		end
 		
 		return obj
 	end
 	
 	if init then c.__init = init
-	elseif not init and base then c.__init = base.__init end
+	elseif base and base.__init then c.__init = base.__init end
 	
 	c.__implementAbstract = function(clss, methodName, func)
 		clss[methodName] = func
@@ -82,10 +80,6 @@ function abst_class(init, base)
 		return obj
 	end
 	
-	if init then c.__init = init
-	elseif not init and base then c.__init = base.__init end
-	
-	c.__oinit = c.__init
 	c.__init = function(obj, ...)
 		if getmetatable(obj)._abstract then
 			error("Cannot instanciate an abstract class")
@@ -95,10 +89,11 @@ function abst_class(init, base)
 			init(obj, ...)
 		elseif c.__oinit then
 			c.__oinit(obj, ...)
-		elseif base and base.__init then
-			base.init(obj, ...)
 		end
 	end
+	
+	if init then c.__oinit = init
+	elseif base and base.__init then c.__oinit = base.__init end
 	
 	c.__implementAbstract = function(clss, methodName, func)
 		clss[methodName] = func
@@ -155,17 +150,12 @@ function enum(init, base, instances)
 		
 		if init then
 			init(obj, name, ...)
-		elseif class_tbl.__init then
-			class_tbl.__init(obj, name, ...)
 		elseif base and base.__init then
-			base.init(obj, name, ...)
+			base.__init(obj, name, ...)
 		end
 		
 		return obj
 	end
-	
-	if init then c.__init = init
-	elseif not init and base then c.__init = base.__init end
 	
 	c.isinstance = function(self, clss)
 		local m = getmetatable(self)

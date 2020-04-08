@@ -173,6 +173,7 @@ end
 stateManager = StateManager("mm")
 
 stateManager:registerState(mainMenuState, "mm")
+stateManager:registerState(optionsState, "options")
 stateManager:registerState(preGameState, "gameWrapper")
 stateManager:registerState(gameState, "game")
 

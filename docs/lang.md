@@ -43,7 +43,7 @@ A lang fallback is used when the lang doesn't have a translation.
 For instance, if the lang `a` has `ig.map.sword` and the lang `b` has `a` as fallback, but doesn't have a translation for `ig.map.sword`, it will use `a`'s one.
 
 By default, the fallback is the american english `en_US` lang. If you don't want any fallback, the fallback will be `false` without any `"` (like for the american english lang).
-Beware, if you remove the fallback, any unknown translaton will be replaced by the translation string (with dots and all, like `ig.map.sword` or `opt.difficulty.value:3`).
+Beware, if you remove the fallback, any unknown translaton will be replaced by the translation string (with dots and all, like `ig.map.sword` or `options.difficulty.value:3`).
 
 ### Creating the file and integrating it in the program
 From now on, the lang name, ID and fallback are replaced respectively by `[name]`, `[ID]` and `[fallback]` in the code parts.

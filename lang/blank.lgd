@@ -21,20 +21,20 @@ mm.eqcmenu.yes =
 mm.eqcmenu.no = 
 
 # Options strings
-opt.advanced = 
-opt.not_exit = 
-opt.enable_minimap = 
-opt.difficulty.option = 
+options.advanced = 
+options.not_exit = 
+options.enable_minimap = 
+options.difficulty.option = 
 
-opt.difficulty.value:1 = 
-opt.difficulty.value:2 = 
-opt.difficulty.value:3 = 
-opt.difficulty.value:4 = 
+options.difficulty.value:1 = 
+options.difficulty.value:2 = 
+options.difficulty.value:3 = 
+options.difficulty.value:4 = 
 
-opt.adv.vlength = 
-opt.adv.dev = 
-opt.adv.loglv = 
-opt.adv.enable_map = 
+options.adv.vlength = 
+options.adv.dev = 
+options.adv.loglv = 
+options.adv.enable_map = 
 
 # In-game string
 ig.prompt = 

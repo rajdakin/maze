@@ -10,44 +10,25 @@ local classmodule = load_module(import_prefix .. "class", true)
 
 local basechoicemodule = load_module(import_prefix .. "states.baseChoice", true)
 
-local MainMenuState = class(function(self)
+local OptionsState = class(function(self)
 end, BaseChoiceState)
 
-MainMenuState:__implementAbstract("runIteration", function(self)
+OptionsState:__implementAbstract("runIteration", function(self)
 	console:printLore(
 		dictionary:translate(stateManager:getStatesStack(), "display")
 	)
 	
-	local menu = self:loopChoice(1, 3, "not_valid")
+	local menu = self:loopChoice(1, 1, "not_valid")
 	if menu == nil then
 		return false
 	end
 	
 	console:printLore('\n')
 	if menu == 1 then
-		stateManager:pushMainState("gameWrapper")
-		return true
-	elseif menu == 2 then
-		stateManager:pushMainState("options")
-		return true
-	else
-		stateManager:pushState("eqcmenu")
-		console:printLore(
-			dictionary:translate(stateManager:getStatesStack(), "confirm")
-		)
-		
-		local menu = self:loopChoice(1, 2, "not_valid")
-		if menu == nil then
-			return false
-		end
-		
-		stateManager:popState()
-		
-		if menu == 2 then return true
-		else return false end
+		return false
 	end
 	
 	return true
 end)
 
-mainMenuState = MainMenuState()
+optionsState = OptionsState()

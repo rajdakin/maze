@@ -180,7 +180,7 @@ function printAnyError(fun, printFun)
 	end
 	local function printTable(t, p, tbls)
 		if type(t) ~= "table" then return tostring(t) end
-		for i, v in pairs(tbls) do if v == t then return "backref #" .. tostring(i) end
+		for i, v in pairs(tbls) do if v == t then return "backref #" .. tostring(i) end end
 		local ret = ""
 		for k, v in pairs(t) do
 			if ret ~= "" then ret = ret .. "\n" .. p end ret = ret .. tostring(k) .. ":\t" .. printTable(v, p .. "\t")

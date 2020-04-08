@@ -46,7 +46,7 @@ function GameState:onPush()
 	self:onLevelInitialize()
 end
 
-function GameState:runIteration()
+GameState:__implementAbstract("runIteration", function(self)
 	levelManager:getActiveLevel():setActiveRoomAttribute("saw", true)
 	console:printLore("\n")
 	
@@ -197,6 +197,6 @@ function GameState:runIteration()
 	
 	stateManager:popMainState()
 	return not self.__game_ended
-end
+end)
 
 gameState = GameState()

@@ -23,7 +23,7 @@ function PreGameState:onPoppedUpper(stateName, state)
 	self.__status = {popped = true, state = state, player =  state.__player, requested = state.__request}
 end
 
-function PreGameState:runIteration()
+PreGameState:__implementAbstract("runIteration", function(self)
 	if not self.__status.popped then
 		console:print("No first iteration code for the pre-game state", LogLevel.WARNING_DEV, "states\\pregame.lua/PreGameState:runIteration")
 		return false
@@ -57,6 +57,6 @@ function PreGameState:runIteration()
 	end
 	
 	return false
-end
+end)
 
 preGameState = PreGameState()

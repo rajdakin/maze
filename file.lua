@@ -124,7 +124,7 @@ function File:getLines()
 	return f, self.__file:lines(), nil
 end
 
-function File:write(text)
+function File:write(...)
 	local opened = false
 	if not self.__state.write then
 		opened = self.__state
@@ -136,7 +136,7 @@ function File:write(text)
 		end
 	end
 	
-	self.__file:write(text)
+	self.__file:write(...)
 	
 	if opened then
 		self:close()

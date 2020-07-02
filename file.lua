@@ -91,6 +91,12 @@ function File:close()
 	return _file:close()
 end
 
+function File:__gc()
+	if self.__state ~= FileState.closed then
+		self:close()
+	end
+end
+
 function File:readLine()
 	local opened = false
 	if not self.__state.read then
@@ -293,7 +299,6 @@ local function transform_value_back(val)
 		return va
 	else
 		error(InvalidArgument("val", "unknown datatype " .. tostring(datatype), "file.lua/transform_value_back(DataStream:get)"))
-		return val.val
 	end
 end
 
@@ -482,7 +487,7 @@ function DataStream:getAsDataStream(key, errorOnFailure)
 	
 	key = tostring(key)
 	if key == "" then return self end
-	if key:find(":") then fail("key must be a string not containing ':'") end
+	if key:find(":") then return fail("key must be a string not containing ':'") end
 	
 	local toint = function(v, name)
 		local n = tonumber(v)
@@ -500,7 +505,7 @@ function DataStream:getAsDataStream(key, errorOnFailure)
 					first = false
 				else
 					local v = toint(i)
-					if not v then return nil end
+					if v == nil then return nil end
 					table.insert(keys, v)
 				end
 			end

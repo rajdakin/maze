@@ -10,7 +10,7 @@ local classmodule = require(import_prefix .. "class")
 	- ErrorBase - a generic error class
 	- StringError - a string error (thrown mainly by Lua)
 	- UncaughtError - an uncaught error
-	- BundledError - two errors budled together
+	- BundledError - two or more errors budled together
 	- InvalidArgument - an argument was given, but its type or value is incorrect
 	+ UnimplementedCase - the state of the program leads to a yet-to-be-implemented case
 	 - UnimplementedFunction - the function is not yet implemented
@@ -24,6 +24,7 @@ function ErrorBase:tostring(prepend)
 	if type(prepend) ~= "string" then prepend = "" end
 	return prepend .. "[In " .. self.thrower .. "] " .. self.str
 end
+ErrorBase.__tostring = ErrorBase.tostring
 
 StringError = class(function(self, str)
 	ErrorBase.__init(self, str, "Lua")
@@ -44,8 +45,10 @@ function UncaughtError:tostring(prepend)
 end
 
 BundledError = class(function(self, error1, error2)
+	if type(error1) == "string" then error1 = StringError(error1) end
 	if (type(error1) ~= "table") or not error1.isinstance or not error1:isinstance(ErrorBase) then
 		error1 = InvalidArgument("error1", "cannot bundle two non-errors", "BundledError.__init") end
+	if type(error2) == "string" then error2 = StringError(error2) end
 	if (type(error2) ~= "table") or not error2.isinstance or not error2:isinstance(ErrorBase) then
 		error2 = InvalidArgument("error2", "cannot bundle two non-errors", "BundledError.__init") end
 	ErrorBase.__init(self, error1.str, error1.thrower)
@@ -160,9 +163,9 @@ end
 	then it executes the `finally` block regardless of whether the `try`/`catch` succeeded or not
 		(if a `catch` errors it will not be executed though)
 	then if the error wasn't caught it propagates the error.
-	It returns two tables, the first one is {[1] = success, [2] = ret} where success is true iff the `try` block didn't
+	It returns two tables, the first one is {[1] = success, [2] = ret} where success is true if the `try` block didn't
 		raise an exception and ret is the return value of the `try` or executed `catch` block
-	and the second table ha its first element equal to the return value of the `finally` block.
+	and the second table has its first element equal to the return value of the `finally` block.
 	
 	Note the use of the last `()`.
 	
@@ -191,7 +194,7 @@ function printAnyError(fun, printFun)
 	return ({
 		try(fun):
 		catch(ErrorBase, function(e)
-			printFun(e:tostring())
+			printFun(tostring(e))
 		end):catch(any_error_of.table, function(e)
 			printFun(printTable(e, "", {}))
 		end):catch(any_error, function(e)
@@ -203,17 +206,17 @@ end
 --[[ load_module - Load a module with error checking
 	modname - module name
 	onfail - function called when the module fails to load
-	returns whether the module was successfully loaded
+	returns whether the module was successfully loaded and the return value of the module
 ]]
 function load_module(modname, onfail)
 	if type(onfail) == "boolean" then local fail = onfail onfail = function(e)
-		io.write("Failed loading module " .. modname .. "\n")
+		io.stderr:write("Failed loading module " .. modname .. "\n")
 		if fail then error(UncaughtError(e)) else print(e) end
 	end end
 	
 	local module_, _ = try(
 		function() return require(import_prefix .. modname) end
-	):catch("module '" .. modname .. "' not found", onfail)()
+	):catch("module '" .. modname .. "' not found", onfail)("module '" .. modname .. "' loading")
 	
-	return module_[1]
+	return module_[1], module_[2]
 end

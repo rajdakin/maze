@@ -21,6 +21,7 @@ function OutputModeClass:isValid() return self.__is_auto_valid end
 function OutputModeClass:isCharPerChar() return self.__is_CPC end
 function OutputModeClass:isErrorMode() return not self.__out end
 function OutputModeClass:tostring() return "[" .. (out and "OUT" or "ERR") .. "] " end
+OutputModeClass.__tostring = OutputModeClass.tostring
 
 --[[ OutputMode - the output mode enum
 	The output mode is a speed (character-per-character display) or immediate, an output "descriptor"
@@ -102,7 +103,7 @@ function Log:print(printable, level, module, valid_args, output_args)
 	local output_mode = not level:getOutputMode(output_args):isErrorMode()
 	if type(printable) == "string" then
 		self:printString("[" .. level:getLogText() .. " in " .. module .. "] " .. printable, output_mode, level:isValid(valid_args))
-		self.__log(level:getOutputMode(output_args):tostring() .. "[" .. level:getLogText() .. " in " .. module .. "] " .. printable)
+		self.__log(tostring(level:getOutputMode(output_args)) .. "[" .. level:getLogText() .. " in " .. module .. "] " .. printable)
 	elseif type(printable) == "table" then
 		local function objtostr(obj, prep)
 			if type(obj) == "table" then
@@ -120,7 +121,7 @@ function Log:print(printable, level, module, valid_args, output_args)
 			end
 		end
 		self:printString("[" .. level:getLogText() .. " in " .. module .. "] " .. (objtostr(printable, ""):gmatch("\n(.*)")() or "") .. "\n", output_mode, level:isValid(valid_args))
-		self.__log(level:getOutputMode(output_args):tostring() .. "[" .. level:getLogText() .. " in " .. module .. "] " .. (objtostr(printable, ""):gmatch("\n(.*)")() or "") .. "\n")
+		self.__log(tostring(level:getOutputMode(output_args)) .. "[" .. level:getLogText() .. " in " .. module .. "] " .. (objtostr(printable, ""):gmatch("\n(.*)")() or "") .. "\n")
 	else
 		self:print("Error with printable type in the print module\n", LogLevel.ERROR, "util.lua/Log:print")
 	end

@@ -14,6 +14,7 @@ local basestatemodule = load_module(import_prefix .. "states.base", true)
 local mainmenustatemodule = load_module(import_prefix .. "states.mainMenu", true)
 local pregamestatemodule = load_module(import_prefix .. "states.pregame", true)
 local gamestatemodule = load_module(import_prefix .. "states.game", true)
+local optionsstatemodule = load_module(import_prefix .. "states.options", true)
 
 --[[ StateManager - the state manager class [singleton]
 	Holds a state stack

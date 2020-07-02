@@ -397,6 +397,45 @@ function Lang:resetAlternative(alt)
 	end
 end
 
+function Lang:getAlternative(state, str)
+	local statestr = "" for k, v in pairs(state) do statestr = statestr .. v .. "." end
+	
+	self:resetAlternative(" nil")
+	
+	if not self.__alt_dicts[str] then
+		if self.__fallback then return self.__fallback:getAlternative(state, str, newUnlocalized)
+		else return false end
+	end
+	
+	local dicts = {self.__dict}
+	
+	local max_pos = 1
+	
+	while state[max_pos] and (type(dicts[max_pos][state[max_pos]]) == "table") do
+		dicts[max_pos + 1] = dicts[max_pos][state[max_pos]]
+		max_pos = max_pos + 1
+	end
+	
+	local pos
+	
+	for pos = max_pos, 1, -1 do
+		if dicts[pos][str] then
+			if type(dicts[pos][str]) == "table" then
+				return dicts[pos][str][" actid"]
+			else
+				console:print("Trying to get alternative while being a string (" .. statestr .. str .. ")\n", LogLevel.WARNING_DEV, "dictionary.lua/Lang:getAlternative")
+				return " "
+			end
+		end
+	end
+	
+	if self.__fallback then
+		return self.__fallback:getAlternative(state, str)
+	else
+		return " "
+	end
+end
+
 function Lang:setAlternative(state, str, newUnlocalized)
 	local statestr = "" for k, v in pairs(state) do statestr = statestr .. v .. "." end
 	
@@ -461,9 +500,11 @@ end)
 --[[
 	setActiveLang - set the active lang UID
 	getActiveLang - get the active lang UID
+	getActiveLangName - get the active lange name
 ]]
 function Dictionary:setActiveLang(lang)    self.__active_lang = lang end
 function Dictionary:getActiveLang() return self.__active_lang end
+function Dictionary:getActiveLangName() return self.__langs[self:getActiveLang()]:getName() end
 
 -- translate - translates the string str in state state, using the active lang
 function Dictionary:translate(state, str, ...) return self.__langs[self:getActiveLang()]:translate(state, str, nil, ...) end
@@ -473,6 +514,18 @@ function Dictionary:resetAlternatives(alt)
 	for k, lang in pairs(self.__langs) do
 		lang:resetAlternative(alt)
 	end
+end
+
+-- getAlternative - get the alternative for the string str in state state
+function Dictionary:getAlternative(state, str)
+	local ret
+	
+	ret = self.__langs[self:getActiveLang()]:getAlternative(state, str, newUnlocalized)
+	for k, lang in pairs(self.__langs) do
+		if k ~= self:getActiveLang() then lang:getAlternative(state, str, newUnlocalized) end
+	end
+	
+	return ret
 end
 
 -- setAlternative - set the alternative for the string str in state state to newUnlocalized

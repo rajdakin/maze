@@ -25,12 +25,13 @@ mm.eqcmenu.no = Nah, it's OK...
 mm.eqcmenu.not_valid = I said 1 or 2 damnit! 
 
 # Options 
-options.display = 1. %Ioptions.back
+options.display = 1. %Ioptions.not_exit %l2. %Ioptions.cancel %l3. %Ioptions.save %l%lYour choice: 
 options.not_exit = I don't like %Imm.eqc !
 options.enable_minimap = Enable minimap? (%Y)
 options.difficulty.option = Difficulty: %Ioptions.difficulty.value 
 options.advanced = Advanced options
-options.back = Back to main menu
+options.cancel = Back to main menu, revert changes
+options.save = Back to main menu, apply changes
 
 options.difficulty.value:1 = Very easy
 options.difficulty.value:2 = Easy

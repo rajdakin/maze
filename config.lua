@@ -153,6 +153,25 @@ function ConsoleConfig:getLogLevel()             return self.__logLevel         
 function ConsoleConfig:isLogLevelValid(logLevel) return self.__logLevel >= logLevel end
 function ConsoleConfig:isDeveloperMode()         return self.__developerMode        end
 
+--[[ OptionsConfig - the options class.
+	Holds the misc configs.
+	
+	options - the level configuration table
+]]
+local Options = class(nil, Configuration)
+Options:__implementAbstract("__updateSelf", function(self)
+	self.__eqc = self.__ds:getOrDefault("eqc", 1)
+end)
+Options:__implementAbstract("_updateDS", function(self)
+	self.__ds:set("eqc", self.__eqc)
+end)
+
+function Options:getEQCAlts() return {"exit", "quit", "close", "term", "kill"} end
+function Options:getEQCAltsCount() return 5 end
+
+function Options:getEQCAlt() return self.__eqc end
+function Options:setEQCAlt(alt) self.__eqc = alt self:notifyListeners() end
+
 --[[ Config - the global configuration class [singleton]
 	Holds the level manager, keyboard and console configurations.
 	
@@ -163,13 +182,19 @@ local Config = class(function(self, filename)
 	
 	self.__filename = filename
 	
-	self.configs = {levelManager = LevelManagerConfig, keyboard = KeyboardConfig, console = ConsoleConfig}
+	self.configs = {
+		levelManager = LevelManagerConfig,
+		keyboard = KeyboardConfig,
+		console = ConsoleConfig,
+		options = Options
+	}
 	self:readConfig()
 end)
 
 function Config:getLevelManagerConfig() return self.__levelManagerConfig end
 function Config:getKeyboardConfig() return self.__keyboardConfig end
 function Config:getConsoleConfig() return self.__consoleConfig end
+function Config:getOptions() return self.__optionsConfig end
 
 function Config:readConfig()
 	self.__ds:read(self.__filename)
@@ -184,6 +209,7 @@ function Config:writeConfig()
 		self.__ds:setSubDataStream("levelManager", self.__levelManagerConfig.__ds)
 		self.__ds:setSubDataStream("keyboard", self.__keyboardConfig.__ds)
 		self.__ds:setSubDataStream("console", self.__consoleConfig.__ds)
+		self.__ds:setSubDataStream("options", self.__optionsConfig.__ds)
 	end
 	
 	self.__ds:write(self.__filename)

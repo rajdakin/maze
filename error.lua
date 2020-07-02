@@ -8,6 +8,7 @@ local classmodule = require(import_prefix .. "class")
 --[[
 	Some "standard" errors:
 	- ErrorBase - a generic error class
+	- UnknownError - an error due to a state theoretically inaccessible
 	- StringError - a string error (thrown mainly by Lua)
 	- UncaughtError - an uncaught error
 	- BundledError - two or more errors budled together
@@ -24,7 +25,11 @@ function ErrorBase:tostring(prepend)
 	if type(prepend) ~= "string" then prepend = "" end
 	return prepend .. "[In " .. self.thrower .. "] " .. self.str
 end
-ErrorBase.__tostring = ErrorBase.tostring
+function ErrorBase:__tostring()
+	return self:tostring("")
+end
+
+UnknownError = class(nil, ErrorBase)
 
 StringError = class(function(self, str)
 	ErrorBase.__init(self, str, "Lua")
@@ -57,9 +62,18 @@ BundledError = class(function(self, error1, error2)
 	if error1:isinstance(BundledError) then self.errors = deepcopy(error1.errors) self.nberr = error1.nberr
 	else self.errors = {error1} self.nberr = 1 end
 	if error2:isinstance(BundledError) then
-		for i, v in ipairs(self.errors) do self.errors[i + self.nberr] = deepcopy(v) end
+		for i, v in ipairs(self.errors) do
+			local copy = deepcopy(v)
+			setmetatable(copy, getmetatable(v))
+			self.errors[i + self.nberr] = copy
+		end
 		self.nberr = self.nberr + error2.nberr
-	else table.insert(self.errors, deepcopy(error1)) self.nberr = self.nberr + 1 end
+	else
+		local copy = deepcopy(error2)
+		setmetatable(copy, getmetatable(error2))
+		table.insert(self.errors, copy)
+		self.nberr = self.nberr + 1
+	end
 end, ErrorBase)
 function BundledError:tostring(prepend)
 	local ret = ""
@@ -184,9 +198,11 @@ function printAnyError(fun, printFun)
 	local function printTable(t, p, tbls)
 		if type(t) ~= "table" then return tostring(t) end
 		for i, v in pairs(tbls) do if v == t then return "backref #" .. tostring(i) end end
+		table.insert(tbls, t)
 		local ret = ""
 		for k, v in pairs(t) do
-			if ret ~= "" then ret = ret .. "\n" .. p end ret = ret .. tostring(k) .. ":\t" .. printTable(v, p .. "\t")
+			if ret ~= "" then ret = ret .. "\n" .. p end
+			ret = ret .. tostring(k) .. ":\t" .. printTable(v, p .. "\t", tbls)
 		end
 		return ret
 	end

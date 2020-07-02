@@ -163,7 +163,7 @@ local function transform_value(val, datatype, from)
 	if datatype == "function" then
 		if val == tostring then return {type = "typecast", val = val}
 		elseif val == tonumber then return {type = "typecast", val = val}
-		else error(UnimplementedCase("The case datatype == function", "transform_value(" .. from .. ")")) end
+		else error(UnimplementedCase("datatype == function", "transform_value(" .. from .. ")")) end
 	elseif datatype == "boolsswitch" then
 		return {type = datatype, val = val}
 	elseif datatype == "typecast" then
@@ -172,7 +172,7 @@ local function transform_value(val, datatype, from)
 		elseif val == "number" then fcn = tonumber
 		elseif type(val) == "function" then fcn = val
 		else error(UnimplementedCase(
-			"The case datatype == typecast and val == " .. tostring(val), "transform_value(" .. from .. ")"
+			"datatype == typecast and val == " .. tostring(val), "transform_value(" .. from .. ")"
 		)) end
 		return {type = datatype, val = fcn}
 	elseif datatype == "switchfunction" then
@@ -186,9 +186,11 @@ local function transform_value(val, datatype, from)
 				"val", "a switchfunction value must have two objects and a function", "transform_value(" .. from .. ")"
 			))
 		end end
-		local strfun = "function _function__load_switchfunction_("
-		for k, v in pairs(val[1]) do strfun = strfun .. v.name .. ", " end strfun = strfun:gmatch("(.+), ")()
-		strfun = strfun .. ") "
+		local strfun = ""
+		if getArrayLength(val[1]) > 0 then
+			for _, v in pairs(val[1]) do strfun = strfun .. v.name .. ", " end strfun = strfun:gmatch("(.+), ")()
+			strfun = strfun .. " = ...\n"
+		end
 		local curansw = 1
 		local function parsenext(i)
 			local v = val[1][i]
@@ -218,10 +220,11 @@ local function transform_value(val, datatype, from)
 			)) end
 		end
 		parsenext(1)
-		strfun = strfun .. "end"
-		load(strfun)()
-		val[3] = _function__load_switchfunction_
-		_function__load_switchfunction_ = nil
+		if _VERSION == "Lua 5.1" then
+			val[3] = loadstring(strfun)
+		else
+			val[3] = load(strfun)
+		end
 		for i, v in pairs(val[1]) do val[1][i] = transform_value(v, nil, from) end
 		for i, v in pairs(val[2]) do val[2][i] = transform_value(v, nil, from) end
 		val[1] = {type = "array", val = val[1]}
@@ -242,6 +245,7 @@ local function transform_value(val, datatype, from)
 			end
 		end
 		if datatype == "array" then
+			-- Do I want this?
 			if val[1] and val[2] and (not val[3] or (type(val[3]) == "function")) then
 				local ok = true
 				for i, v in pairs(val) do
@@ -283,6 +287,8 @@ local function transform_value_back(val)
 		return val.val
 	elseif datatype == " switchfunction function" then
 		return val.val
+	elseif datatype == "switchfunction" then
+		return val.val[3].val
 	elseif datatype == "typecast" then
 		return val.val
 	elseif datatype == "number" then
@@ -291,7 +297,7 @@ local function transform_value_back(val)
 		return tostring(val.val)
 	elseif datatype == "boolean" then
 		return not not val.val
-	elseif (datatype == "object") or (datatype == "array") or (datatype == "switchfunction") then
+	elseif (datatype == "object") or (datatype == "array") then
 		local va = {}
 		for k, v in pairs(val.val) do
 			va[k] = transform_value_back(v)
@@ -626,17 +632,15 @@ function DataStream:read(filename)
 				val = val:gmatch(type .. ": (.+)$")()
 				if type == "object" then return readObjects[1].readObject(prefix .. innerblock)
 				elseif type == "array" then return readObjects[1].readArray(prefix .. innerblock)
-				elseif type == "switchfunction" then
-					local arr = readObjects[1].readArray(prefix .. innerblock)
-					return transform_value(transform_value_back(arr), type, "DataStream:read")
+				elseif type == "switchfunction" then return readObjects[1].readSwFunArgs(prefix .. innerblock)
 				else return transform_value(val, type, "DataStream:read") end
-				end,
+			end,
 			readObject = function(prefix)
 				local dat = {type = "object", val = {}}
 				while true do
 					local line = getLine()
 					while line and line:find("^%s*$") do line = getLine() end
-					if not line or not line:find("^" .. prefix) then lineIdx = lineIdx - 1 return dat end
+					if not line or not line:find("^" .. prefix .. "[^" .. innerblock:sub(1, 1) .. "]") then lineIdx = lineIdx - 1 return dat end
 					line = line:gmatch(prefix .. "(.*)")()
 					local key = line:gmatch("(.-):")()
 					local val = line:gmatch(key .. ":%s*(.*)")()
@@ -649,10 +653,86 @@ function DataStream:read(filename)
 				while true do
 					local line = getLine()
 					while line and line:find("^%s*$") do line = getLine() end
-					if not line or not line:find("^" .. prefix) then lineIdx = lineIdx - 1 return dat end
+					if not line or not line:find("^" .. prefix .. "[^" .. innerblock:sub(1, 1) .. "]") then lineIdx = lineIdx - 1 return dat end
 					line = line:gmatch(prefix .. "(.*)")()
 					local val = line
 					dat.val[idx] = readObjects[1].readData(val, prefix)
+					idx = idx + 1
+				end
+			end,
+			
+			readSwFunArgs = function(prefix)
+				local dat = {}
+				
+				local line = getLine()
+				while line and line:find("^%s*$") do line = getLine() end
+				if not line or not line:find("^" .. prefix .. "[^" .. innerblock:sub(1, 1) .. "]") then
+					error(InvalidArgument("val", "malformed switchfunction", "DataStream:read.readSwFunArgs_1"))
+				end
+				line = line:gmatch(prefix .. "(.*)")()
+				local val = line
+				local type = val:gmatch("%w+")()
+				if not type then error(InvalidArgument("val", "malformed line", "DataStream:read.readSwFunArgs_1")) end
+				val = val:gmatch(type .. ": (.+)$")()
+				if type == "array" then dat[1] = readObjects[1].readSwFunArgs1(prefix .. innerblock)
+				else error(InvalidArgument("val", "malformed switchfunction", "DataStream:read.readSwFunArgs_1")) end
+				
+				local line = getLine()
+				while line and line:find("^%s*$") do line = getLine() end
+				if not line or not line:find("^" .. prefix .. "[^" .. prefix:sub(1, 1) .. "]") then
+					error(InvalidArgument("val", "malformed switchfunction", "DataStream:read.readSwFunArgs_1"))
+				end
+				line = line:gmatch(prefix .. "(.*)")()
+				local val = line
+				local type = val:gmatch("%w+")()
+				if not type then error(InvalidArgument("val", "malformed line", "DataStream:read.readSwFunArgs_1")) end
+				val = val:gmatch(type .. ": (.+)$")()
+				if type == "array" then dat[2] = readObjects[1].readSwFunArgs2(prefix .. innerblock)
+				else error(InvalidArgument("val", "malformed switchfunction", "DataStream:read.readSwFunArgs_1")) end
+				
+				return transform_value(dat, "switchfunction", "DataStream:read.readSwFunArgs_1")
+			end,
+			readSwFunArgs1 = function(prefix)
+				-- Array of "boolean" variables or "number-to-tristate" variables
+				local dat = {}
+				local idx = 1
+				while true do
+					local line = getLine()
+					while line and line:find("^%s*$") do line = getLine() end
+					if not line or not line:find("^" .. prefix .. "[^" .. prefix:sub(1, 1) .. "]") then lineIdx = lineIdx - 1 return dat end
+					line = line:match(prefix .. "(.*)")
+					
+					local type = line:match("[%w%-]+")
+					if not type then error(InvalidArgument("line", "malformed line", "DataStream:read.readSwFunArgs1_1")) end
+					line = line:match(": (.+)$")
+					if type == "boolean" then dat[idx] = {type = type, name = line}
+					elseif type == "number-to-tristate" then
+						local i = 1
+						local ts = {"name", "low", "high"}
+						dat[idx] = {type = type}
+						for v,_ in line:gmatch("([^,]+)(,? ?)") do dat[idx][ts[i]] = v i = i + 1 end
+					else error(InvalidArgument("line", "invalid data type", "DataStream:read.readSwFunArgs1_1")) end
+					
+					idx = idx + 1
+				end
+			end,
+			readSwFunArgs2 = function(prefix)
+				-- Array of "string"s or "number"s
+				local dat = {}
+				local idx = 1
+				while true do
+					local line = getLine()
+					while line and line:find("^%s*$") do line = getLine() end
+					if not line or not line:find("^" .. prefix .. "[^" .. prefix:sub(1, 1) .. "]") then lineIdx = lineIdx - 1 return dat end
+					line = line:gmatch(prefix .. "(.*)")()
+					local val = line
+					
+					local type = val:gmatch("%w+")()
+					if not type then error(InvalidArgument("val", "malformed line", "DataStream:read.readSwFunArgs2_1")) end
+					assert((type == "string") or (type == "number"),
+						InvalidArgument("val", "invalid data type", "DataStream:read.readSwFunArgs2_1"))
+					dat[idx] = val:gmatch(type .. ": (.+)$")()
+					
 					idx = idx + 1
 				end
 			end
@@ -662,7 +742,7 @@ function DataStream:read(filename)
 		local ret = ({try(function()
 			self.__data = readObjects[1].readObject("")
 			return nil
-		end):catch(InvalidArgument, function(e)
+		end):catch(any_error, function(e)
 			return BundledError(InvalidArgument("filename", "invalid file", "DataStream:read"), e)
 		end)("DataStream:read>build=1")})[1]
 		if not ret[1] then
@@ -673,6 +753,11 @@ function DataStream:read(filename)
 	end
 end
 
+--[[
+	Note: serialize functions at your own risk!
+	(There is a pretty high probability this will crash,
+	  either at save time or load time due to invalid serialization.)
+]]
 function DataStream:write(filename)
 	local lines = {}
 	local innerblock = "  "

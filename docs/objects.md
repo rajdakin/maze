@@ -67,13 +67,13 @@ Here there should be around something like:
 ```lua
 if objKind == 0 then -- Empty object
 elseif objKind == 1 then
-    _fallbacks = {...}
+    _fallback = {...}
 
     setname = "standard"
-end -- Line 137
+elseif type(objKind) == "string" then -- Line 137
 ```
 
-Before the `end`, you must insert:
+Before the `elseif`, you must insert:
 
 ```lua
 elseif objKind == [ID] then

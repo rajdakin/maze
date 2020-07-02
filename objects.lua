@@ -125,27 +125,31 @@ function Objects:initialize(objKind)
 	self.__objects = {}
 	self.__added_objects = {}
 	
-	local _fallbacks = {}
-	local setname
+	local _fallback = {}
+	local setname = nil
 	if objKind == 0 then -- Empty object
 	elseif objKind == 1 then
-		_fallbacks = {"key", false, "held", {"altset", {"ig"}, "key", function(set) return tostring(set) end}, {"altset", {"ig", "keydoors", "group", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end},
-		  "redkey", false, "held", {"altset", {"ig"}, "redkey", function(set) return tostring(set) end}, {"altset", {"ig", "keydoors", "redgroup", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end},
-		  "sword", false, "held", {"altset", {"ig"}, "sword", function(set) return tostring(set) end}, {"altset", {"ig", "sword"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end}}
+		_fallback = {
+			{"key", false, "held", {"altset", {"ig"}, "key", function(set) return tostring(set) end}, {"altset", {"ig", "keydoors", "group", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end}},
+			{"redkey", false, "held", {"altset", {"ig"}, "redkey", function(set) return tostring(set) end}, {"altset", {"ig", "keydoors", "redgroup", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end}},
+			{"sword", false, "held", {"altset", {"ig"}, "sword", function(set) return tostring(set) end}, {"altset", {"ig", "sword"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end}}
+		}
 		
 		setname = "standard"
 	elseif type(objKind) == "string" then -- Line 137
 		setname = objKind
 	end
 	
-	local ds, ret
+	local ds, ret = nil, {}
 	if setname then
-		local ds = DataStream()
-		local ret = ds:read("objects/" .. setname .. ".objhld")
+		ds = DataStream()
+		ret = ds:read("objects/" .. setname .. ".objhld")
 	end
 	if not ret.success then
-		if not ret.reason then ret.reason = tostring(ret.reas) end
-		console:print("Error reading object group " .. setname .. ": " .. tostring(ret.reason) .. "\n", LogLevel.WARNING, "objects.lua/Objects:initialize")
+		if setname then
+			if not ret.reason then ret.reason = tostring(ret.reas) end
+			console:print("Error reading object group " .. setname .. ": " .. tostring(ret.reason) .. "\n", LogLevel.WARNING, "objects.lua/Objects:initialize")
+		end
 		-- Fallback
 		for _, v in pairs(_fallback) do
 			self:addObject(unpack(v))
@@ -186,15 +190,17 @@ function Objects:initialize(objKind)
 			end
 			
 			for k, v in pairs(objs) do
-				local adds = {}
-				for k, v in pairs(v.alts) do
-					adds[k] = {"altset", v[1], nil, v[2]}
-					adds[k][3] = table.remove(adds[k][2])
+				if k ~= '_objver' then
+					local adds = {}
+					for k2, v2 in pairs(v.alts) do
+						adds[k2] = {"altset", v2[1], nil, v2[2]}
+						adds[k2][3] = table.remove(adds[k2][2])
+					end
+					self:addObject(k, v.default, v.type, unpack(adds))
 				end
-				self:addObject(k, v.default, v.type, unpack(adds))
 			end
 			ok = true
-		end):finally(any_error, function()
+		end):finally(function()
 			if not ok then
 				for _, v in pairs(_fallback) do
 					self:addObject(unpack(v))

@@ -21,6 +21,7 @@ end
 console:printLore("Write 'h'<Enter> to get the help at any time when in play mode.\n")
 stateManager:getState():onPush()
 stateManager:runLoop()
+--[[ Not accurate anymore
 console:printLore("\n")
 console:printLore("\nIf you are in interactive mode, you can restart the game by writing:\n")
 console:printLore("main()\n\n")
@@ -39,5 +40,6 @@ if dead then
 else
 	console:printLore("Having exited, the full labyrinth is revealed because you now have its map!\n")
 end
+]]
 
 end)

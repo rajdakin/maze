@@ -1,0 +1,85 @@
+Version 1.0.0.01b
+
+_objver: number: 1
+
+key: object
+  type: string: held
+  default: boolean: false
+  alts: array:
+    array:
+      array:
+        string: ig
+        string: key
+      typecast: string
+    array:
+      array:
+        string: ig
+        string: keydoors
+        string: group
+        string: key
+        string: take
+      switchfunction:
+        array:
+          boolean: set
+          number-to-tristate: diff, 2, 3
+        array:
+          string: true
+          string: true
+          string: true
+          string: easy
+          string: norm
+          string: false
+
+redkey: object
+  type: string: held
+  default: boolean: false
+  alts: array:
+    array:
+      array:
+        string: ig
+        string: redkey
+      typecast: string
+    array:
+      array:
+        string: ig
+        string: keydoors
+        string: redgroup
+        string: key
+        string: take
+      switchfunction:
+        array:
+          boolean: set
+          number-to-tristate: diff, 2, 3
+        array:
+          string: true
+          string: true
+          string: true
+          string: easy
+          string: norm
+          string: false
+
+sword: object
+  type: string: held
+  default: boolean: false
+  alts: array:
+    array:
+      array:
+        string: ig
+        string: sword
+      typecast: string
+    array:
+      array:
+        string: ig
+        string: sword
+        string: take
+      switchfunction:
+        array:
+          boolean: set
+          number-to-tristate: diff, 2, 3
+        array:
+          string: true
+          string: true
+          string: true
+          string: easy
+          string: norm
+          string: false

@@ -70,17 +70,19 @@ function Objects:setObject(object, value, ...)
 		if tonumber(value) and (tonumber(value) ~= 0) then
 			value = tonumber(value)
 			active = true
-		elseif value then
+		elseif value and not tonumber(value) then
 			value = 1
 			active = true
 		else
 			value = false
 			active = false
 		end
-		local i = 1
-		while obj.add[i] and obj.add[i + 1] and obj.add[i + 2] do
-			dictionary:setAlternative(obj.add[i], tostring(obj.add[i + 1]), tostring(obj.add[i + 2](active, ...)))
-			i = i + 3
+		for _, v in pairs(obj.add) do
+			if v[1] == "altset" then
+				dictionary:setAlternative(v[2], tostring(v[3]), tostring(v[4](active, ...)))
+			else
+				console:print("Added an object with invalid additional data (" .. v[1] .. ")\n", LogLevel.WARNING, "objects.lua/Objects:setObject")
+			end
 		end
 	end
 	
@@ -115,6 +117,7 @@ end
 	(Re)initializes the object with the corresponding object kind
 	
 	objKind - object group kind:
+	- 0: empty set
 	- 1: standard physical objects (key, red key, sword)
 	otherwise empty set
 ]]
@@ -122,10 +125,81 @@ function Objects:initialize(objKind)
 	self.__objects = {}
 	self.__added_objects = {}
 	
+	local _fallbacks = {}
+	local setname
 	if objKind == 0 then -- Empty object
 	elseif objKind == 1 then
-		self:addObject("key", false, "held", {"ig"}, "key", function(set) return tostring(set) end, {"ig", "keydoors", "group", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
-		self:addObject("redkey", false, "held", {"ig"}, "redkey", function(set) return tostring(set) end, {"ig", "keydoors", "redgroup", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
-		self:addObject("sword", false, "held", {"ig"}, "sword", function(set) return tostring(set) end, {"ig", "sword"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end)
-	end -- Line 130
+		_fallbacks = {"key", false, "held", {"altset", {"ig"}, "key", function(set) return tostring(set) end}, {"altset", {"ig", "keydoors", "group", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end},
+		  "redkey", false, "held", {"altset", {"ig"}, "redkey", function(set) return tostring(set) end}, {"altset", {"ig", "keydoors", "redgroup", "key"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end},
+		  "sword", false, "held", {"altset", {"ig"}, "sword", function(set) return tostring(set) end}, {"altset", {"ig", "sword"}, "take", function(set, diff) if set then if diff <= 2 then return "easy" elseif diff >= 4 then return "false" else return "norm" end else return "true" end end}}
+		
+		setname = "standard"
+	elseif type(objKind) == "string" then -- Line 137
+		setname = objKind
+	end
+	
+	local ds, ret
+	if setname then
+		local ds = DataStream()
+		local ret = ds:read("objects/" .. setname .. ".objhld")
+	end
+	if not ret.success then
+		if not ret.reason then ret.reason = tostring(ret.reas) end
+		console:print("Error reading object group " .. setname .. ": " .. tostring(ret.reason) .. "\n", LogLevel.WARNING, "objects.lua/Objects:initialize")
+		-- Fallback
+		for _, v in pairs(_fallback) do
+			self:addObject(unpack(v))
+		end
+	else
+		local ok = false
+		try(function()
+			local objs = ds:get("", true)
+			
+			if not objs._objver then
+				console:print("No object group version for " .. setname .. "!\n", LogLevel.WARNING, "objects.lua/Objects:initialize")
+			end
+			
+			ret = ds:read("objects/" .. setname .. ".objhld.ext")
+			if not ret.success then
+				console:print("Error reading object group extension " .. setname .. ": " .. tostring(ret.reason) .. "\n", LogLevel.WARNING, "objects.lua/Objects:initialize")
+			elseif not objs._objver or (objs._objver ~= ds:get("_objver", false)) then
+				console:print("Versions of object group and object group extension of " .. setname .. " are different!\n", LogLevel.WARNING, "objects.lua/Objects:initialize")
+			else
+				-- Extending the set
+				local function update(dst, src)
+					for k, v in pairs(src) do
+						if (type(dst[k]) == type(v)) and (type(v) == "table") then
+							-- Replace if array, update if object
+							-- And since an object only has strings as key, this is sufficient
+							if v[1] ~= nil then
+								dst[k] = v
+							else
+								update(dst[k], v)
+							end
+						else
+							dst[k] = v
+						end
+					end
+				end
+				
+				update(objs, ds:get("", true))
+			end
+			
+			for k, v in pairs(objs) do
+				local adds = {}
+				for k, v in pairs(v.alts) do
+					adds[k] = {"altset", v[1], nil, v[2]}
+					adds[k][3] = table.remove(adds[k][2])
+				end
+				self:addObject(k, v.default, v.type, unpack(adds))
+			end
+			ok = true
+		end):finally(any_error, function()
+			if not ok then
+				for _, v in pairs(_fallback) do
+					self:addObject(unpack(v))
+				end
+			end
+		end)("objects.lua/Objects:initialize") -- Just a wrapper
+	end
 end

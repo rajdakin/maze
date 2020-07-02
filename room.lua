@@ -265,7 +265,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 							console:print("Unknown grave's exit direction (opening the other side): " .. self:getAttribute("exitdir") .. "\n", LogLevel.WARNING_DEV, "room.lua/Room:checkRoomEvents:createEvents")
 						end
 						
-						objects:setObject(key, false)
+						objects:setObject(key, false, difficulty)
 					elseif (key == "key") or (key == "redkey") then
 						console:printLore(
 							dictionary:translate(stateManager:getStatesStack(), "locked")
@@ -313,7 +313,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 					dictionary:translate(stateManager:getStatesStack(), "sword")
 				)
 				
-				objects:setObject("sword", false)
+				objects:setObject("sword", false, difficulty)
 				self:setAttribute("monster", false)
 				stateManager:popState()
 			else
@@ -508,7 +508,7 @@ function Room:checkRoomEvents(is_ended, objects, room_position_in_row, up, down,
 						left:setAttribute("__n" .. prefix .. "key", false)
 						right:setAttribute("__n" .. prefix .. "key", false)
 					else
-						objects:setObject(prefix .. "key", false)
+						objects:setObject(prefix .. "key", false, difficulty)
 					end
 				else
 					console:printLore(

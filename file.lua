@@ -510,35 +510,70 @@ function DataStream:getAsDataStream(key, errorOnFailure)
 	end
 	key = table.remove(keys)
 	
-	if (datatype == "array") and (type(key) ~= "number") then
-		fail(tostring(key) .. " is not an integer")
+	local data = self.__data
+	if data == nil then
+		if errorOnFailure then
+			error(ErrorBase("the datastream doesn't contain anything!", "DataStream:getAsDataStream"))
+		else
+			return nil
+		end
 	end
 	
-	local data = self.__data
-	for i, v in ipairs(keys) do
+	local t
+	for _, v in ipairs(keys) do
 		if type(v) == "number" then
-			if data.type ~= "array" then
-				fail("the key does not lead to an array")
-			end
+			t = "array"
 		else
-			if data.type ~= "object" then
-				fail("the key does not lead to an object")
-			end
+			t = "object"
 		end
+		if data.type ~= t then
+			return fail("the key does not lead to an " .. t)
+		end
+		
 		data = data.val[v]
+		if data == nil then
+			return fail("the key does not lead to anything")
+		end
+	end
+	
+	if type(key) == "number" then
+		if data.type ~= "array" then
+			return fail("the key does not lead to an array")
+		end
+	else
+		if errorOnFailure and (data.type ~= "object") then
+			return fail("the key does not lead to an object")
+		end
 	end
 	
 	local ret = DataStream()
-	ret.__data = deepcopy(data.val[key])
+	if data.val and data.val[key] then ret.__data = deepcopy(data.val[key])
+	else ret.__data = {type = "nil", val = nil} end
 	return ret
 end
 function DataStream:get(key, errorOnFailure)
+	local ds = self:getAsDataStream(key, errorOnFailure)
 	if errorOnFailure then
-		return transform_value_back(self:getAsDataStream(key, errorOnFailure).__data)
+		if ds and ds.__data then
+			return transform_value_back(ds.__data)
+		else
+			error(UnknownError("Datastream or datastream data is nil", "file.lua/DataStream:get>errorOnFailure=true"))
+		end
 	else
-		return ({try(differ(transform_value_back, self:getAsDataStream(key, errorOnFailure).__data))
-			:catch(any_error, function(e) return nil end)()})[1][2]
+		if ds then
+			return ({
+				try(differ(transform_value_back, ds.__data))
+				 :catch(any_error, function(e) return nil end)("file.lua/DataSteam:get>errorOnFailure=false")})[1][2]
+		else
+			return nil
+		end
 	end
+end
+
+function DataStream:getOrDefault(key, default)
+	ret = self:get(key, false)
+	if ret == nil then return default
+	else return ret end
 end
 
 function DataStream:read(filename)

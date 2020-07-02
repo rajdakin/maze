@@ -9,6 +9,10 @@ local utilmodule = load_module(import_prefix .. "util", true)
 local classmodule = load_module(import_prefix .. "class", true)
 
 local basechoicemodule = load_module(import_prefix .. "states.baseChoice", true)
+local dictionarymodule = load_module(import_prefix .. "dictionary", false)
+local configmodule = load_module(import_prefix .. "config", true)
+
+if dictionarymodule and dictionary.addListenerToConfig then dictionary:addListenerToConfig(currentConfig:getOptions()) end
 
 local OptionsState = class(function(self)
 end, BaseChoiceState)

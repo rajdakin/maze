@@ -9,6 +9,7 @@ local utilmodule = load_module(import_prefix .. "util", true)
 
 local consolemodule = load_module(import_prefix .. "console", true)
 local classmodule = load_module(import_prefix .. "class", true)
+local configmodule = load_module(import_prefix .. "config", false)
 
 local comment = "#"
 
@@ -502,5 +503,20 @@ for lang_id, lang in pairs(id2lang) do
 	if lang.__fallback then
 		if not id2lang[lang.__fallback] then console:print("No lang fallback for lang " .. lang:getName() .. " (" .. lang:getID() .. "), should have been " .. lang.__fallback .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:(post init)") lang.__fallback = false
 		else lang.__fallback = id2lang[lang.__fallback] end
+	end
+end
+
+local function configListener(self, cfg)
+	self:setAlternative({"mm"}, "eqc", cfg:getEQCAlts()[cfg:getEQCAlt()])
+end
+if configmodule then
+	-- config has been successfully loaded, set alternatives
+	currentConfig:getOptions():addListener(dictionary, configListener)
+else
+	-- missing config, add helper function
+	function dictionary:addListenerToConfig(cfg)
+		cfg:addListener(dictionary, configListener)
+		dictionary.addListenerToConfig = nil
+		configListener(dictionary, cfg)
 	end
 end

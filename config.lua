@@ -20,7 +20,8 @@ end)
 	callback - function that takes as a parameter the updated configuration
 ]]
 function Configuration:addListener(listener, callback)
-	self.__listeners[listener] = callback
+	if not self.__listeners[listener] then self.__listeners[listener] = {} end
+	table.insert(self.__listeners[listener], callback)
 end
 function Configuration:removeListener(listener)
 	local ret = self.__listeners[listener] ~= nil
@@ -29,13 +30,16 @@ function Configuration:removeListener(listener)
 end
 
 function Configuration:notifyListeners()
-	for l, f in pairs(self.__listeners) do
-		f(self)
+	for l, fs in pairs(self.__listeners) do
+		for _, f in ipairs(fs) do
+			f(l, self)
+		end
 	end
 end
 
 function Configuration:updateConfig(ds)
 	if ds then self.__ds = ds end
+	if not self.__ds or (self.__ds.__data.type == 'nil') then self.__ds = DataStream() end
 	self:__updateSelf()
 	self:notifyListeners()
 end
@@ -51,13 +55,13 @@ Configuration:__addAbstract("_updateDS")
 ]]
 local LevelConfig = class(nil, Configuration)
 LevelConfig:__implementAbstract("__updateSelf", function(self)
-	self.__displayMinimap = self.__ds:get("displayMinimap")
-	self.__displayMap = self.__ds:get("displayMap")
+	self.__displayMinimap = self.__ds:getOrDefault("displayMinimap", true)
+	self.__displayMap = self.__ds:getOrDefault("displayMap", true)
 	
-	self.__minimapViewingSize = self.__ds:get("minimapViewingSize")
-	self.__mapOffset = self.__ds:get("mapOffset")
+	self.__minimapViewingSize = self.__ds:getOrDefault("minimapViewingSize", {3, 3})
+	self.__mapOffset = self.__ds:getOrDefault("mapOffset", {0, 7})
 	
-	self.__difficulty = self.__ds:get("difficulty")
+	self.__difficulty = self.__ds:getOrDefault("difficulty", 3)
 end)
 LevelConfig:__implementAbstract("_updateDS", function(self)
 	self.__ds:set("displayMinimap", self.__displayMinimap, "boolean")
@@ -92,7 +96,7 @@ LevelManagerConfig:__implementAbstract("__updateSelf", function(self)
 	if not self.__levelConfig then self.__levelConfig = LevelConfig(self.__ds:getAsDataStream("levelConfig"))
 	else self.__levelConfig:updateConfig(self.__ds:getAsDataStream("levelConfig")) end
 	
-	self.__loadTestLevels = self.__ds:get("loadTestLevels")
+	self.__loadTestLevels = self.__ds:getOrDefault("loadTestLevels", false)
 end)
 LevelManagerConfig:__implementAbstract("_updateDS", function(self)
 	self.__levelConfig:_updateDS()
@@ -107,10 +111,10 @@ function LevelManagerConfig:doLoadTestLevels() return self.__loadTestLevels end
 
 local KeyboardConfig = class(nil, Configuration)
 KeyboardConfig:__implementAbstract("__updateSelf", function(self)
-	self.__directions = self.__ds:get("directions")
+	self.__directions = self.__ds:getOrDefault("directions", {up = "u", down = "d", left = "l", right = "r"})
 end)
 KeyboardConfig:__implementAbstract("_updateDS", function(self)
-	self.__ds:set("directions", self.__directions, "array")
+	self.__ds:set("directions", self.__directions, "object")
 end)
 
 function KeyboardConfig:getDirectionsKey() return self.__directions end
@@ -136,9 +140,9 @@ end
 ]]
 local ConsoleConfig = class(nil, Configuration)
 ConsoleConfig:__implementAbstract("__updateSelf", function(self)
-	self.__logLevel = self.__ds:get("logLevel")
+	self.__logLevel = self.__ds:getOrDefault("logLevel", 2)
 	self.__logLevel = min(max(floor(self.__logLevel), 0), 4)
-	self.__developerMode = self.__ds:get("developerMode")
+	self.__developerMode = self.__ds:getOrDefault("developerMode", false)
 end)
 ConsoleConfig:__implementAbstract("_updateDS", function(self)
 	self.__ds:set("logLevel", min(max(floor(self.__logLevel), 0), 4), "number")
@@ -188,12 +192,12 @@ end
 function Config:updateConfig()
 	for cfg, cls in pairs(self.configs) do
 		local cfgName = "__" .. cfg .. "Config"
-		if not self[cfgName] then self[cfgName] = cls(self.__ds:getAsDataStream(cfg))
-		else self[cfgName]:updateConfig(self.__ds:getAsDataStream(cfg)) end
+		if not self[cfgName] then self[cfgName] = cls(self.__ds:getAsDataStream(cfg, false))
+		else self[cfgName]:updateConfig(self.__ds:getAsDataStream(cfg, false)) end
 	end
 end
 function Config:updateDataStream()
-	for cfg, cls in pairs(self.configs) do
+	for cfg, _ in pairs(self.configs) do
 		local cfgName = "__" .. cfg .. "Config"
 		self[cfgName]:_updateDS()
 		self.__ds:setSubDataStream(cfg, self[cfgName].__ds)

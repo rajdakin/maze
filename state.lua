@@ -146,7 +146,9 @@ function StateManager:runLoop()
 		return true
 	end
 	while not self:mustExit() do
-		if not ({try(differ(self.runIteration, self)):catch(any_error, catch)()})[1][2] then
+		if not ({
+			try(differ(self.runIteration, self)):catch(any_error, catch)("state.lua/StateManager:runLoop")
+		})[1][2] then
 			self:popMainState()
 		end
 	end

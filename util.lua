@@ -70,13 +70,24 @@ function Watch:stop()
 	return self.stop - self.start
 end
 
+-- concat - concatenate two indexable arrays
+function concat(a, b)
+	cpy = {unpack(a)}
+	e = #cpy
+	for i, v in ipairs(b) do
+		cpy[e + i] = v
+	end
+	return cpy
+end
+
 --[[ differ - differ a function call
 	returns a function
 		which call is the call to the first `differ` call parameter
 		with at most 8 parameters given as the at most 8 next other `differ` parameters.
 ]]
-function differ(fun, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
-	return function() return fun(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) end
+function differ(fun, ...)
+	first_args = {...}
+	return function(...) return fun(unpack(concat(first_args, {...}))) end
 end
 
 --[[

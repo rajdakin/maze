@@ -1,6 +1,6 @@
 local args = {...}
 local import_prefix = args[1]
-if import_prefix then import_prefix = import_prefix:match("(.-)[^%.]+$") end
+if import_prefix then import_prefix = import_prefix:match("^(.-)[^%.]+$") end
 if not import_prefix then import_prefix = "" end
 
 local errormodule = require(import_prefix .. "error")
@@ -9,7 +9,7 @@ local utilmodule = load_module(import_prefix .. "util", true)
 
 local consolemodule = load_module(import_prefix .. "console", true)
 local classmodule = load_module(import_prefix .. "class", true)
-local configmodule = load_module(import_prefix .. "config", false)
+local configmodule = load_module(import_prefix .. "config", function(e) end)
 
 local comment = "#"
 
@@ -562,14 +562,13 @@ end
 local function configListener(self, cfg)
 	self:setAlternative({"mm"}, "eqc", cfg:getEQCAlts()[cfg:getEQCAlt()])
 end
+-- missing config, add helper function
+function dictionary:addListenerToConfig(cfg)
+	cfg:addListener(dictionary, configListener)
+	dictionary.addListenerToConfig = nil
+	configListener(dictionary, cfg)
+end
 if configmodule then
-	-- config has been successfully loaded, set alternatives
-	currentConfig:getOptions():addListener(dictionary, configListener)
-else
-	-- missing config, add helper function
-	function dictionary:addListenerToConfig(cfg)
-		cfg:addListener(dictionary, configListener)
-		dictionary.addListenerToConfig = nil
-		configListener(dictionary, cfg)
-	end
+	-- config has been successfully loaded, use helper function immediately
+	dictionary:addListenerToConfig(currentConfig:getOptions())
 end

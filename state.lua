@@ -22,12 +22,9 @@ local optionsstatemodule = load_module(import_prefix .. "states.options", true)
 	main_state - the initial main state
 ]]
 local StateManager = class(function(self, main_state)
-	self.__exit = false
-	
-	self.__main_states, self.__main_count = {main_state}, 1
-	self.__states, self.__count = {{main_state}}, 1
-	
 	self.__states_dict = {}
+	
+	self:reset(main_state)
 end)
 
 function StateManager:mustExit() return self.__exit end
@@ -77,6 +74,12 @@ function StateManager:popMainState()
 	self.__main_count = self.__main_count - 1
 	
 	table.remove(self.__states)
+	if self.__main_count > 0 then
+		-- Also reset substates count
+		self.__count = #self.__states[#self.__states]
+	else
+		self.__count = 0
+	end
 	
 	local topState = self:getState()
 	if topState then topState:onPoppedUpper(main_state, state) end
@@ -153,6 +156,27 @@ function StateManager:runLoop()
 			self:popMainState()
 		end
 	end
+end
+
+--[[ reset
+	Reset the state manager to an empty and valid state
+]]
+function StateManager:reset(main_state)
+	self.__exit = false
+	
+	if main_state then
+		self.__main_states, self.__main_count = {main_state}, 1
+		self.__states, self.__count = {{main_state}}, 1
+		
+		local state = self:getState()
+		if state then state:onPush() end
+	else
+		self.__main_states, self.__main_count = {}, 0
+		self.__states, self.__count = {}, 0
+	end
+	
+	-- Also gc just to be safe.
+	collectgarbage()
 end
 
 function StateManager:crash(msg)

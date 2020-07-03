@@ -729,8 +729,9 @@ function DataStream:read(filename)
 					
 					local type = val:gmatch("%w+")()
 					if not type then error(InvalidArgument("val", "malformed line", "DataStream:read.readSwFunArgs2_1")) end
-					assert((type == "string") or (type == "number"),
-						InvalidArgument("val", "invalid data type", "DataStream:read.readSwFunArgs2_1"))
+					if (type ~= "string") and (type == "number") then
+						error(InvalidArgument("val", "invalid data type", "DataStream:read.readSwFunArgs2_1"))
+					end
 					dat[idx] = val:gmatch(type .. ": (.+)$")()
 					
 					idx = idx + 1

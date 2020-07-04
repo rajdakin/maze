@@ -24,7 +24,7 @@ function OutputModeClass:tostring() return "[" .. (out and "OUT" or "ERR") .. "]
 OutputModeClass.__tostring = OutputModeClass.tostring
 
 --[[ OutputMode - the output mode enum
-	The output mode is a speed (character-per-character display) or immediate, an output "descriptor"
+	The output mode is a speed (character-per-character or immediate display), an output "descriptor"
 	(output or error) and whether it is automatically outputed regardless of configurations.
 ]]
 local OutputMode = enum(function(self, name, args)
@@ -202,11 +202,11 @@ end
 
 -- console - the console singleton
 console = Console({
-	["consoleConfig"] = {
-		["input"] = function(...) return io.read(...) end
-	}, ["logConfig"] = {
-		["log"] = function(...) local file = File("maze.log") file:open("a") file:write(...) file:close() end,
-		["out"] = {print = function(...)                     io.write(...) io.write("\27[00m") end, print_inv = function(...) end, flush = function() io.flush() end},
-		["err"] = {print = function(...) io.write("\27[31m") io.write(...) io.write("\27[00m") end, print_inv = function(...) end, flush = function() io.flush() end}
+	consoleConfig = {
+		input = function(...) return io.read(...) end
+	}, logConfig = {
+		log = function(...) local file = File("maze.log") file:open("a") file:write(...) file:close() end,
+		out = {print = function(...)                     io.write(...) io.write("\27[00m") end, print_inv = function(...) end, flush = function() io.flush() end},
+		err = {print = function(...) io.write("\27[31m") io.write(...) io.write("\27[00m") end, print_inv = function(...) end, flush = function() io.flush() end}
 	}
 })

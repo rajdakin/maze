@@ -197,7 +197,11 @@ function Config:getConsoleConfig() return self.__consoleConfig end
 function Config:getOptions() return self.__optionsConfig end
 
 function Config:readConfig()
-	self.__ds:read(self.__filename)
+	try(function()
+		-- If the file don't exist, then it's OK
+		io.open(self.__filename, 'r'):close()
+		self.__ds:read(self.__filename)
+	end):catch(any_error, function(e) end)("config.lua/Config:readConfig")
 	
 	self:updateConfig()
 end

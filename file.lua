@@ -34,6 +34,25 @@ File = class(function(self, filename)
 	self.__state = FileState.closed
 end)
 
+function File:canOpen(mode)
+	if type(mode) == "table" then
+		if mode.open then
+			local mod = ""
+				if mode.read  then mod = mod .. "r" end
+				if mode.app   then mod = mod .. "a"
+			elseif mode.write then mod = mod .. "w" end
+				if mode.bin   then mod = mod .. "b" end
+			
+			mode = mod
+		else
+			return false
+		end
+	end
+	return try(
+		function() io.open(self.__filename, mode):close() return true end
+	):catch(any_error, function(e) return false end)("file.lua/File:canOpen@mode=" .. tostring(mode))
+end
+
 function File:open(mode)
 	if self.__file then self.__file:close() end
 	
@@ -45,20 +64,21 @@ function File:open(mode)
 		if     mode:find("b") then mod, fmode, bin   = mod .. "b", fmode .. "B", true end
 		
 		if FileState[fmode] then
-			self.__file = io.open(self.__filename, mod)
+			local emsg, ecode
+			self.__file, emsg, ecode = io.open(self.__filename, mod)
 			
 			if self.__file then
 				self.__state = FileState[fmode]
 				
 				return true
 			else
-				if not package.loaded[import_prefix .. "console"] then load_module(import_prefix .. "console") end
+				load_module(import_prefix .. "console", true)
 				
-				console:print("Error while opening file " .. self.__filename .. " in " .. mod .. " mode\n", LogLevel.ERROR, "file.lua/File:open:(string)")
+				console:print("Error while opening file " .. self.__filename .. " in " .. mod .. " mode (error code " .. tostring(ecode) .. ": " .. tostring(emsg) .. "\n", LogLevel.ERROR, "file.lua/File:open:(string)")
 				return false
 			end
 		else
-			if not package.loaded[import_prefix .. "console"] then load_module(import_prefix .. "console") end
+			load_module(import_prefix .. "console", true)
 			
 			console:print("Unknown opening mode " .. mode .. "\n", LogLevel.WARNING_DEV, "file.lua/File:open:(string)")
 			return false
@@ -78,7 +98,7 @@ function File:open(mode)
 			return 0
 		end
 	else
-		if not package.loaded[import_prefix .. "console"] then load_module(import_prefix .. "console") end
+		load_module(import_prefix .. "console")
 		
 		console:print("Unknown opening type " .. type(mode) .. "\n", LogLevel.ERROR, "file.lua/File:open")
 	end

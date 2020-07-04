@@ -197,11 +197,16 @@ function Config:getConsoleConfig() return self.__consoleConfig end
 function Config:getOptions() return self.__optionsConfig end
 
 function Config:readConfig()
-	try(function()
-		-- If the file don't exist, then it's OK
-		io.open(self.__filename, 'r'):close()
-		self.__ds:read(self.__filename)
-	end):catch(any_error, function(e) end)("config.lua/Config:readConfig")
+	local f = File(self.__filename)
+	-- If the file don't exist, then it's OK
+	if f:canOpen('r') then
+		local ret = self.__ds:read(self.__filename)
+		
+		if not ret.success then
+			load_module(import_prefix .. "console", true)
+			console:print("Error loading settings: " .. tostring(ret.reason or ret.reas) .. "\n", LogLevel.ERROR, "config.lua/Config:readConfig")
+		end
+	end
 	
 	self:updateConfig()
 end

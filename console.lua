@@ -49,6 +49,8 @@ local LogLevelClass = class(function(self, log_text, log_level, config_check, ou
 end)
 
 function LogLevelClass:getLogText() return self.__log_text end
+LogLevelClass.__tostring = LogLevelClass.getLogText
+
 function LogLevelClass:getOutputMode(...) return self:__output_mode(...) end
 
 function LogLevelClass:isValid(...)
@@ -71,6 +73,18 @@ end, LogLevelClass,
  INFO        = {"Info",              3, function(config) return true                     end, function(args) if (args[2] == "fast") then return OutputMode.FNOU else return OutputMode.SNOU end end},
  LOG         = {"Log",               4, function(config) return true                     end, function(args)                             return OutputMode.FNOU                                end}}
 )
+LogLevel.level2log = {
+	[0] = LogLevel.FATAL_ERROR,
+	[1] = LogLevel.ERROR,
+	[2] = LogLevel.WARNING,
+	[3] = LogLevel.INFO,
+	[4] = LogLevel.LOG
+}
+do
+	local maxLogLevel = currentConfig:getConsoleConfig():getMaxLogLevel()
+	assert(LogLevel.level2log[maxLogLevel] and not LogLevel.level2log[maxLogLevel + 1],
+		"Forgot to change the max log level in the config!")
+end
 
 --[[ Log - the log class
 	Holds its own configuration: the log (that is always called), the output/error printing functions,

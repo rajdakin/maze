@@ -11,7 +11,7 @@ local classmodule = load_module(import_prefix .. "class", true)
 local basechoicemodule = load_module(import_prefix .. "states.baseChoice", true)
 local dictionarymodule = load_module(import_prefix .. "dictionary", true)
 
-if dictionarymodule and dictionary.addListenerToConfig then dictionary:addListenerToConfig(currentConfig:getOptions()) end
+if dictionary.addListenerToConfig then dictionary:addListenerToConfig(currentConfig) end
 
 local MainMenuState = class(function(self)
 end, BaseChoiceState)
@@ -23,6 +23,7 @@ MainMenuState:__implementAbstract("runIteration", function(self)
 	
 	local menu = self:loopChoice(1, 3, "not_valid")
 	if menu == nil then
+		console:printLore('\n\n')
 		return false
 	end
 	

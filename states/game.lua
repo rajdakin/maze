@@ -79,6 +79,7 @@ GameState:__implementAbstract("runIteration", function(self)
 		self.__player.dead = true
 		
 		console:print("EOS detected, going to main menu\n", LogLevel.LOG, "states\\game.lua/GameState:runIteration@level movement parsing")
+		console:printLore('\n\n')
 		
 		self.__request = true
 		stateManager:popMainState()

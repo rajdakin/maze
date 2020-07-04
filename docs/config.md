@@ -1,50 +1,65 @@
-# What is this?
+# What is this
+
 This is the documentation for the configuration.
 
-It is contained in [config.lua](/config.lua).
+It is implemented in [config.lua](/config.lua) and the actual configuration is in `settings.cfg`.
 
-# Quick summary
-1. [What is in this configuration?](#what-is-in-this-configuration)
-2. [Why can't I modify the configuration in-game?](#why-cant-i-modify-the-configuration-in-game)
+## Quick summary
 
-# What is in this configuration?
+1. [How to change the configuration](#how-to-change-the-configuration)
+1. [What is in this configuration](#what-is-in-this-configuration)
+
+## How to change the configuration
+
+There is an in-game settings menu. The settings are also saved using the game's custom file format, in `settings.cfg`.
+
+## What is in this configuration
+
 There are several modules in the configuration, each of them having different options.
 
-*The lines pointed by this documentation can be inexact. If that's the case, search around in the file to find the option.*
+Every option listed below is modifiable by editing the value. The default value is put in parenthesis and is automatically generated when absent from the configuration file.
 
-Every option listed below is modifiable by editing the value \(after the `=` if not specified).
+### Level manager configuration
 
-## Level manager configuration
-Inside the `levelManagerConfiguration` block.
-- `loadTestFile` \(`false`): set to `true` if you want to use the test file. \(Unrecommanded for normal players, you must also change [the `+` sign in the `main` loop](/maze.lua#L182) to a `-`).
+Inside the `levelManager` object.
 
-## Level configuration
-Inside the `levelConfiguration` block.
+- `loadTestLevels` \(`false`): set to `true` if you want to use the test file. \(Unrecommanded for normal players, also read the [README.md@line52](/README.md#L52)).
+- `levelConfig`: levels configuration.
+
+### Level configuration
+
+Inside the `levelManager` object, `levelConfig` subobject.
+
 - `minimapDisplay` \(`true`): set to `false` to remove the minimap.
-- `minimapViewingSize` \(`{3, 3}`): change the `3`s by any positive odd number \(result not guaranteed otherwise) to change the minimap's size.
+- `minimapViewingSize` \(array with `3` and `3`): change the `3`s by any positive odd number \(result not guaranteed otherwise) to change the minimap's size.
 - `mapDisplayable` \(`true`): set to `false` if you think there shouldn't be any full map \(`m` command in game).
-- `mapYoffset` \(`7`): see [README.md@line45](/README.md#L45).
+- `mapOffset` \(array with `0` and `6`): the size taken when drawing the minimap.
 - `difficulty` \(`3`): ranging from very easy \(`1`) to hard \(`4`), can be any whole number between.
-  1. Very easy: no map reset, no object destroying
-  2. Easy: map reset, no object destroying
-  3. Normal: map reset, new object destroying
-  4. Hard: map reset, both objects \(held and new) destroying
+  1. Very easy: no map reset, no object destroyed when trying to pick two objects of the same kind at once
+  2. Easy: map reset, no object destroyed when trying to pick two objects of the same kind at once
+  3. Normal: map reset, new object destroyed when picking two objects of the same kind at once
+  4. Hard: map reset, both objects \(held and new) destroyed when picking two objects of the same kind at once
 
-## Keyboard configuration
-Inside the `keyboardConfiguration` block
-- `directions`: the directions quickkeys (up, down, left, right are respectively u, d, l, r by default, this can be changed here). Changing this configuration may break other keys as movement has predecence on about everything else.
+### Keyboard configuration
 
-## Console configuration
-Inside the `consoleConfiguration` block.
-- `logLevel` \(`2`): the logging level. Ranges from 0 to 4.
+Inside the `keyboard` object.
+
+- `directions` (objects which Lua equivalent is `{up = 'u', down = 'd', left = 'l', right = 'r'}`): the directions quickkeys (up, down, left, right). Changing this configuration may break other keys as movement has predecence on about everything else.
+
+### Console configuration
+
+Inside the `console` object.
+
+- `logLevel` \(`2`): the logging level. Ranges from 0 to 4. Also includes messages with lower log level.
   0. Fatal error
   1. Error
   2. Warning + developer warning \(see also `developerMode`)
   3. Info
   4. Log
-- `developerMode` \(`false`): set to `true` to have the developer warnings.
+- `developerMode` \(`false`): set to `true` to have the allowed \(see also `logLevel`) developer messages.
 
-# Why can't I modify the configuration in-game?
-There are two reasons to this:
-1. There are currently no other states than the in-game state.
-2. There is no file interface, so the game cannot save nor load any configuration.
+### Miscellaneous options
+
+Inside the `options` object.
+
+- `eqc` \(1): Number between 1 and 5, the "Exit"/"Quit"/"Close"/... debate.

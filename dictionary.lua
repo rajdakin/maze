@@ -232,13 +232,9 @@ function Lang:translate(state, str, origin, ...)
 		
 		local max_pos = 1
 		
-		while state[max_pos] do
-			if type(dicts[max_pos][state[max_pos]]) == "table" then
-				dicts[max_pos + 1] = dicts[max_pos][state[max_pos]]
-				max_pos = max_pos + 1
-			else
-				break
-			end
+		while state[max_pos] and (type(dicts[max_pos][state[max_pos]]) == "table") do
+			dicts[max_pos + 1] = dicts[max_pos][state[max_pos]]
+			max_pos = max_pos + 1
 		end
 		
 		local pos
@@ -251,7 +247,6 @@ function Lang:translate(state, str, origin, ...)
 					return value
 				elseif (type(value) == "table") and value[" active"] then
 					return value[" active"]
-				elseif (type(value) == "table") then
 				end
 			end
 		end
@@ -261,69 +256,24 @@ function Lang:translate(state, str, origin, ...)
 			return self.__dict[str][" active"]
 		else
 			local strtmp = "" for k, v in pairs(state) do strtmp = strtmp .. v .. "." end
-			self.__dict[str] = strtmp .. str .. "\n"
+			self.__dict[str] = strtmp .. str
 			return self.__dict[str]
 		end
 	end
 	
 	local newstr = pure()
 	
-	local args, argp = {...}, 1
-	while newstr:find("%%[^%%I]") and args[argp] do
-		local typ = newstr:gsub(".-%%([^%%I]).*", "%1")
-		
-		if typ == "s" then      -- The simple string
-			newstr = newstr:gsub("%%s", args[argp], 1)
-		elseif typ == "b" then  -- on or off
-			if args[argp] then
-				newstr = newstr:gsub("%%b", "on", 1)
-			else
-				newstr = newstr:gsub("%%b", "off", 1)
-			end
-		elseif typ == "B" then  -- On or Off
-			if args[argp] then
-				newstr = newstr:gsub("%%b", "On", 1)
-			else
-				newstr = newstr:gsub("%%b", "Off", 1)
-			end
-		elseif typ == "y" then  -- yes or no
-			if args[argp] then
-				newstr = newstr:gsub("%%y", "yes", 1)
-			else
-				newstr = newstr:gsub("%%y", "no", 1)
-			end
-		elseif typ == "Y" then  -- Yes or No
-			if args[argp] then
-				newstr = newstr:gsub("%%y", "Yes", 1)
-			else
-				newstr = newstr:gsub("%%y", "No", 1)
-			end
-		elseif typ == "n" then  -- A number or ?
-			if type(args[argp]) == "number" then
-				newstr = newstr:gsub("%%n", tostring(args[argp]), 1)
-			elseif tonumber(args[argp]) then
-				newstr = newstr:gsub("%%n", args[argp], 1)
-			else
-				newstr = newstr:gsub("%%n", "?", 1)
-			end
-		else
-			console:print("Unknown replacement type: " .. typ .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:translate")
-			newstr = newstr:gsub("%%([^%%I])", "%1", 1)
-		end
-		
-		argp = argp + 1
-	end
-	
-	while newstr:find("%%I") do  -- Insert another translation
+	-- Insert other translations before parsing arguments?
+	while newstr:find("%%I") do
 		local text = newstr:sub(newstr:find("%%I") + 2)
 		text = text:gsub("[	 ].*", "")
 		
 		if text == "" then
 			console:print("Insertion value needed with %I", LogLevel.WARNING, "dictionary.lua/Lang:translate:(%I parsing)")
-			newstr = newstr:gsub("%%I[ 	]", "I", 1)
+			newstr = newstr:gsub("%%I[ 	]?", "I", 1)
 		elseif text:find(":") then
 			console:print("Bad insertion value '" .. text .. "': alternatives are unsupported", LogLevel.WARNING, "dictionary.lua/Lang:translate:(%I parsing)")
-			newstr = newstr:gsub("%%I(.-)[ 	]", "%1", 1)
+			newstr = newstr:gsub("%%I(.-)[ 	]?", "%1", 1)
 		else
 			local spos, epos = newstr:find("%%I"), newstr:find("%%I") + text:len() + 2
 			
@@ -336,7 +286,7 @@ function Lang:translate(state, str, origin, ...)
 			local success, ret = pcall(origin.translate, origin, states, text, origin)
 			
 			if success then
-				newstr = newstr:gsub("%%I[^	 ]+.", ret, 1)
+				newstr = newstr:gsub("%%I[^	 ]+.", ret:gsub("%%", "%%%%"), 1)
 			else
 				local strtmp = "" for k, v in pairs(state) do strtmp = strtmp .. v .. "." end
 				console:print("Error while translating '" .. newstr:sub(spos + 2, epos - 1) .. "' for string '" .. strtmp .. str .. "' (probably a stack overflow: infinite translation loop)\n", LogLevel.ERROR, "dictionary.lua/Lang:translate:(%I parsing)")
@@ -346,8 +296,62 @@ function Lang:translate(state, str, origin, ...)
 		end
 	end
 	
-	newstr = newstr:gsub("%%%%[	 ]?", "%%")
-	return newstr
+	local args, argp = {...}, 1
+	local finstr = ""
+	local st = newstr:find("%%")
+	while st and (args[argp] ~= nil) do
+		local typ = newstr:sub(st + 1, st + 1)
+		finstr = finstr .. newstr:sub(1, st - 1)
+		
+		if typ == "s" then     -- The simple string
+			finstr = finstr .. args[argp]
+		elseif typ == "b" then -- on or off
+			if args[argp] then
+				finstr = finstr .. "on"
+			else
+				finstr = finstr .. "off"
+			end
+		elseif typ == "B" then -- On or Off
+			if args[argp] then
+				finstr = finstr .. "On"
+			else
+				finstr = finstr .. "Off"
+			end
+		elseif typ == "y" then -- yes or no
+			if args[argp] then
+				finstr = finstr .. "yes"
+			else
+				finstr = finstr .. "no"
+			end
+		elseif typ == "Y" then -- Yes or No
+			if args[argp] then
+				finstr = finstr .. "Yes"
+			else
+				finstr = finstr .. "No"
+			end
+		elseif typ == "n" then -- A number or ?
+			if type(args[argp]) == "number" then
+				finstr = finstr .. tostring(args[argp])
+			elseif tonumber(args[argp]) then
+				finstr = finstr .. tostring(tonumber(args[argp]))
+			else
+				finstr = finstr .. "?"
+			end
+		elseif typ == "%" then -- Escaped %
+			finstr = finstr .. "%"
+		else
+			console:print("Unknown replacement type: " .. typ .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:translate")
+			finstr = finstr .. typ
+		end
+		
+		newstr = newstr:sub(st + 2)
+		argp = argp + 1
+		
+		st = newstr:find("%%")
+	end
+	
+	finstr = finstr .. newstr
+	return finstr
 end
 
 function Lang:resetAlternative(alt)
@@ -559,16 +563,23 @@ for lang_id, lang in pairs(id2lang) do
 	end
 end
 
-local function configListener(self, cfg)
-	self:setAlternative({"mm"}, "eqc", cfg:getEQCAlts()[cfg:getEQCAlt()])
-end
 -- missing config, add helper function
 function dictionary:addListenerToConfig(cfg)
-	cfg:addListener(dictionary, configListener)
 	dictionary.addListenerToConfig = nil
-	configListener(dictionary, cfg)
+	
+	local function addCallback(cb, c)
+		c:addListener(dictionary, cb)
+		cb(dictionary, c)
+	end
+	
+	addCallback(function(self, cfg)
+		self:setAlternative({"mm"}, "eqc", cfg:getEQCAlts()[cfg:getEQCAlt()])
+	end, cfg:getOptions())
+	addCallback(function(self, cfg)
+		self:setAlternative({"options", "difficulty"}, "value", tostring(cfg:getDifficulty()))
+	end, cfg:getLevelManagerConfig():getLevelConfig())
 end
 if configmodule then
 	-- config has been successfully loaded, use helper function immediately
-	dictionary:addListenerToConfig(currentConfig:getOptions())
+	dictionary:addListenerToConfig(currentConfig)
 end

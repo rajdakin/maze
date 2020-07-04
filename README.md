@@ -12,7 +12,7 @@ To play this game, you must
 2. Start a command line in the repo
 3. Run `lua maze.lua`
 
-### Controls:
+### Controls
 
 - u or up arrow: move up \(north)
 - d or down arrow: move down \(south)
@@ -26,7 +26,7 @@ To play this game, you must
 
 Follow every instruction by a hit to the enter key. Multiple commands are not supported as of yet.
 
-## How can I contribute/change the configuration/see the documentations for the different classes/...
+## How can I contribute/change the configuration/see the documentations for the different classes/etc
 
 See [the `docs` folder](/docs)
 

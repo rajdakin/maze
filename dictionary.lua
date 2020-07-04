@@ -25,6 +25,8 @@ local id2lang = {}
 	fallback_id - the lang fallback UID
 ]]
 local Lang = class(function(self, lang_name, lang_id, fallback_id)
+	self.__loadedLevels = {}
+	
 	if id2lang[lang_id] then
 		console:print("Lang already defined: " .. lang_id .. "\n", LogLevel.ERROR, "dictionary.lua/Lang:(init)")
 		for k, v in pairs(id2lang) do self[k] = v end
@@ -47,9 +49,11 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 		linecount = linecount + 1
 		
 		if not line:find("^[ 	]*" .. comment) then
-		local nwsline = line:gsub("^%s+", ""):gsub("(%w[%w_%.%:]-)%s*= ?", "%1=", 1)
-		if nwsline and nwsline ~= "" and not nwsline:find("^" .. comment) then
-			if nwsline:find("=") then
+		local nwsline, repls = line:gsub("^%s+", ""):gsub("(%w[%w_%.%:]-)%s*= ?", "%1=", 1)
+		if repls == 0 then
+			console:print("[Loading file " .. lang_id .. ".lgd, line " .. linecount .. " for lang " .. lang_name .. "] Invalid states-key in `" .. nwsline .. "'\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+		elseif nwsline and (nwsline ~= "") and not nwsline:find("^" .. comment) then
+			if nwsline:find("=") then -- Should always be true, since we check for 1 substitution (which contains '=')
 				local text_id, text = nwsline:gsub("=.*", "", 1), nwsline:gsub(".-=", "", 1)
 				
 				local err = false
@@ -124,6 +128,8 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 end)
 
 function Lang:addLevel(level_id)
+	if self.__loadedLevels[level_id] then return end
+	
 	local file = io.open(import_prefix .. "lang/" .. level_id .. ".lld")
 	if not file then return false end
 	
@@ -218,6 +224,7 @@ function Lang:addLevel(level_id)
 	
 	file:close()
 	
+	self.__loadedLevels[level_id] = true
 	return true
 end
 
@@ -304,7 +311,7 @@ function Lang:translate(state, str, origin, ...)
 		finstr = finstr .. newstr:sub(1, st - 1)
 		
 		if typ == "s" then     -- The simple string
-			finstr = finstr .. args[argp]
+			finstr = finstr .. tostring(args[argp])
 		elseif typ == "b" then -- on or off
 			if args[argp] then
 				finstr = finstr .. "on"
@@ -339,6 +346,7 @@ function Lang:translate(state, str, origin, ...)
 			end
 		elseif typ == "%" then -- Escaped %
 			finstr = finstr .. "%"
+			argp = argp - 1
 		else
 			console:print("Unknown replacement type: " .. typ .. "\n", LogLevel.WARNING, "dictionary.lua/Lang:translate")
 			finstr = finstr .. typ
@@ -487,7 +495,10 @@ function Lang:setAlternative(state, str, newUnlocalized)
 end
 
 -- langs - the registered langs
-local langs = {{id = "en_US", name = "English (America)", fallback = false}, {id = "en_GB", name = "Serious english (Great Britain)"}}
+local langs = {
+	{id = "en_US", name = "English (America)", fallback = false},
+	{id = "en_GB", name = "Serious english (Great Britain)"}
+}
 
 --[[ Dictionary - the dictionary class [singleton]
 	Holds all registered langs and the active lang UID

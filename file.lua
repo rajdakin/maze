@@ -188,7 +188,8 @@ local function transform_value(val, datatype, from)
 		end end
 		local strfun = ""
 		if getArrayLength(val[1]) > 0 then
-			for _, v in pairs(val[1]) do strfun = strfun .. v.name .. ", " end strfun = strfun:gmatch("(.+), ")()
+			strfun = "local "
+			for _, v in pairs(val[1]) do strfun = strfun .. v.name .. ", " end strfun = strfun:match("^(.+), $")
 			strfun = strfun .. " = ...\n"
 		end
 		local curansw = 1

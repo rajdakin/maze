@@ -50,10 +50,10 @@ local Lang = class(function(self, lang_name, lang_id, fallback_id)
 		
 		if not line:find("^[ 	]*" .. comment) then
 		local nwsline, repls = line:gsub("^%s+", ""):gsub("(%w[%w_%.%:]-)%s*= ?", "%1=", 1)
-		if repls == 0 then
-			console:print("[Loading file " .. lang_id .. ".lgd, line " .. linecount .. " for lang " .. lang_name .. "] Invalid states-key in `" .. nwsline .. "'\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
-		elseif nwsline and (nwsline ~= "") and not nwsline:find("^" .. comment) then
-			if nwsline:find("=") then -- Should always be true, since we check for 1 substitution (which contains '=')
+		if nwsline and (nwsline ~= "") and not nwsline:find("^" .. comment) then
+			if repls == 0 then
+				console:print("[Loading file " .. lang_id .. ".lgd, line " .. linecount .. " for lang " .. lang_name .. "] Invalid states-key in `" .. nwsline .. "'\n", LogLevel.WARNING, "dictionary.lua/Lang:(init):lang dictionary file parsing")
+			elseif nwsline:find("=") then -- Should always be true, since we check for 1 substitution (which contains '=')
 				local text_id, text = nwsline:gsub("=.*", "", 1), nwsline:gsub(".-=", "", 1)
 				
 				local err = false
@@ -253,7 +253,13 @@ function Lang:translate(state, str, origin, ...)
 				if type(value) == "string" then
 					return value
 				elseif (type(value) == "table") and value[" active"] then
-					return value[" active"]
+					if value[" default"] == "nil" then
+						-- Value was fallbacked
+						self.__dict[str] = {[" active"] = self.__fallback:translate(state, str, origin), [" default"] = "nil"}
+						return self.__dict[str][" active"]
+					else
+						return value[" active"]
+					end
 				end
 			end
 		end
@@ -386,10 +392,8 @@ function Lang:resetAlternative(alt)
 	local function resetNils(tbl)
 		for k, v in pairs(tbl) do
 			if type(v) == "table" then
-				if v[" default"] then
-					if v[" default"] == "nil" then
-						tbl[k] = nil
-					end
+				if v[" default"] == "nil" then
+					tbl[k] = nil
 				else
 					resetNils(v)
 				end
@@ -496,7 +500,7 @@ end
 
 -- langs - the registered langs
 local langs = {
-	{id = "en_US", name = "English (America)", fallback = false},
+	{id = "en_US", name = "English ('Merica)", fallback = false},
 	{id = "en_GB", name = "Serious english (Great Britain)"}
 }
 
@@ -504,25 +508,29 @@ local langs = {
 	Holds all registered langs and the active lang UID
 ]]
 local Dictionary = class(function(self)
-	self.__active_lang = langs[1].id
+	self.__active_id = 1
+	self.__active_lang = langs[self.__active_id].id
 	
 	self.__langs = {}
 	for k, lang in pairs(langs) do
-		if not self.__langs[lang_id] then self.__langs[lang.id] = Lang(lang.name, lang.id, lang.fallback) end
+		if not self.__langs[lang.id] then self.__langs[lang.id] = Lang(lang.name, lang.id, lang.fallback) end
 	end
 end)
 
 --[[
-	setActiveLang - set the active lang UID
-	getActiveLang - get the active lang UID
+	getActiveLangIdx - get the active lang index
+	getNextLangID    - get the next   lang index
 	getActiveLangName - get the active lange name
 ]]
-function Dictionary:setActiveLang(lang)    self.__active_lang = lang end
-function Dictionary:getActiveLang() return self.__active_lang end
-function Dictionary:getActiveLangName() return self.__langs[self:getActiveLang()]:getName() end
+function Dictionary:_setActiveLang(lang)    self.__active_lang = lang end
+function Dictionary:_getActiveLang() return self.__active_lang end
+function Dictionary:_setLangIdx(id)      self.__active_id = id self:_setActiveLang(langs[id].id) end
+function Dictionary:getActiveLangIdx() return self.__active_id end
+function Dictionary:getNextLangIdx() return langs[self:getActiveLangIdx() + 1] and self:getActiveLangIdx() + 1 or 1 end
+function Dictionary:getActiveLangName() return self.__langs[self:_getActiveLang()]:getName() end
 
 -- translate - translates the string str in state state, using the active lang
-function Dictionary:translate(state, str, ...) return self.__langs[self:getActiveLang()]:translate(state, str, nil, ...) end
+function Dictionary:translate(state, str, ...) return self.__langs[self:_getActiveLang()]:translate(state, str, nil, ...) end
 
 -- resetAlternatives - reset every alternatives in every langs
 function Dictionary:resetAlternatives(alt)
@@ -535,9 +543,9 @@ end
 function Dictionary:getAlternative(state, str)
 	local ret
 	
-	ret = self.__langs[self:getActiveLang()]:getAlternative(state, str, newUnlocalized)
+	ret = self.__langs[self:_getActiveLang()]:getAlternative(state, str, newUnlocalized)
 	for k, lang in pairs(self.__langs) do
-		if k ~= self:getActiveLang() then lang:getAlternative(state, str, newUnlocalized) end
+		if k ~= self:_getActiveLang() then lang:getAlternative(state, str, newUnlocalized) end
 	end
 	
 	return ret
@@ -547,9 +555,9 @@ end
 function Dictionary:setAlternative(state, str, newUnlocalized)
 	local ret
 	
-	ret = self.__langs[self:getActiveLang()]:setAlternative(state, str, newUnlocalized)
+	ret = self.__langs[self:_getActiveLang()]:setAlternative(state, str, newUnlocalized)
 	for k, lang in pairs(self.__langs) do
-		if k ~= self:getActiveLang() then lang:setAlternative(state, str, newUnlocalized) end
+		if k ~= self:_getActiveLang() then lang:setAlternative(state, str, newUnlocalized) end
 	end
 	
 	return ret
@@ -585,6 +593,7 @@ function dictionary:addListenerToConfig(cfg)
 	
 	addCallback(function(self, cfg)
 		self:setAlternative({"mm"}, "eqc", cfg:getEQCAlts()[cfg:getEQCAlt()])
+		self:_setLangIdx(cfg:getLangIdx())
 	end, cfg:getOptions())
 	addCallback(function(self, cfg)
 		self:setAlternative({"options", "difficulty"}, "value", tostring(cfg:getDifficulty()))

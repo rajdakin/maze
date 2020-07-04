@@ -110,6 +110,11 @@ Level = class(function(self, level_datas, level_config, obs3)
 	if status.obsolete then console:print("Warning: obsolete level instanciation used. Please use the newer version.\n", LogLevel.WARNING_DEV, "level.lua/Level:(init)")
 	elseif status.old then console:print("Old level instanciation used. A newer version is available.\n", LogLevel.LOG, "level.lua/Level:(init)")
 	end
+	
+	if self.initialize_status.success then
+		self.__level_configuration:addListener(self, function(self, cfg)
+		end)
+	end
 end)
 
 function Level:getMapSize() return getArrayLength(self:getRooms()) - 2 * self:getColumnCount() end
@@ -366,11 +371,14 @@ function LevelManager:removeLevels() self.__levels = {} self.__level_count, self
 function LevelManager:getConfig() return self.__config end
 
 function LevelManager:initialize(scenarioName)
+	self.__lastScenario = scenarioName
+	
 	self:removeLevels()
 	
 	self:_initializeLevels(scenarioName)
 	
-	if self:getConfig():doLoadTestLevels() then
+	self.__debugLevels = self:getConfig():doLoadTestLevels()
+	if self.__debugLevels then
 		self.__level_number = -1
 	else
 		self.__level_number = 1
@@ -476,3 +484,9 @@ end
 
 -- levelManager - the LevelManager main singleton
 levelManager = LevelManager(currentConfig:getLevelManagerConfig())
+
+currentConfig:getLevelManagerConfig():addListener(levelManager, function(self, cfg)
+	if self.__debugLevels ~= cfg:doLoadTestLevels() then
+		self:initialize(self.__lastScenario)
+	end
+end)

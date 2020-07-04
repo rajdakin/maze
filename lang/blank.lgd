@@ -1,14 +1,16 @@
-# Blank pattern.
+# Blank template.
 
 # General purpose strings
 ok = 
 cancel = 
 
 # Main Menu strings
+mm.display = 
 mm.reset = 
 mm.play = 
 mm.options = 
 mm.profiles = 
+mm.not_valid = 
 # exit/quit/close debate...
  mm.eqc:exit = 
  mm.eqc:quit = 
@@ -17,24 +19,39 @@ mm.profiles =
  mm.eqc:kill = 
 
 mm.eqcmenu.confirm = 
+mm.eqcmenu.question = 
 mm.eqcmenu.yes = 
 mm.eqcmenu.no = 
+mm.eqcmenu.not_valid = 
 
-# Options strings
-options.advanced = 
+# Options 
+options.display = 
+options.lang = 
 options.not_exit = 
 options.enable_minimap = 
 options.difficulty.option = 
+options.advanced = 
+options.cancel = 
+options.save = 
+options.not_valid = 
 
 options.difficulty.value:1 = 
 options.difficulty.value:2 = 
 options.difficulty.value:3 = 
 options.difficulty.value:4 = 
 
-options.adv.vlength = 
-options.adv.dev = 
-options.adv.loglv = 
+options.adv.display = 
+options.adv.minimap_sz = 
 options.adv.enable_map = 
+options.adv.vlength = 
+options.adv.loglv = 
+options.adv.dev = 
+options.adv.dbg_levels = 
+options.adv.back = 
+options.adv.not_valid = 
+
+options.adv.vchange.prompt = 
+options.adv.vchange.not_valid = 
 
 # In-game string
 ig.prompt = 
@@ -64,10 +81,6 @@ ig.start =
 ig.levels.lores.start.lore = 
 ig.levels.lores.end.death:default = 
 ig.levels.lores.end.victory:default = 
-
-ig.levels.lores.start.starter.lore = 
-ig.levels.lores.end.starter.death:default = 
-ig.levels.lores.end.starter.victory:default = 
 
 ig.key:false = 
 ig.key:true = 

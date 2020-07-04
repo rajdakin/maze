@@ -44,9 +44,10 @@ color brightyellow "%I(ok|cancel)"
 color brightyellow "%Imm\.(reset|play|options|profiles|eqc)"
 color brightyellow "%Imm\.eqcmenu\.(confirm|yes|no)"
 
-color brightyellow "%Iopt\.(advanced|not_exit|enable_minimap)"
-color brightyellow "%Iopt\.difficulty\.(option|value)"
-color brightyellow "%Iopt\.adv\.(vlength|dev|loglv|enable_map)"
+color brightyellow "%Ioptions\.(display|lang|not_exit|enable_minimap|advanced|cancel|save)"
+color brightyellow "%Ioptions\.difficulty\.(option|value)"
+color brightyellow "%Ioptions\.adv\.(display|minimap_sz|enable_map|vlength|loglv|dev|dbg_levels|back)"
+color brightyellow "%Ioptions\.adv\.vchange\.(prompt|not_valid)"
 
 color brightyellow "%Iig\.(prompt|unknown_dir|help|nil|up|down|left|right|start|(red)?key|sword|confirm|exit)"
 color brightyellow "%Iig\.move\.(fail|up|down|left|right)"

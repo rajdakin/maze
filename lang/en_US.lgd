@@ -4,9 +4,11 @@
 ok = OK
 cancel = Cancel
 
+# Default 'not_valid' prompt (main menu/options)
+not_valid = I said enter a number between %n and %n! 
+
 # Main Menu strings
 mm.display = 1. %Imm.play %l2. %Imm.options %l3. %Imm.eqc %l%lSelect your choice: 
-mm.not_valid = I said enter a number between %n and %n! 
 mm.reset = Reset
 mm.play = Play
 mm.options = Options
@@ -25,7 +27,8 @@ mm.eqcmenu.no = Nah, it's OK...
 mm.eqcmenu.not_valid = I said 1 or 2 damnit! 
 
 # Options 
-options.display = 1. %Ioptions.not_exit %l2. %Ioptions.cancel %l3. %Ioptions.save %l%lYour choice: 
+options.display = 1. %Ioptions.lang %l2. %Ioptions.not_exit %l3. %Ioptions.enable_minimap %l4. %Ioptions.difficulty.option %l5. %Ioptions.advanced %l6. %Ioptions.cancel %l7. %Ioptions.save %l%lYour choice: 
+options.lang = Language: %s
 options.not_exit = I don't like %Imm.eqc !
 options.enable_minimap = Enable minimap? (%Y)
 options.difficulty.option = Difficulty: %Ioptions.difficulty.value 
@@ -38,10 +41,17 @@ options.difficulty.value:2 = Easy
 options.difficulty.value:3 = Normal
 options.difficulty.value:4 = Hard
 
-options.adv.vlength = How many lines vertically? (%n)
-options.adv.dev = Developper mode: %y
-options.adv.loglv = Logging level: %n
+options.adv.display = 1. %Ioptions.adv.minimap_sz %l2. %Ioptions.adv.enable_map %l3. %Ioptions.adv.vlength %l4. %Ioptions.adv.loglv %l5. %Ioptions.adv.dev %l6. %Ioptions.adv.dbg_levels %l7. %Ioptions.adv.back %l%lYour choice: 
+options.adv.minimap_sz = Minimap size: %nx%n
 options.adv.enable_map = Enable the full map? (%Y)
+options.adv.vlength = How many lines does the legend take? (%n)
+options.adv.loglv = Logging level: %s
+options.adv.dev = Developer mode: %y
+options.adv.dbg_levels = Load the debug levels: %y
+options.adv.back = Back to basic options
+
+options.adv.vchange.prompt = %c03mStarting here: ------%r%l%Iig.map.legend %c03m--------- Ending here%r%l%lPlease enter the number of lines: 
+options.adv.vchange.not_valid = Please enter a valid number (between %n and %n): 
 
 # In-game string
 ig.prompt = Command: 
@@ -68,7 +78,7 @@ ig.left = at your left
 ig.right = at your right
 ig.start = 
 
-#ig.levels.lores.start.lore = 
+ig.levels.lores.start.lore = 
 ig.levels.lores.end.death:default = You DIE. Maybe next time you'll survive?%l
 ig.levels.lores.end.victory:default = You WIN! Congratulations!%l
 
@@ -79,7 +89,7 @@ ig.redkey:true = You do have a %c46;01;31mred key...?%r.
 ig.sword:false = You don't have any sword.
 ig.sword:true = You do have a %c01;39;40;07msword%r.
 
-ig.map.legend = E = exit, S = sword, K = key, k = %c9mred%r %c02;31mblood%ry key, %c44m %r = door, %c41m %r = red door, %c45m %r = grave to grave's origin,   = nothing particular, %c01;30;07;47m?%r = not yet discovered, %c01;30;41;07m %r = wall, %c31mM%r = monster, %c31mT%r = trap, %c01;30;41;07mU%r = unreachable%l%l
+ig.map.legend = E = exit, S = sword, K = key, k = %c9mred%r %c02;31mblood%ry key, %c44m %r = door, %c41m %r = red door, %c45m %r = grave to grave's origin,   = nothing particular, %c01;30;47;07m?%r = not yet discovered, %c01;30;41;07m %r = wall, %c31mM%r = monster, %c31mT%r = trap, %c01;30;41;07mU%r = unreachable%l%l
 ig.map.key = You have a %c45;01;32mkey%r.%l
 ig.map.redkey = You have a %c46;01;31mred key...?%r.%l
 ig.map.sword = You have a %c01;39;40;07msword%r.%l
@@ -103,7 +113,7 @@ ig.monster.no_sword = Before you realized what happen, a huge mass comes toward 
 ig.monster.sword = Before you realized what happen, a huge mass comes toward you and jumps on you. And on your sword that was fortunately pointing toward the sky.%lThey both disintegrates, letting you wondering what happened and where is your sword.%l
 
 ig.trap.fall = You fall into a trap. Literally. You are now somewhere else.%l
-ig.trap.kill = You fall into a trap. A spiky one. You can confirm: spike hurts.%l
+ig.trap.kill = You fall into a trap. A spiky one. You can confirm: spike hurts. Especially when falling on them.%l
 
 ig.exit:open = The exit is a simple opened door with "EXIT" written on top of it. You feel so disappointed that you almost turn back.%l
 ig.exit:opened = 

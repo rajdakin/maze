@@ -17,12 +17,14 @@ local Configuration = abst_class(function(self, configDS)
 end)
 
 --[[ addListener - add a listener to the configuration and get notified at each configuration update
+	listener - object to link the callback to
 	callback - function that takes as a parameter the updated configuration
 ]]
 function Configuration:addListener(listener, callback)
 	if not self.__listeners[listener] then self.__listeners[listener] = {} end
 	table.insert(self.__listeners[listener], callback)
 end
+-- removeListener - remove all callbacks linked to the given listener
 function Configuration:removeListener(listener)
 	local ret = self.__listeners[listener] ~= nil
 	self.__listeners[listener] = nil
@@ -50,8 +52,6 @@ Configuration:__addAbstract("_updateDS")
 --[[ LevelConfig - the level configuration class.
 	Holds whether the minimap should display, whether the map should be displayable,
 	the minimap's size, the minimap printing height and the difficulty
-	
-	levelConfiguration - the level configuration table
 ]]
 local LevelConfig = class(nil, Configuration)
 LevelConfig:__implementAbstract("__updateSelf", function(self)
@@ -62,6 +62,7 @@ LevelConfig:__implementAbstract("__updateSelf", function(self)
 	self.__mapOffset = self.__ds:getOrDefault("mapOffset", {0, 7})
 	
 	self.__difficulty = self.__ds:getOrDefault("difficulty", 3)
+	self.__difficulty = min(max(floor(self.__difficulty), 1), self:getMaxDifficulty())
 end)
 LevelConfig:__implementAbstract("_updateDS", function(self)
 	self.__ds:set("displayMinimap", self.__displayMinimap, "boolean")
@@ -84,12 +85,16 @@ function LevelConfig:getMapXoffset() return self.__mapOffset[1] end
 function LevelConfig:getMapYoffset() return self.__mapOffset[2] end
 
 function LevelConfig:getDifficulty() return self.__difficulty end
+function LevelConfig:getMaxDifficulty() return 4 end
+
+function LevelConfig:setDisplayMinimap(disp) self.__displayMinimap = disp self:notifyListeners() end
+function LevelConfig:setDisplayFullMap(disp) self.__displayMap     = disp self:notifyListeners() end
+function LevelConfig:setCamSize(size) self.__minimapViewingSize = size self:notifyListeners() end
+function LevelConfig:setMapYoffset(yOff) self.__mapOffset[2] = yOff self:notifyListeners() end
+function LevelConfig:setDifficulty(diff) self.__difficulty = diff self:notifyListeners() end
 
 --[[ LevelManagerConfig - the level manager configuration class.
 	Holds whether to load test levels and a level (default) configuration
-	
-	levelManagerConfiguration - the level manager configuration table
-	levelConfiguration - the default levels configuration table used on loading levels
 ]]
 local LevelManagerConfig = class(nil, Configuration)
 LevelManagerConfig:__implementAbstract("__updateSelf", function(self)
@@ -108,6 +113,8 @@ end)
 function LevelManagerConfig:getLevelConfig() return self.__levelConfig end
 
 function LevelManagerConfig:doLoadTestLevels() return self.__loadTestLevels end
+
+function LevelManagerConfig:setLoadTestLevels(doLoad) self.__loadTestLevels = doLoad self:notifyListeners() end
 
 local KeyboardConfig = class(nil, Configuration)
 KeyboardConfig:__implementAbstract("__updateSelf", function(self)
@@ -135,17 +142,15 @@ end
 
 --[[ ConsoleConfig - the console configuration class.
 	Holds the log level (an integer between 0 and 4) and whether if it is in developer mode.
-	
-	levelConfiguration - the level configuration table
 ]]
 local ConsoleConfig = class(nil, Configuration)
 ConsoleConfig:__implementAbstract("__updateSelf", function(self)
 	self.__logLevel = self.__ds:getOrDefault("logLevel", 2)
-	self.__logLevel = min(max(floor(self.__logLevel), 0), 4)
+	self.__logLevel = min(max(floor(self.__logLevel), 0), self:getMaxLogLevel())
 	self.__developerMode = self.__ds:getOrDefault("developerMode", false)
 end)
 ConsoleConfig:__implementAbstract("_updateDS", function(self)
-	self.__ds:set("logLevel", min(max(floor(self.__logLevel), 0), 4), "number")
+	self.__ds:set("logLevel", min(max(floor(self.__logLevel), 0), self:getMaxLogLevel()), "number")
 	self.__ds:set("developerMode", self.__developerMode, "boolean")
 end)
 
@@ -153,24 +158,32 @@ function ConsoleConfig:getLogLevel()             return self.__logLevel         
 function ConsoleConfig:isLogLevelValid(logLevel) return self.__logLevel >= logLevel end
 function ConsoleConfig:isDeveloperMode()         return self.__developerMode        end
 
+function ConsoleConfig:getMaxLogLevel() return 4 end
+
+function ConsoleConfig:setLogLevel(lv) self.__logLevel      = lv  self:notifyListeners() end
+function ConsoleConfig:setDevMode(dev) self.__developerMode = dev self:notifyListeners() end
+
 --[[ OptionsConfig - the options class.
 	Holds the misc configs.
-	
-	options - the level configuration table
 ]]
 local Options = class(nil, Configuration)
 Options:__implementAbstract("__updateSelf", function(self)
 	self.__eqc = self.__ds:getOrDefault("eqc", 1)
+	self.__langIdx = self.__ds:getOrDefault("lang", 1)
 end)
 Options:__implementAbstract("_updateDS", function(self)
 	self.__ds:set("eqc", self.__eqc)
+	self.__ds:set("lang", self.__langIdx)
 end)
 
 function Options:getEQCAlts() return {"exit", "quit", "close", "term", "kill"} end
 function Options:getEQCAltsCount() return 5 end
 
-function Options:getEQCAlt() return self.__eqc end
-function Options:setEQCAlt(alt) self.__eqc = alt self:notifyListeners() end
+function Options:getEQCAlt()  return self.__eqc     end
+function Options:getLangIdx() return self.__langIdx end
+
+function Options:setEQCAlt(alt)  self.__eqc     = alt self:notifyListeners() end
+function Options:setLangIdx(idx) self.__langIdx = idx self:notifyListeners() end
 
 --[[ Config - the global configuration class [singleton]
 	Holds the level manager, keyboard and console configurations.

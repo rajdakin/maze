@@ -15,7 +15,7 @@ function BaseChoiceState:loopChoice(firstChoice, choicesCount, unlocalized_inval
 	local menu = nil
 	local function getMenuNo(menu)
 		local num = tonumber(menu)
-		return num and (floor(num) == num) and (num >= firstChoice) and (num <= choicesCount - firstChoice + 1) and num or nil
+		return num and (floor(num) == num) and (num >= firstChoice) and (num <= choicesCount + firstChoice - 1) and num or nil
 	end
 	while not menu do
 		local returned = console:read()
@@ -33,7 +33,7 @@ function BaseChoiceState:loopChoice(firstChoice, choicesCount, unlocalized_inval
 			return nil
 		elseif not getMenuNo(menu) then
 			console:printLore(
-				dictionary:translate(stateManager:getStatesStack(), unlocalized_invalid, firstChoice, choicesCount - firstChoice + 1)
+				dictionary:translate(stateManager:getStatesStack(), unlocalized_invalid, firstChoice, choicesCount + firstChoice - 1)
 			)
 		end
 		menu = getMenuNo(menu)

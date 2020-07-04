@@ -48,12 +48,14 @@ color brightmagenta "%Imm\.([a-zA-Z0-9]+\.)*(display|not_valid|reset|play|option
 color brightyellow "^[ 	]*(mm\.(eqcmenu\.)?)?(confirm|question|yes|no|not_valid)"
 color brightmagenta "%Imm\.eqcmenu\.([a-zA-Z0-9]+\.)*(confirm|question|yes|no|not_valid)"
 
-color brightyellow "^[ 	]*(options\.)?(display|not_exit|enable_minimap|advanced|back)"
-color brightmagenta "%Ioptions\.([a-zA-Z0-9]+\.)*(display|not_exit|enable_minimap|advanced|back)"
+color brightyellow "^[ 	]*(options\.)?(display|lang|not_exit|enable_minimap|advanced|cancel|save)"
+color brightmagenta "%Ioptions\.([a-zA-Z0-9]+\.)*(display|lang|not_exit|enable_minimap|advanced|cancel|save)"
 color brightyellow "^[ 	]*(options\.(difficulty\.)?)?(option|value:(1|2|3|4))"
 color brightmagenta "%Ioptions\.difficulty\.([a-zA-Z0-9]+\.)*(option|value)"
-color brightyellow "^[ 	]*(options\.(adv\.)?)?(vlength|dev|loglv|enable_map)"
-color brightmagenta "%Ioptions\.adv\.([a-zA-Z0-9]+\.)*(vlength|dev|loglv|enable_map)"
+color brightyellow "^[ 	]*(options\.(adv\.)?)?(display|minimap_sz|enable_map|vlength|loglv|dev|dbg_levels|back)"
+color brightmagenta "%Ioptions\.adv\.([a-zA-Z0-9]+\.)*(display|minimap_sz|enable_map|vlength|loglv|dev|dbg_levels|back)"
+color brightyellow "^[ 	]*(options\.(adv\.(vchange\.)?)?)?(prompt|not_valid)"
+color brightmagenta "%Ioptions\.adv\.vchange\.([a-zA-Z0-9]+\.)*(prompt|not_valid)"
 
 color brightyellow "^[ 	]*(ig\.)?(prompt|unknown_dir|help:(true|false)|nil|up|down|left|right|start|((red)?key|sword):(true|false)|confirm|exit:(open|opened))"
 color brightmagenta "%Iig\.([a-zA-Z0-9]+\.)*(prompt|unknown_dir|help|nil|up|down|left|right|start|(red)?key|sword|confirm|exit)"

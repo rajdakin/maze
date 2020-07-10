@@ -48,9 +48,9 @@ function File:canOpen(mode)
 			return false
 		end
 	end
-	return try(
+	return ({try(
 		function() io.open(self.__filename, mode):close() return true end
-	):catch(any_error, function(e) return false end)("file.lua/File:canOpen@mode=" .. tostring(mode))
+	):catch(any_error, function(e) return false end)("file.lua/File:canOpen@mode=" .. tostring(mode))})[1][2]
 end
 
 function File:open(mode)
@@ -131,7 +131,7 @@ function File:readLine()
 	
 	local ret = self.__file:read()
 	
-	if opened then
+	if opened and opened.open then
 		self:open(opened)
 	end
 	

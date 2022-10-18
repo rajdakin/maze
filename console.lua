@@ -71,7 +71,7 @@ end, LogLevelClass,
  WARNING     = {"Warning",           2, function(config) return true                     end, function(args)                             return OutputMode.FERR                                 end},
  WARNING_DEV = {"Developer warning", 2, function(config) return config:isDeveloperMode() end, function(args)                             return OutputMode.FERR                                 end},
  INFO        = {"Info",              3, function(config) return true                     end, function(args) if (args[2] == "fast") then return OutputMode.FNOU else return OutputMode.SNOU end end},
- LOG         = {"Log",               4, function(config) return true                     end, function(args)                             return OutputMode.FNOU                                end}}
+ LOG         = {"Log",               4, function(config) return true                     end, function(args)                             return OutputMode.FNOU                                 end}}
 )
 LogLevel.level2log = {
 	[0] = LogLevel.FATAL_ERROR,
@@ -137,7 +137,7 @@ function Log:print(printable, level, module, valid_args, output_args)
 		self:printString("[" .. level:getLogText() .. " in " .. module .. "] " .. (objtostr(printable, ""):gmatch("\n(.*)")() or "") .. "\n", output_mode, level:isValid(valid_args))
 		self.__log(tostring(level:getOutputMode(output_args)) .. "[" .. level:getLogText() .. " in " .. module .. "] " .. (objtostr(printable, ""):gmatch("\n(.*)")() or "") .. "\n")
 	else
-		self:print("Error with printable type in the print module\n", LogLevel.ERROR, "util.lua/Log:print")
+		self:print("Error with printable type in the print module\n", LogLevel.ERROR, "console.lua/Log:print")
 	end
 	self.__out_flush()
 	self.__err_flush()
@@ -214,7 +214,7 @@ function Console:printLore(printable)
 	self.__log:printLore(printable)
 end
 
--- console - the console singleton
+-- console - the console singleton; see also rawconsole
 console = Console({
 	consoleConfig = {
 		input = function(...) return io.read(...) end

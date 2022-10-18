@@ -72,7 +72,7 @@ end
 
 -- concat - concatenate two indexable arrays
 function concat(a, b)
-	cpy = {unpack(a)}
+	cpy = {table.unpack(a)}
 	e = #cpy
 	for i, v in ipairs(b) do
 		cpy[e + i] = v
@@ -87,7 +87,7 @@ end
 ]]
 function differ(fun, ...)
 	first_args = {...}
-	return function(...) return fun(unpack(concat(first_args, {...}))) end
+	return function(...) return fun(table.unpack(concat(first_args, {...}))) end
 end
 
 --[[

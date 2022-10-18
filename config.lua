@@ -9,6 +9,7 @@ local utilmodule = load_module(import_prefix .. "util", true)
 
 local classmodule = load_module(import_prefix .. "class", true)
 local filemodule = load_module(import_prefix .. "file", true)
+local rawconsolemodule = load_module(import_prefix .. "raw_console", true)
 
 local Configuration = abst_class(function(self, configDS)
 	self.__listeners = {}
@@ -216,8 +217,7 @@ function Config:readConfig()
 		local ret = self.__ds:read(self.__filename)
 		
 		if not ret.success then
-			load_module(import_prefix .. "console", true)
-			console:print("Error loading settings: " .. tostring(ret.reason or ret.reas) .. "\n", LogLevel.ERROR, "config.lua/Config:readConfig")
+			rawconsole:print("Error loading settings: " .. tostring(ret.reason or ret.reas) .. "\n", LogLevel.ERROR, "config.lua/Config:readConfig")
 		end
 	end
 	

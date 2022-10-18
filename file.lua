@@ -72,15 +72,15 @@ function File:open(mode)
 				
 				return true
 			else
-				load_module(import_prefix .. "console", true)
+				load_module(import_prefix .. "raw_console", true)
 				
-				console:print("Error while opening file " .. self.__filename .. " in " .. mod .. " mode (error code " .. tostring(ecode) .. ": " .. tostring(emsg) .. "\n", LogLevel.ERROR, "file.lua/File:open:(string)")
+				rawconsole:print("Error while opening file " .. self.__filename .. " in " .. mod .. " mode (error code " .. tostring(ecode) .. ": " .. tostring(emsg) .. "\n", LogLevel.ERROR, "file.lua/File:open:(string)")
 				return false
 			end
 		else
-			load_module(import_prefix .. "console", true)
+			load_module(import_prefix .. "raw_console", true)
 			
-			console:print("Unknown opening mode " .. mode .. "\n", LogLevel.WARNING_DEV, "file.lua/File:open:(string)")
+			rawconsole:print("Unknown opening mode " .. mode .. "\n", LogLevel.WARNING_DEV, "file.lua/File:open:(string)")
 			return false
 		end
 	elseif type(mode) == "table" then
@@ -98,9 +98,9 @@ function File:open(mode)
 			return 0
 		end
 	else
-		load_module(import_prefix .. "console")
+		load_module(import_prefix .. "raw_console")
 		
-		console:print("Unknown opening type " .. type(mode) .. "\n", LogLevel.ERROR, "file.lua/File:open")
+		rawconsole:print("Unknown opening type " .. type(mode) .. "\n", LogLevel.ERROR, "file.lua/File:open")
 	end
 end
 

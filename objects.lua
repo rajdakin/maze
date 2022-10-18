@@ -152,7 +152,7 @@ function Objects:initialize(objKind)
 		end
 		-- Fallback
 		for _, v in pairs(_fallback) do
-			self:addObject(unpack(v))
+			self:addObject(table.unpack(v))
 		end
 	else
 		local ok = false
@@ -196,14 +196,14 @@ function Objects:initialize(objKind)
 						adds[k2] = {"altset", v2[1], nil, v2[2]}
 						adds[k2][3] = table.remove(adds[k2][2])
 					end
-					self:addObject(k, v.default, v.type, unpack(adds))
+					self:addObject(k, v.default, v.type, table.unpack(adds))
 				end
 			end
 			ok = true
 		end):finally(function()
 			if not ok then
 				for _, v in pairs(_fallback) do
-					self:addObject(unpack(v))
+					self:addObject(table.unpack(v))
 				end
 			end
 		end)("objects.lua/Objects:initialize") -- Just a wrapper

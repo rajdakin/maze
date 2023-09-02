@@ -62,6 +62,10 @@ function File:open(mode)
 		if     mode:find("a") then mod, fmode, write = mod .. "a", fmode .. "A", true
 		elseif mode:find("w") then mod, fmode, write = mod .. "w", fmode .. "W", true end
 		if     mode:find("b") then mod, fmode, bin   = mod .. "b", fmode .. "B", true end
+		if mod == "" then
+			rawconsole:print("Error while opening file " .. self.__filename .. ": unsupported mode\n", LogLevel.ERROR, "file.lua/File:open:(string)")
+			return false
+		end
 		
 		if FileState[fmode] then
 			local emsg, ecode
@@ -105,10 +109,14 @@ function File:open(mode)
 end
 
 function File:close()
-	self.__state = FileState.closed
-	local _file = self.__file
-	self.__file = nil
-	return _file:close()
+	if self.__state.open then
+		self.__state = FileState.closed
+		local _file = self.__file
+		self.__file = nil
+		return _file:close()
+	else
+		return false
+	end
 end
 
 function File:__gc()
@@ -242,6 +250,7 @@ local function transform_value(val, datatype, from)
 		end
 		parsenext(1)
 		if _VERSION == "Lua 5.1" then
+			---@diagnostic disable-next-line: deprecated
 			val[3] = loadstring(strfun)
 		else
 			val[3] = load(strfun)

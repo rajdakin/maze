@@ -299,7 +299,7 @@ function Level:printLevelMap(is_ended, objects, doesDisplayAllMap)
 			local roomX, roomY = (curXcoord - 1) / (getRoomDisplayWidth() - 1), (curYcoord - 1) / (getRoomDisplayHeight() - 1)
 			local i = roomX + xOffset + (roomY + yOffset - 1) * self:getColumnCount()
 			
-			local ret = self:getRoomFromCoordinates(roomX + xOffset, roomY + yOffset):printRoom(objets, (i == self:getRoomNumber()) and not is_ended)
+			local ret = self:getRoomFromCoordinates(roomX + xOffset, roomY + yOffset):printRoom(objects, (i == self:getRoomNumber()) and not is_ended)
 			
 			if ret:iskind(RoomPrintingError) then
 				stateManager:popMainState()
@@ -357,7 +357,7 @@ local LevelManager = class(function(self, levelManagerConfig)
 	self.__config = levelManagerConfig
 	
 	self:initialize("")
-end, Manager)
+end)
 
 function LevelManager:getLevels() return self.__levels end
 function LevelManager:getLevel(level) return self:getLevels()[level] end

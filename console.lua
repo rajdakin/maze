@@ -20,7 +20,7 @@ end)
 function OutputModeClass:isValid() return self.__is_auto_valid end
 function OutputModeClass:isCharPerChar() return self.__is_CPC end
 function OutputModeClass:isErrorMode() return not self.__out end
-function OutputModeClass:tostring() return "[" .. (out and "OUT" or "ERR") .. "] " end
+function OutputModeClass:tostring() return "[" .. (self.__out and "OUT" or "ERR") .. "] " end
 OutputModeClass.__tostring = OutputModeClass.tostring
 
 --[[ OutputMode - the output mode enum

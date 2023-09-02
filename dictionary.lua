@@ -419,7 +419,7 @@ function Lang:getAlternative(state, str)
 	self:resetAlternative(" nil")
 	
 	if not self.__alt_dicts[str] then
-		if self.__fallback then return self.__fallback:getAlternative(state, str, newUnlocalized)
+		if self.__fallback then return self.__fallback:getAlternative(state, str)
 		else return false end
 	end
 	
@@ -543,9 +543,9 @@ end
 function Dictionary:getAlternative(state, str)
 	local ret
 	
-	ret = self.__langs[self:_getActiveLang()]:getAlternative(state, str, newUnlocalized)
+	ret = self.__langs[self:_getActiveLang()]:getAlternative(state, str)
 	for k, lang in pairs(self.__langs) do
-		if k ~= self:_getActiveLang() then lang:getAlternative(state, str, newUnlocalized) end
+		if k ~= self:_getActiveLang() then lang:getAlternative(state, str) end
 	end
 	
 	return ret

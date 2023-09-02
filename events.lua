@@ -56,7 +56,7 @@ EventParsingResultEnded = class(function(self, reasonId, reason_registering_stri
 	EventParsingResult.__init(self, -1, 0)
 	self.reasonId = reasonId
 	if reasonId then
-		if not eventParsingResultEndedReasons[reasonId] then eventParsingResultEndedReasons[reasonId] = reason_registring_string end
+		if not eventParsingResultEndedReasons[reasonId] then eventParsingResultEndedReasons[reasonId] = reason_registering_string end
 		self.reason = eventParsingResultEndedReasons[reasonId]
 	end
 end, EventParsingResult)

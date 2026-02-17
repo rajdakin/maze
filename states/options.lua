@@ -29,7 +29,6 @@ OptionsState:__implementAbstract("runIteration", function(self)
 	local lang = dictionary:getActiveLangName()
 	local dispMinimap = self.__lv:doesDisplayMinimap()
 	if not self.__adv then
-		
 		console:printLore(dictionary:translate(stateManager:getStatesStack(), "display", lang, dispMinimap))
 		
 		menu = self:loopChoice(1, 7, "not_valid")

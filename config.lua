@@ -212,12 +212,12 @@ function Config:getOptions() return self.__optionsConfig end
 
 function Config:readConfig()
 	local f = File(self.__filename)
-	-- If the file don't exist, then it's OK
+	-- If the file doesn't exist, then it's OK
 	if f:canOpen('r') then
 		local ret = self.__ds:read(self.__filename)
 		
 		if not ret.success then
-			rawconsole:print("Error loading settings: " .. tostring(ret.reason or ret.reas) .. "\n", LogLevel.ERROR, "config.lua/Config:readConfig")
+			rawconsole:print("Error loading settings: " .. tostring(ret.reason or ret.reas) .. "\n", true, "config.lua/Config:readConfig")
 		end
 	end
 	
